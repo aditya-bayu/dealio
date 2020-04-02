@@ -2,9 +2,9 @@ version: '3'
 services: 
   dealio-services1:
     build: 
-      context: ./services1
+      context: ./service1
       dockerfile: Dockerfile
-    image: dealio-backend:0.0.1
+    image: dealio-backend:v0.1
     container_name: dealio-backend
     networks: 
       default:
