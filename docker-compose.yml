@@ -4,8 +4,8 @@ services:
     build: 
       context: ./service1
       dockerfile: Dockerfile
-    image: dealio-backend:v0.1
-    container_name: dealio-backend
+    image: dealio-backend-service1:v0.1
+    container_name: dealio-backend-service1
     networks: 
       default:
         ipv4_address: 192.168.0.10
