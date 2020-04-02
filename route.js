@@ -11,58 +11,57 @@ const FacebookStrategy = require('passport-facebook');
 const router = express.Router();
 
 //------------------ Google & Facebook Auth -------------------
-passport.use(new GoogleStrategy({
-    clientID: '738742710995-fb8r9338lmvs20pg4cs0rk3b3jruqf7c.apps.googleusercontent.com',
-    clientSecret: '3MwB0ddZageLuEswnnvjwJ4A',
-    callbackURL: 'http://localhost:3000/auth/google/callback'
-},
-function(accessToken, refreshToken, profile, cb) {
-	var json = {
-		id: profile.id,
-		displayName: profile.displayName,
-		name: profile.name,
-		emails: profile.emails,
-		photos: profile.photos,
-		provider: profile.provider,
-		accessToken: accessToken,
-		refreshToken: refreshToken
-	}
-	db.query("INSERT INTO user_google (id, google_id) VALUES ('', '"+json.id+"')", function(result) {	
-		return cb(result);
-	});
-}));
+// passport.use(new GoogleStrategy({
+//     clientID: '738742710995-fb8r9338lmvs20pg4cs0rk3b3jruqf7c.apps.googleusercontent.com',
+//     clientSecret: '3MwB0ddZageLuEswnnvjwJ4A',
+//     callbackURL: 'http://localhost:3000/auth/google/callback'
+// },
+// function(accessToken, refreshToken, profile, cb) {
+// 	var json = {
+// 		id: profile.id,
+// 		displayName: profile.displayName,
+// 		name: profile.name,
+// 		emails: profile.emails,
+// 		photos: profile.photos,
+// 		provider: profile.provider,
+// 		accessToken: accessToken,
+// 		refreshToken: refreshToken
+// 	}
+// 	console.log(accessToken);
+// 	return cb(profile);
+// }));
 
-passport.use(new FacebookStrategy({
-    clientID: '535035844060225',
-    clientSecret: 'fc279f78b74a5973ad269564dc6c175c',
-    callbackURL: "http://localhost:3000/auth/facebook/callback",
-    profileFields: ["email", "name"]
-},
-function(accessToken, refreshToken, profile, cb) {
-    console.log(profile);
-    return cb(profile);
-}));
+// passport.use(new FacebookStrategy({
+//     clientID: '535035844060225',
+//     clientSecret: 'fc279f78b74a5973ad269564dc6c175c',
+//     callbackURL: "http://localhost:3000/auth/facebook/callback",
+//     profileFields: ["email", "name"]
+// },
+// function(accessToken, refreshToken, profile, cb) {
+//     console.log(profile);
+//     return cb(profile);
+// }));
 
-router.get('/auth/google',
-  passport.authenticate('google', { scope: 'https://www.googleapis.com/auth/userinfo.profile'})
-);
+// router.get('/auth/google',
+//   passport.authenticate('google', { scope: 'https://www.googleapis.com/auth/userinfo.profile'})
+// );
 
-router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/' }),
-	function(req, res) {
-    	res.redirect('/');
-	}
-);
+// router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/' }),
+// 	function(req, res) {
+//     	res.redirect('/');
+// 	}
+// );
 
-router.get('/auth/facebook',
-  passport.authenticate('facebook')
-);
+// router.get('/auth/facebook',
+//   passport.authenticate('facebook')
+// );
 
-router.get('/auth/facebook/callback', 
-	passport.authenticate('facebook', { successRedirect:'/', failureRedirect: '/' }),
-	function(req, res) {
-    	res.end();
-  	}
-);
+// router.get('/auth/facebook/callback', 
+// 	passport.authenticate('facebook', { successRedirect:'/', failureRedirect: '/' }),
+// 	function(req, res) {
+//     	res.end();
+//   	}
+// );
 
 //-------------------End Auth-----------------------
 
@@ -78,6 +77,16 @@ const storage = multer.diskStorage({
 const upload = multer({storage});
 
 router.route('/').get(function(req, res) {rf.index(req, res)});
+
+router.route('/auth/google').post(function(req, res) {
+	var access_token = req.body.access_token;
+	request.get({
+		url: 'https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=' + access_token
+	}, function(error, response, body){
+	  console.log(body);
+	  res.json(body);
+	});
+});
 
 router.route('/register-admin').post(function(req, res) {rf.registerAdmin(req, res)});
 
