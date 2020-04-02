@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .DS_Store
 node_modules
 /dist
@@ -21,3 +22,9 @@ yarn-error.log*
 *.sw*
 
 # Project specific
+=======
+.vscode/
+*node_modules/
+
+*package-lock.json
+>>>>>>> 39ea712447f2db97f02226586532aeb0c32fc33f
