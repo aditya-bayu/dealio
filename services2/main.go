@@ -8,7 +8,8 @@ import (
 )
 
 func main() {
-	// lib.GetDeals()
+	// lib.Development()
+
 	var route string = "3001"
 
 	router := mux.NewRouter().StrictSlash(true)
