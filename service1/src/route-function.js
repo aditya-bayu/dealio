@@ -605,14 +605,37 @@ exports.registerUser = function(req, res) {
 	var name = req.body.name;
 	var email = req.body.email;
 	var password = req.body.password;
+	var login_method = 'manual';
 	var date = middle.getDate();
 	var time = middle.getTime();
 
 	db.query("INSERT INTO user_manual (id, phone_number, email, password, date, time) VALUES ('', '"+phone_number+"', '"+email+"', '"+password+"', '"+date+"', '"+time+"')", function(result) {	
-		db.query("INSERT INTO users (id, phone_number, email, name, date, time) VALUES ('', '"+phone_number+"', '"+email+"', '"+name+"', '"+date+"', '"+time+"')", function(result) {	
-			res.json(1);
+		db.query("INSERT INTO users (id, phone_number, email, name, login_method, date, time) VALUES ('', '"+phone_number+"', '"+email+"', '"+name+"', '"+login_method+"', '"+date+"', '"+time+"')", function(result) {	
+			res.json(result);
 		});
 	});
+}
+
+exports.authGoogle = function(req, res) {
+	var access_token = req.body.access_token;
+	request.get({
+		url: 'https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=' + access_token
+	}, 	function(error, response, body){
+  			body = JSON.parse(body);
+  			console.log(body);
+  			var google_id = body.id;
+  			var full_name = body.name;
+  			var given_name = body.given_name;
+  			var family_name = body.family_name;
+  			var image_url = body.picture;
+  			var email = body.email;
+  			var date = middle.getDate();
+			var time = middle.getTime();
+  			db.query("INSERT INTO user_google (id, google_id, full_name, given_name, family_name, image_url, email, date, time) VALUES ('', '"+google_id+"', '"+full_name+"', '"+given_name+"', '"+family_name+"', '"+image_url+"', '"+email+"', '"+date+"', '"+time+"')", function(result) {	
+				res.json(result);
+			});
+		}
+	);
 }
 
 exports.setQrcode = function(req, res) {

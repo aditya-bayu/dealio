@@ -21,3 +21,4 @@ yarn-error.log*
 *.sw*
 
 # Project specific
+db-connect.js
