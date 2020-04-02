@@ -78,16 +78,6 @@ const upload = multer({storage});
 
 router.route('/').get(function(req, res) {rf.index(req, res)});
 
-router.route('/auth/google').post(function(req, res) {
-	var access_token = req.body.access_token;
-	request.get({
-		url: 'https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=' + access_token
-	}, function(error, response, body){
-	  console.log(body);
-	  res.json(body);
-	});
-});
-
 router.route('/register-admin').post(function(req, res) {rf.registerAdmin(req, res)});
 
 router.route('/login-admin').post(function(req, res) {rf.loginAdmin(req, res)});
@@ -189,6 +179,8 @@ router.route('/citcall-otp').get(function(req, res) {rf.citcallOtp(req, res)});
 router.route('/get-one-phone-regis').get(function(req, res) {rf.getOnePhoneRegis(req, res)});
 
 router.route('/register-user').post(function(req, res) {rf.registerUser(req, res)});
+
+router.route('/auth/google').post(function(req, res) {rf.authGoogle(req, res)});
 
 router.route('/set-qrcode').get(function(req, res) {rf.setQrcode(req, res)});
 
