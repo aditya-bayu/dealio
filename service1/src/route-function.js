@@ -538,13 +538,20 @@ exports.userRegisterPhone = function(req, res) {
 	var date = middle.getDate();
 	var time = middle.getTime();
 
-	db.query("SELECT * FROM regis_phone_number WHERE phone_number = '"+phone_number+"' AND status_regis = 0", function(result) {
-		if(result.length >= 3) {
-			res.json(403);
+	db.query("SELECT * FROM regis_phone_number WHERE phone_number = '"+phone_number+"' AND status_regis = 1", function(result) {
+		if(result.length != 0) {
+			res.json(404);
 		}
 		else {
-			db.query("INSERT INTO regis_phone_number (id, phone_number, status_regis, date, time) VALUES ('', '"+phone_number+"', '"+status_regis+"', '"+date+"', '"+time+"')", function(result) {	
-				res.json(result);
+			db.query("SELECT * FROM regis_phone_number WHERE phone_number = '"+phone_number+"' AND status_regis = 0", function(result) {
+				if(result.length >= 3) {
+					res.json(403);
+				}
+				else {
+					db.query("INSERT INTO regis_phone_number (id, phone_number, status_regis, date, time) VALUES ('', '"+phone_number+"', '"+status_regis+"', '"+date+"', '"+time+"')", function(result) {	
+						res.json(result);
+					});
+				}
 			});
 		}
 	});
