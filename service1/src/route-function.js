@@ -4,8 +4,10 @@ const path = require('path');
 const db = require('./db-connect.js');
 const middle = require('./middleware.js');
 const cookieParser = require('cookie-parser');
+const fs = require('fs');
 const session = require('express-session');
 const bodyParser = require('body-parser');
+const { google } = require('googleapis');
 const jwt = require('jsonwebtoken');
 const request = require('request');
 
@@ -28,6 +30,55 @@ var sess = session;
 
 exports.index = function(req, res) {
 	res.json("Works");
+}
+
+exports.gdriveUpload = function(req, res) {
+	const SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly'];
+	const TOKEN_PATH = 'token.json';
+
+	function authorize(credentials, callback) {
+  		// const {client_secret, client_id, redirect_uris} = credentials.installed;
+  		var client_secret = credentials.web.client_secret;
+  		var client_id = credentials.web.client_id;
+  		var redirect_uris = credentials.web.redirect_uris;
+
+	  	var oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris);
+
+  		fs.readFile(TOKEN_PATH, (err, token) => {
+    		if (err) return getAccessToken(oAuth2Client, callback);
+    		oAuth2Client.setCredentials(JSON.parse(token));
+    		callback(oAuth2Client);
+  		});
+	}
+
+	function uploadFile(auth) {
+	  	const drive = google.drive({version: 'v3', auth});
+	  	const fileMetadata = {
+	    	'name': 'photo.jpg'
+	  	};
+	  	const media = {
+	    	mimeType: 'image/jpeg',
+	    	body: fs.createReadStream(__dirname + '/photo.jpg')
+	  	};
+	  	drive.files.create({
+	    	resource: fileMetadata,
+	    	media: media,
+	    	fields: 'id'
+	  	}, (err, file) => {
+	    	if (err) {
+      			// Handle error
+	      		console.error(err);
+	    	} else {
+      			console.log('File Id: ', file.id);
+	    	}
+	  	});
+	}
+
+	fs.readFile(__dirname + '/credentials.json', (err, content) => {
+  		if (err) return console.log('Error loading client secret file:', err);
+	  	// Authorize a client with credentials, then call the Google Drive API.
+	  	authorize(JSON.parse(content), uploadFile);
+	});
 }
 
 exports.registerAdmin = function(req, res) {
@@ -79,7 +130,7 @@ exports.getMerchant = function(req, res) {
 exports.addMerchant = function(req, res) {
 	var name = req.body.name;
 
-	db.query("INSERT INTO merchant (id, name, category_id) VALUES ('', '"+name+"')", function(result) {	
+	db.query("INSERT INTO merchant (id, name) VALUES ('', '"+name+"')", function(result) {	
 		res.json(result);
 	});
 }
@@ -140,7 +191,7 @@ exports.editDeals = function(req, res) {
     var image = req.body.image;
     var banner = req.body.banner;
 
-	db.query("UPDATE deals SET name = '"+name+"', audience_id = '"+audience_id+"', start_date = '"+start_date+"', end_date = '"+end_date+"', description = '"+description+"', action = '"+action+"', action_link = '"+action_link+"', image = '"+image+"', banner = '"+banner+"', merchant_id = "+merchant_id+", type = "+type+", category_id = "+category_id+", hot_deals = "+hot_deals+" WHERE id = "+ req.body.id, function(result) {	
+	db.query("UPDATE deals SET name = '"+name+"', audience_id = '"+audience_id+"', start_date = '"+start_date+"', end_date = '"+end_date+"', description = '"+description+"', action = '"+action+"', action_link = '"+action_link+"', image = '"+image+"', banner = '"+banner+"', merchant_id = "+merchant_id+", type = '"+type+"', category_id = "+category_id+", hot_deals = "+hot_deals+" WHERE id = "+ req.body.id, function(result) {	
 		res.json(result);
 	});
 }
@@ -171,7 +222,7 @@ exports.addEarn = function(req, res) {
     var date = req.body.date;
     var time = req.body.time;
 
-	db.query("INSERT INTO earn (id, name, audience_id, start_date, end_date, description, action, action_link, merchant_id, type, category_id, date, time) VALUES ('', '"+name+"', '"+audience_id+"', '"+start_date+"', '"+end_date+"', '"+description+"', '"+action+"', '"+action_link+"', "+merchant_id+", "+type+", "+category_id+", '"+date+"', '"+time+"')", function(result) {	
+	db.query("INSERT INTO earn (id, name, audience_id, start_date, end_date, description, action, action_link, merchant_id, type, category_id, date, time) VALUES ('', '"+name+"', '"+audience_id+"', '"+start_date+"', '"+end_date+"', '"+description+"', '"+action+"', '"+action_link+"', "+merchant_id+", '"+type+"', "+category_id+", '"+date+"', '"+time+"')", function(result) {	
 		res.json(result);
 	});
 }
@@ -190,7 +241,7 @@ exports.editEarn = function(req, res) {
     var image = req.body.image;
     var banner = req.body.banner;
 
-	db.query("UPDATE earn SET name = '"+name+"', audience_id = '"+audience_id+"', start_date = '"+start_date+"', end_date = '"+end_date+"', description = '"+description+"', action = '"+action+"', action_link = '"+action_link+"', image = '"+image+"', banner = '"+banner+"', merchant_id = "+merchant_id+", type = "+type+", category_id = "+category_id+" WHERE id = "+ req.body.id, function(result) {	
+	db.query("UPDATE earn SET name = '"+name+"', audience_id = '"+audience_id+"', start_date = '"+start_date+"', end_date = '"+end_date+"', description = '"+description+"', action = '"+action+"', action_link = '"+action_link+"', image = '"+image+"', banner = '"+banner+"', merchant_id = "+merchant_id+", type = '"+type+"', category_id = "+category_id+" WHERE id = "+ req.body.id, function(result) {	
 		res.json(result);
 	});
 }
@@ -219,7 +270,7 @@ exports.addWin = function(req, res) {
     var date = req.body.date;
     var time = req.body.time;
 
-	db.query("INSERT INTO win (id, name, audience_id, start_date, end_date, description, point_redeem, type, category_id date, time) VALUES ('', '"+name+"', '"+audience_id+"', '"+start_date+"', '"+end_date+"', '"+description+"', "+point_redeem+", "+type+", "+category_id+", '"+date+"', '"+time+"')", function(result) {	
+	db.query("INSERT INTO win (id, name, audience_id, start_date, end_date, description, point_redeem, type, category_id date, time) VALUES ('', '"+name+"', '"+audience_id+"', '"+start_date+"', '"+end_date+"', '"+description+"', "+point_redeem+", '"+type+"', "+category_id+", '"+date+"', '"+time+"')", function(result) {	
 		res.json(result);
 	});
 }
@@ -236,7 +287,7 @@ exports.editWin = function(req, res) {
     var image = req.body.image;
     var banner = req.body.banner;
 
-	db.query("UPDATE win SET name = '"+name+"', audience_id = '"+audience_id+"', start_date = '"+start_date+"', end_date = '"+end_date+"', description = '"+description+"', image = '"+image+"', banner = '"+banner+"', point_redeem = "+point_redeem+", type = "+type+", category_id = "+category_id+" WHERE id = "+ req.body.id, function(result) {	
+	db.query("UPDATE win SET name = '"+name+"', audience_id = '"+audience_id+"', start_date = '"+start_date+"', end_date = '"+end_date+"', description = '"+description+"', image = '"+image+"', banner = '"+banner+"', point_redeem = "+point_redeem+", type = '"+type+"', category_id = "+category_id+" WHERE id = "+ req.body.id, function(result) {	
 		res.json(result);
 	});
 }
@@ -268,7 +319,7 @@ exports.addProductDeals = function(req, res) {
     var date = req.body.date;
     var time = req.body.time;
 
-	db.query("INSERT INTO product_deals (id, name, audience_id, start_date, end_date, description, price, discount, merchant_id, type, category_id, hot_deals, date, time) VALUES ('', '"+name+"', '"+audience_id+"', '"+start_date+"', '"+end_date+"', '"+description+"', "+price+", "+discount+", "+merchant_id+", "+type+", "+category_id+", "+hot_deals+", '"+date+"', '"+time+"')", function(result) {	
+	db.query("INSERT INTO product_deals (id, name, audience_id, start_date, end_date, description, price, discount, merchant_id, type, category_id, hot_deals, date, time) VALUES ('', '"+name+"', '"+audience_id+"', '"+start_date+"', '"+end_date+"', '"+description+"', "+price+", "+discount+", "+merchant_id+", '"+type+"', "+category_id+", "+hot_deals+", '"+date+"', '"+time+"')", function(result) {	
 		res.json(result);
 	});
 }
@@ -288,7 +339,7 @@ exports.editProductDeals = function(req, res) {
     var image = req.body.image;
     var banner = req.body.banner;
 
-	db.query("UPDATE product_deals SET name = '"+name+"', audience_id = '"+audience_id+"', start_date = '"+start_date+"', end_date = '"+end_date+"', description = '"+description+"', price = "+price+", discount = "+discount+", image = '"+image+"', banner = '"+banner+"', merchant_id = "+merchant_id+", type = "+type+", category_id = "+category_id+", hot_deals = "+hot_deals+" WHERE id = "+ req.body.id, function(result) {	
+	db.query("UPDATE product_deals SET name = '"+name+"', audience_id = '"+audience_id+"', start_date = '"+start_date+"', end_date = '"+end_date+"', description = '"+description+"', price = "+price+", discount = "+discount+", image = '"+image+"', banner = '"+banner+"', merchant_id = "+merchant_id+", type = '"+type+"', category_id = "+category_id+", hot_deals = "+hot_deals+" WHERE id = "+ req.body.id, function(result) {	
 		res.json(result);
 	});
 }
@@ -327,6 +378,34 @@ exports.editAudience = function(req, res) {
     var age_end = req.body.age_end;
 
 	db.query("UPDATE audience SET name = '"+name+"', city = '"+city+"', gender = '"+gender+"', age_start = '"+age_start+"', age_end = '"+age_end+"' WHERE id = "+ req.body.id, function(result) {	
+		res.json(result);
+	});
+}
+
+exports.getOneCategory = function(req, res) {
+	db.query("SELECT * FROM category WHERE id = "+req.query.id, function(result) {
+		res.json(result);
+	});
+}
+
+exports.getCategory = function(req, res) {
+	db.query("SELECT * FROM category", function(result) {
+		res.json(result);
+	});
+}
+
+exports.addCategory = function(req, res) {
+	var name = req.body.name;
+
+	db.query("INSERT INTO category (id, name) VALUES ('', '"+name+"')", function(result) {	
+		res.json(result);
+	});
+}
+
+exports.editCategory = function(req, res) {
+	var name = req.body.name;
+
+	db.query("UPDATE category SET name = '"+name+"' WHERE id = "+ req.body.id, function(result) {	
 		res.json(result);
 	});
 }
@@ -538,13 +617,20 @@ exports.userRegisterPhone = function(req, res) {
 	var date = middle.getDate();
 	var time = middle.getTime();
 
-	db.query("SELECT * FROM regis_phone_number WHERE phone_number = '"+phone_number+"' AND status_regis = 0", function(result) {
-		if(result.length >= 3) {
-			res.json(403);
+	db.query("SELECT * FROM regis_phone_number WHERE phone_number = '"+phone_number+"' AND status_regis = 1", function(result) {
+		if(result.length != 0) {
+			res.json(404);
 		}
 		else {
-			db.query("INSERT INTO regis_phone_number (id, phone_number, status_regis, date, time) VALUES ('', '"+phone_number+"', '"+status_regis+"', '"+date+"', '"+time+"')", function(result) {	
-				res.json(result);
+			db.query("SELECT * FROM regis_phone_number WHERE phone_number = '"+phone_number+"' AND status_regis = 0", function(result) {
+				if(result.length >= 3) {
+					res.json(403);
+				}
+				else {
+					db.query("INSERT INTO regis_phone_number (id, phone_number, status_regis, date, time) VALUES ('', '"+phone_number+"', '"+status_regis+"', '"+date+"', '"+time+"')", function(result) {	
+						res.json(result);
+					});
+				}
 			});
 		}
 	});
@@ -605,15 +691,22 @@ exports.registerUser = function(req, res) {
 	var name = req.body.name;
 	var email = req.body.email;
 	var password = req.body.password;
-	var login_method = 'manual';
+	var login_method = req.body.login_method;
 	var date = middle.getDate();
 	var time = middle.getTime();
 
-	db.query("INSERT INTO user_manual (id, phone_number, email, password, date, time) VALUES ('', '"+phone_number+"', '"+email+"', '"+password+"', '"+date+"', '"+time+"')", function(result) {	
+	if(login_method == 'manual') {
+		db.query("INSERT INTO user_manual (id, phone_number, email, password, date, time) VALUES ('', '"+phone_number+"', '"+email+"', '"+password+"', '"+date+"', '"+time+"')", function(result) {	
+			db.query("INSERT INTO users (id, phone_number, email, name, login_method, date, time) VALUES ('', '"+phone_number+"', '"+email+"', '"+name+"', '"+login_method+"', '"+date+"', '"+time+"')", function(result) {	
+				res.json(result);
+			});
+		});
+	}
+	else {
 		db.query("INSERT INTO users (id, phone_number, email, name, login_method, date, time) VALUES ('', '"+phone_number+"', '"+email+"', '"+name+"', '"+login_method+"', '"+date+"', '"+time+"')", function(result) {	
 			res.json(result);
 		});
-	});
+	}
 }
 
 exports.authGoogle = function(req, res) {
@@ -636,6 +729,12 @@ exports.authGoogle = function(req, res) {
 			});
 		}
 	);
+}
+
+exports.getUserGoogle = function(req, res) {
+	db.query("SELECT *, date_format(date, '%Y-%m-%d') AS date, date_format(time, '%H:%i:%s') AS time FROM user_google WHERE id = "+req.query.id, function(result) {
+		res.json(result);
+	});
 }
 
 exports.setQrcode = function(req, res) {

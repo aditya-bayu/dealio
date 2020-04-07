@@ -130,6 +130,14 @@ router.route('/add-audience').post(function(req, res) {rf.addAudience(req, res)}
 
 router.route('/edit-audience').post(function(req, res) {rf.editAudience(req, res)});
 
+router.route('/get-one-category').get(function(req, res) {rf.getOneCategory(req, res)});
+
+router.route('/get-category').get(function(req, res) {rf.getCategory(req, res)});
+
+router.route('/add-category').post(function(req, res) {rf.addCategory(req, res)});
+
+router.route('/edit-category').post(function(req, res) {rf.editCategory(req, res)});
+
 router.route('/get-one-news').get(function(req, res) {rf.getOneNews(req, res)});
 
 router.route('/get-news').get(function(req, res) {rf.getNews(req, res)});
@@ -181,6 +189,10 @@ router.route('/get-one-phone-regis').get(function(req, res) {rf.getOnePhoneRegis
 router.route('/register-user').post(function(req, res) {rf.registerUser(req, res)});
 
 router.route('/auth/google').post(function(req, res) {rf.authGoogle(req, res)});
+
+router.route('/get-user-google').get(function(req, res) {rf.getUserGoogle(req, res)});
+
+router.route('/gdrive-upload').get(function(req, res) {rf.gdriveUpload(req, res)});
 
 router.route('/set-qrcode').get(function(req, res) {rf.setQrcode(req, res)});
 
