@@ -4,66 +4,8 @@ const rf = require('./src/route-function');
 const db = require('./src/db-connect.js');
 const multer = require('multer');
 const request = require('request');
-const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-const FacebookStrategy = require('passport-facebook');
 
 const router = express.Router();
-
-//------------------ Google & Facebook Auth -------------------
-// passport.use(new GoogleStrategy({
-//     clientID: '738742710995-fb8r9338lmvs20pg4cs0rk3b3jruqf7c.apps.googleusercontent.com',
-//     clientSecret: '3MwB0ddZageLuEswnnvjwJ4A',
-//     callbackURL: 'http://localhost:3000/auth/google/callback'
-// },
-// function(accessToken, refreshToken, profile, cb) {
-// 	var json = {
-// 		id: profile.id,
-// 		displayName: profile.displayName,
-// 		name: profile.name,
-// 		emails: profile.emails,
-// 		photos: profile.photos,
-// 		provider: profile.provider,
-// 		accessToken: accessToken,
-// 		refreshToken: refreshToken
-// 	}
-// 	console.log(accessToken);
-// 	return cb(profile);
-// }));
-
-// passport.use(new FacebookStrategy({
-//     clientID: '535035844060225',
-//     clientSecret: 'fc279f78b74a5973ad269564dc6c175c',
-//     callbackURL: "http://localhost:3000/auth/facebook/callback",
-//     profileFields: ["email", "name"]
-// },
-// function(accessToken, refreshToken, profile, cb) {
-//     console.log(profile);
-//     return cb(profile);
-// }));
-
-// router.get('/auth/google',
-//   passport.authenticate('google', { scope: 'https://www.googleapis.com/auth/userinfo.profile'})
-// );
-
-// router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/' }),
-// 	function(req, res) {
-//     	res.redirect('/');
-// 	}
-// );
-
-// router.get('/auth/facebook',
-//   passport.authenticate('facebook')
-// );
-
-// router.get('/auth/facebook/callback', 
-// 	passport.authenticate('facebook', { successRedirect:'/', failureRedirect: '/' }),
-// 	function(req, res) {
-//     	res.end();
-//   	}
-// );
-
-//-------------------End Auth-----------------------
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -81,6 +23,8 @@ router.route('/').get(function(req, res) {rf.index(req, res)});
 router.route('/register-admin').post(function(req, res) {rf.registerAdmin(req, res)});
 
 router.route('/login-admin').post(function(req, res) {rf.loginAdmin(req, res)});
+
+router.route('/login-user').post(function(req, res) {rf.loginUser(req, res)});
 
 router.route('/get-one-merchant').get(function(req, res) {rf.getOneMerchant(req, res)});
 
@@ -188,11 +132,19 @@ router.route('/get-one-phone-regis').get(function(req, res) {rf.getOnePhoneRegis
 
 router.route('/register-user').post(function(req, res) {rf.registerUser(req, res)});
 
+router.route('/user-forget-phone').post(function(req, res) {rf.userForgetPhone(req, res)});
+
+router.route('/user-forget-otp').post(function(req, res) {rf.userForgetOtp(req, res)});
+
+router.route('/check-forget-otp').post(function(req, res) {rf.checkForgetOtp(req, res)});
+
+router.route('/citcall-forget-otp').get(function(req, res) {rf.citcallForgetOtp(req, res)});
+
+router.route('/forget-password-user').post(function(req, res) {rf.forgetPasswordUser(req, res)})
+
 router.route('/auth/google').post(function(req, res) {rf.authGoogle(req, res)});
 
 router.route('/get-user-google').get(function(req, res) {rf.getUserGoogle(req, res)});
-
-router.route('/gdrive-upload').get(function(req, res) {rf.gdriveUpload(req, res)});
 
 router.route('/set-qrcode').get(function(req, res) {rf.setQrcode(req, res)});
 

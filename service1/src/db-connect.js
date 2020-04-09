@@ -1,9 +1,9 @@
 var mysql = require('mysql');
 
 var con = mysql.createConnection({
-  host: "190.168.0.6",
-  user: "dealioapi",
-  password: "dealioteam",
+  host: "localhost",
+  user: "root",
+  password: "",
   database: "dealio"
 });
 

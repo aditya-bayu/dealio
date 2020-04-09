@@ -32,55 +32,6 @@ exports.index = function(req, res) {
 	res.json("Works");
 }
 
-exports.gdriveUpload = function(req, res) {
-	const SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly'];
-	const TOKEN_PATH = 'token.json';
-
-	function authorize(credentials, callback) {
-  		// const {client_secret, client_id, redirect_uris} = credentials.installed;
-  		var client_secret = credentials.web.client_secret;
-  		var client_id = credentials.web.client_id;
-  		var redirect_uris = credentials.web.redirect_uris;
-
-	  	var oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris);
-
-  		fs.readFile(TOKEN_PATH, (err, token) => {
-    		if (err) return getAccessToken(oAuth2Client, callback);
-    		oAuth2Client.setCredentials(JSON.parse(token));
-    		callback(oAuth2Client);
-  		});
-	}
-
-	function uploadFile(auth) {
-	  	const drive = google.drive({version: 'v3', auth});
-	  	const fileMetadata = {
-	    	'name': 'photo.jpg'
-	  	};
-	  	const media = {
-	    	mimeType: 'image/jpeg',
-	    	body: fs.createReadStream(__dirname + '/photo.jpg')
-	  	};
-	  	drive.files.create({
-	    	resource: fileMetadata,
-	    	media: media,
-	    	fields: 'id'
-	  	}, (err, file) => {
-	    	if (err) {
-      			// Handle error
-	      		console.error(err);
-	    	} else {
-      			console.log('File Id: ', file.id);
-	    	}
-	  	});
-	}
-
-	fs.readFile(__dirname + '/credentials.json', (err, content) => {
-  		if (err) return console.log('Error loading client secret file:', err);
-	  	// Authorize a client with credentials, then call the Google Drive API.
-	  	authorize(JSON.parse(content), uploadFile);
-	});
-}
-
 exports.registerAdmin = function(req, res) {
 	var username = req.body.username;
 	var password = req.body.password;
@@ -103,10 +54,40 @@ exports.loginAdmin = function(req, res) {
 			});
 			jwt.sign({
 				id: result[0].id,
-				username: result[0].username
+				username: result[0].username,
+				role: 'admin'
 			},'kuda', {expiresIn: '24h'}, (err, token) => {
 	    		res.json({token, response: result[0]});
 	      	});
+		}
+		else {
+			console.log(404);
+			res.json(404);
+		}
+	});
+}
+
+exports.loginUser = function(req, res) {
+	var phone_number = req.body.phone_number;
+	var password = req.body.password;
+
+	db.query("SELECT * FROM user_manual WHERE phone_number = '"+phone_number+"' AND password = '"+password+"'", function(result) {
+		if(result.length) {
+			sess.user = result[0];
+
+			db.query("SELECT id FROM users WHERE phone_number = '"+phone_number+"'", function(result) {
+				db.query("INSERT INTO login_user (id, user_id, date, time) VALUES ('', "+result[0].id+", '"+middle.getDate()+"', '"+middle.getTime()+"')", function(result) {
+					console.log("Logged in at " + middle.getDate() + " " + middle.getTime());
+				});
+
+				jwt.sign({
+					id: result[0].id,
+					username: result[0].phone_number,
+					role: 'user'
+				},'kuda', {expiresIn: '24h'}, (err, token) => {
+		    		res.json({token, response: result[0]});
+		      	});
+			});
 		}
 		else {
 			console.log(404);
@@ -707,6 +688,90 @@ exports.registerUser = function(req, res) {
 			res.json(result);
 		});
 	}
+}
+
+exports.userForgetPhone = function(req, res) {
+	var phone_number = req.body.phone_number;
+	var status_forget = 0;
+	var date = middle.getDate();
+	var time = middle.getTime();
+
+	db.query("SELECT id FROM user_manual WHERE phone_number = '"+phone_number+"'", function(result) {
+		if(result.length) {
+			var user_manual_id = result[0].id;
+
+			db.query("SELECT * FROM forget_phone_number WHERE user_manual_id = '"+user_manual_id+"' AND status_forget = 0", function(result) {
+				if(result.length >= 3) {
+					res.json(403);
+				}
+				else {
+					db.query("INSERT INTO forget_phone_number (id, user_manual_id, status_forget, date, time) VALUES ('', '"+user_manual_id+"', '"+status_forget+"', '"+date+"', '"+time+"')", function(result) {	
+						res.json(result);
+					});
+				}
+			});
+		}
+		else {
+			res.json(404);
+		}
+	});
+}
+
+exports.userForgetOtp = function(req, res) {
+	var forget_phone_number_id = req.body.forget_phone_number_id;
+	var otp_code = req.body.otp_code.substr(req.body.otp_code.length-4);
+	var date = middle.getDate();
+	var time = middle.getTime();
+
+	console.log(forget_phone_number_id);
+
+	db.query("INSERT INTO otp_forget_password (id, forget_phone_number_id, otp_code, date, time) VALUES ('', "+forget_phone_number_id+", '"+otp_code+"', '"+date+"', '"+time+"')", function(result) {	
+		res.json(result);
+	});
+}
+
+exports.checkForgetOtp = function(req, res) {
+	var id = req.body.id;
+	var otp_code = req.body.otp_code;
+	var forget_phone_number_id = req.body.forget_phone_number_id;
+	var user_manual_id = req.body.user_manual_id;
+
+	db.query("SELECT * FROM otp_forget_password WHERE id = "+id, function(result) {
+		if(result[0].otp_code == otp_code) {
+			db.query("UPDATE forget_phone_number SET status_forget = 2 WHERE user_manual_id = '"+ user_manual_id+"' AND status_forget = 0", function(result) {	
+				db.query("UPDATE forget_phone_number SET status_forget = 1 WHERE id = "+ forget_phone_number_id, function(result) {	
+					res.json(200);
+				});
+			});
+		}
+		else {
+			res.json(403);
+		}
+	});
+}
+
+exports.citcallForgetOtp = function(req, res) {
+	db.query("SELECT user_manual_id FROM forget_phone_number WHERE id = "+req.query.id, function(result) {
+		db.query("SELECT * FROM user_manual WHERE id = '"+result[0].user_manual_id+"'", function(result) {
+			request.post({
+				headers: {'Content-Type' : 'application/json', 'Authorization': 'Apikey 5e69e97b699f5c31dcc16c5e63568e3c'},
+			  	url: 'http://104.199.196.122/gateway/v3/asynccall',
+			  	json: {"msisdn": result[0].phone_number, "gateway":1}
+			}, function(error, response, body){
+			  console.log(body);
+			  res.json({result, body});
+			});
+		});
+	});
+}
+
+exports.forgetPasswordUser = function(req, res) {
+	var password = req.body.password;
+	db.query("SELECT user_manual_id FROM forget_phone_number WHERE id = "+req.body.id, function(result) {
+		db.query("UPDATE user_manual SET password = '"+password+"' WHERE id = "+ result[0].user_manual_id, function(result) {	
+			res.json(result);
+		});
+	});	
 }
 
 exports.authGoogle = function(req, res) {

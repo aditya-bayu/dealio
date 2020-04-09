@@ -41,7 +41,7 @@ CREATE TABLE `admin` (
 
 LOCK TABLES `admin` WRITE;
 /*!40000 ALTER TABLE `admin` DISABLE KEYS */;
-INSERT INTO `admin` VALUES (1,'dyo','123','2020-03-31','2020-02-23','17:30:37','04:02:57'),(2,'ronald','123',NULL,NULL,NULL,NULL),(5,'james','123',NULL,NULL,NULL,NULL);
+INSERT INTO `admin` VALUES (1,'dyo','123','2020-04-08','2020-04-08','16:55:33','16:55:36'),(2,'ronald','123',NULL,NULL,NULL,NULL),(5,'james','123',NULL,'2020-04-08',NULL,'17:22:48');
 /*!40000 ALTER TABLE `admin` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -158,7 +158,7 @@ CREATE TABLE `deals` (
   CONSTRAINT `deals_ibfk_1` FOREIGN KEY (`merchant_id`) REFERENCES `merchant` (`id`),
   CONSTRAINT `deals_ibfk_2` FOREIGN KEY (`audience_id`) REFERENCES `audience` (`id`),
   CONSTRAINT `deals_ibfk_3` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -200,7 +200,7 @@ CREATE TABLE `earn` (
   CONSTRAINT `earn_ibfk_1` FOREIGN KEY (`merchant_id`) REFERENCES `merchant` (`id`),
   CONSTRAINT `earn_ibfk_2` FOREIGN KEY (`audience_id`) REFERENCES `audience` (`id`),
   CONSTRAINT `earn_ibfk_3` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -250,6 +250,34 @@ LOCK TABLES `event` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `forget_phone_number`
+--
+
+DROP TABLE IF EXISTS `forget_phone_number`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `forget_phone_number` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_manual_id` int(11) NOT NULL,
+  `status_forget` int(11) NOT NULL,
+  `date` date NOT NULL,
+  `time` time NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_manual_id` (`user_manual_id`),
+  CONSTRAINT `forget_phone_number_ibfk_1` FOREIGN KEY (`user_manual_id`) REFERENCES `user_manual` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `forget_phone_number`
+--
+
+LOCK TABLES `forget_phone_number` WRITE;
+/*!40000 ALTER TABLE `forget_phone_number` DISABLE KEYS */;
+/*!40000 ALTER TABLE `forget_phone_number` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `horoscope`
 --
 
@@ -296,7 +324,7 @@ CREATE TABLE `login_user` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `login_user_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -305,6 +333,7 @@ CREATE TABLE `login_user` (
 
 LOCK TABLES `login_user` WRITE;
 /*!40000 ALTER TABLE `login_user` DISABLE KEYS */;
+INSERT INTO `login_user` VALUES (1,5,'2020-04-08','17:21:02'),(2,5,'2020-04-08','17:22:08'),(3,5,'2020-04-08','17:23:17'),(4,5,'2020-04-09','13:08:19'),(5,5,'2020-04-09','13:32:49');
 /*!40000 ALTER TABLE `login_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -394,29 +423,31 @@ LOCK TABLES `news` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `otp_forgot_password`
+-- Table structure for table `otp_forget_password`
 --
 
-DROP TABLE IF EXISTS `otp_forgot_password`;
+DROP TABLE IF EXISTS `otp_forget_password`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `otp_forgot_password` (
+CREATE TABLE `otp_forget_password` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_manual_id` int(11) NOT NULL,
   `date` date NOT NULL,
   `time` time NOT NULL,
   `otp_code` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `forget_phone_number_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `forget_phone_number_id` (`forget_phone_number_id`),
+  CONSTRAINT `otp_forget_password_ibfk_1` FOREIGN KEY (`forget_phone_number_id`) REFERENCES `forget_phone_number` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `otp_forgot_password`
+-- Dumping data for table `otp_forget_password`
 --
 
-LOCK TABLES `otp_forgot_password` WRITE;
-/*!40000 ALTER TABLE `otp_forgot_password` DISABLE KEYS */;
-/*!40000 ALTER TABLE `otp_forgot_password` ENABLE KEYS */;
+LOCK TABLES `otp_forget_password` WRITE;
+/*!40000 ALTER TABLE `otp_forget_password` DISABLE KEYS */;
+/*!40000 ALTER TABLE `otp_forget_password` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -435,7 +466,7 @@ CREATE TABLE `otp_regis` (
   PRIMARY KEY (`id`),
   KEY `regis_phone_number_id` (`regis_phone_number_id`),
   CONSTRAINT `otp_regis_ibfk_1` FOREIGN KEY (`regis_phone_number_id`) REFERENCES `regis_phone_number` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -444,7 +475,7 @@ CREATE TABLE `otp_regis` (
 
 LOCK TABLES `otp_regis` WRITE;
 /*!40000 ALTER TABLE `otp_regis` DISABLE KEYS */;
-INSERT INTO `otp_regis` VALUES (7,7,'8913','2020-04-02','12:00:25');
+INSERT INTO `otp_regis` VALUES (12,14,'0319','2020-04-08','17:17:04');
 /*!40000 ALTER TABLE `otp_regis` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -586,7 +617,7 @@ CREATE TABLE `regis_phone_number` (
   `time` time NOT NULL,
   `status_regis` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -595,7 +626,7 @@ CREATE TABLE `regis_phone_number` (
 
 LOCK TABLES `regis_phone_number` WRITE;
 /*!40000 ALTER TABLE `regis_phone_number` DISABLE KEYS */;
-INSERT INTO `regis_phone_number` VALUES (6,'082299392596','2020-04-02','11:58:50',2),(7,'082299392596','2020-04-02','12:00:25',1),(8,'008111804','2020-04-02','12:07:01',0);
+INSERT INTO `regis_phone_number` VALUES (14,'082299392596','2020-04-08','17:17:03',1);
 /*!40000 ALTER TABLE `regis_phone_number` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -702,7 +733,7 @@ CREATE TABLE `user_google` (
   `date` date DEFAULT NULL,
   `time` time DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -729,7 +760,7 @@ CREATE TABLE `user_manual` (
   `time` time NOT NULL,
   `email` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -738,7 +769,7 @@ CREATE TABLE `user_manual` (
 
 LOCK TABLES `user_manual` WRITE;
 /*!40000 ALTER TABLE `user_manual` DISABLE KEYS */;
-INSERT INTO `user_manual` VALUES (2,'082299392596','123','2020-04-02','12:04:56','dyo@gmail.com');
+INSERT INTO `user_manual` VALUES (5,'082299392596','123','2020-04-08','17:17:25','hanindyo.herbowo@gmail.com');
 /*!40000 ALTER TABLE `user_manual` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -758,7 +789,7 @@ CREATE TABLE `users` (
   `time` time NOT NULL,
   `login_method` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -767,7 +798,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'Hanindyo Herbowo','dyo@gmail.com','082299392596','2020-04-02','12:04:56','');
+INSERT INTO `users` VALUES (5,'Hanindyo Herbowo','hanindyo.herbowo@gmail.com','082299392596','2020-04-08','17:17:25','manual');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -818,4 +849,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-04-02 13:27:35
+-- Dump completed on 2020-04-09 13:41:00
