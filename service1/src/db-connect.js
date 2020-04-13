@@ -1,7 +1,7 @@
 var mysql = require('mysql');
 
 var con = mysql.createConnection({
-  host: "192.168.0.6",
+  host: process.env.HOST_MYSQL ? process.env.HOST_MYSQL : "192.168.0.6",
   user: "dealioapi",
   password: "dealioteam",
   database: "dealio"
