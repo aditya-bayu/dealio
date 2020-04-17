@@ -141,7 +141,7 @@ CREATE TABLE `category` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -150,7 +150,7 @@ CREATE TABLE `category` (
 
 LOCK TABLES `category` WRITE;
 /*!40000 ALTER TABLE `category` DISABLE KEYS */;
-INSERT INTO `category` VALUES (1,'F&B');
+INSERT INTO `category` VALUES (1,'F&B'),(3,'Health & Beauty'),(4,'Supermarket'),(5,'Accessories, Jewelry and Watches'),(6,'Bag and Shoes'),(7,'Electronic and Gadget'),(8,'Departement Store'),(9,'Fashion and Sport Fashion'),(10,'Hobbies, Gift and Books'),(11,'Home and Furnishing'),(12,'Kids Fashion and Toys'),(13,'Optical Store'),(14,'Service and Travel');
 /*!40000 ALTER TABLE `category` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -912,4 +912,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-04-17 13:06:33
+-- Dump completed on 2020-04-17 13:25:14
