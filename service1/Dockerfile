@@ -1,4 +1,8 @@
 FROM node:12.14.1
+
+ENV TZ=Asia/Jakarta
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 WORKDIR /dealio
 COPY ./ /dealio
 RUN npm install

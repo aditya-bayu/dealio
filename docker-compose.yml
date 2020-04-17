@@ -6,9 +6,8 @@ services:
       dockerfile: Dockerfile
     image: dealio-backend-service1:v0.1
     container_name: dealio-backend-service1
-    networks: 
-      default:
-        ipv4_address: 192.168.0.10
+    environment: 
+      - HOST_MYSQL=mydatabase_sql
     ports: 
       - "0.0.0.0:3000:3000"
 
