@@ -82,6 +82,20 @@ router.route('/add-category').post(function(req, res) {rf.addCategory(req, res)}
 
 router.route('/edit-category').post(function(req, res) {rf.editCategory(req, res)});
 
+router.route('/get-one-campaign-slot').get(function(req, res) {rf.getOneCampaignSlot(req, res)});
+
+router.route('/get-campaign-slot').get(function(req, res) {rf.getCampaignSlot(req, res)});
+
+router.route('/add-campaign-slot').post(function(req, res) {rf.addCampaignSlot(req, res)});
+
+router.route('/edit-campaign-slot').post(function(req, res) {rf.editCampaignSlot(req, res)});
+
+router.route('/get-lottery').get(function(req, res) {rf.getLottery(req, res)});
+
+router.route('/add-lottery').post(function(req, res) {rf.addLottery(req, res)});
+
+router.route('/shuffle-lottery').get(function(req, res) {rf.shuffleLottery(req, res)});
+
 router.route('/get-one-news').get(function(req, res) {rf.getOneNews(req, res)});
 
 router.route('/get-news').get(function(req, res) {rf.getNews(req, res)});

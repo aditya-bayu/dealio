@@ -200,10 +200,11 @@ exports.addEarn = function(req, res) {
     var action_link = req.body.action_link;
     var type = req.body.type;
     var category_id = req.body.category_id;
+    var best_activities = req.body.best_activities;
     var date = req.body.date;
     var time = req.body.time;
 
-	db.query("INSERT INTO earn (id, name, audience_id, start_date, end_date, description, action, action_link, merchant_id, type, category_id, date, time) VALUES ('', '"+name+"', '"+audience_id+"', '"+start_date+"', '"+end_date+"', '"+description+"', '"+action+"', '"+action_link+"', "+merchant_id+", '"+type+"', "+category_id+", '"+date+"', '"+time+"')", function(result) {	
+	db.query("INSERT INTO earn (id, name, audience_id, start_date, end_date, description, action, action_link, merchant_id, type, category_id, best_activities, date, time) VALUES ('', '"+name+"', '"+audience_id+"', '"+start_date+"', '"+end_date+"', '"+description+"', '"+action+"', '"+action_link+"', "+merchant_id+", '"+type+"', "+category_id+", "+best_activities+", '"+date+"', '"+time+"')", function(result) {	
 		res.json(result);
 	});
 }
@@ -219,10 +220,11 @@ exports.editEarn = function(req, res) {
     var action_link = req.body.action_link;
     var type = req.body.type;
     var category_id = req.body.category_id;
+    var best_activities = req.body.best_activities;
     var image = req.body.image;
     var banner = req.body.banner;
 
-	db.query("UPDATE earn SET name = '"+name+"', audience_id = '"+audience_id+"', start_date = '"+start_date+"', end_date = '"+end_date+"', description = '"+description+"', action = '"+action+"', action_link = '"+action_link+"', image = '"+image+"', banner = '"+banner+"', merchant_id = "+merchant_id+", type = '"+type+"', category_id = "+category_id+" WHERE id = "+ req.body.id, function(result) {	
+	db.query("UPDATE earn SET name = '"+name+"', audience_id = '"+audience_id+"', start_date = '"+start_date+"', end_date = '"+end_date+"', description = '"+description+"', action = '"+action+"', action_link = '"+action_link+"', image = '"+image+"', banner = '"+banner+"', merchant_id = "+merchant_id+", type = '"+type+"', category_id = "+category_id+", best_activities = "+best_activities+" WHERE id = "+ req.body.id, function(result) {	
 		res.json(result);
 	});
 }
@@ -388,6 +390,65 @@ exports.editCategory = function(req, res) {
 
 	db.query("UPDATE category SET name = '"+name+"' WHERE id = "+ req.body.id, function(result) {	
 		res.json(result);
+	});
+}
+
+exports.getOneCampaignSlot = function(req, res) {
+	db.query("SELECT *, date_format(date, '%Y-%m-%d') AS date, date_format(time, '%H:%i:%s') AS time FROM campaign_slot WHERE id = "+req.query.id, function(result) {
+		res.json(result);
+	});
+}
+
+exports.getCampaignSlot = function(req, res) {
+	db.query("SELECT *, date_format(date, '%Y-%m-%d') AS date, date_format(time, '%H:%i:%s') AS time FROM campaign_slot", function(result) {
+		res.json(result);
+	});
+}
+
+exports.addCampaignSlot = function(req, res) {
+	var name = req.body.name;
+    var source_name = req.body.source_name;
+    var source_id = req.body.source_id;
+    var date = req.body.date;
+    var time = req.body.time;
+
+	db.query("INSERT INTO campaign_slot (id, name, source_name, source_id, date, time) VALUES ('', '"+name+"', '"+source_name+"', "+source_id+", '"+date+"', '"+time+"')", function(result) {	
+		res.json(result);
+	});
+}
+
+exports.editCampaignSlot = function(req, res) {
+	var name = req.body.name;
+    var source_name = req.body.source_name;
+    var source_id = req.body.source_id;
+
+	db.query("UPDATE campaign_slot SET name = '"+name+"', source_name = '"+source_name+"', source_id = "+source_id+" WHERE id = "+ req.body.id, function(result) {	
+		res.json(result);
+	});
+}
+
+exports.getLottery = function(req, res) {
+	db.query("SELECT *, date_format(date, '%Y-%m-%d') AS date, date_format(time, '%H:%i:%s') AS time FROM lottery WHERE user_id ="+req.query.user_id, function(result) {
+		res.json(result);
+	});
+}
+
+exports.addLottery = function(req, res) {
+	var lottery_code = req.body.lottery_code;
+    var user_id = req.body.user_id;
+    var date = req.body.date;
+    var time = req.body.time;
+
+	db.query("INSERT INTO lottery (id, lottery_code, user_id, date, time) VALUES ('', '"+lottery_code+"', '"+user_id+"', '"+date+"', '"+time+"')", function(result) {	
+		res.json(result);
+	});
+}
+
+exports.shuffleLottery = function(req, res) {
+	db.query("SELECT *, date_format(date, '%Y-%m-%d') AS date, date_format(time, '%H:%i:%s') AS time FROM lottery", function(result) {
+		var participants = result.length;
+		var shuffle = Math.floor((Math.random() * participants));
+		res.json(result[shuffle]);
 	});
 }
 
