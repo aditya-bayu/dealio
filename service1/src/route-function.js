@@ -149,8 +149,8 @@ exports.addDeals = function(req, res) {
     var type = req.body.type;
     var category_id = req.body.category_id;
     var hot_deals = req.body.hot_deals;
-    var date = req.body.date;
-    var time = req.body.time;
+    var date = middle.getDate();
+    var time = middle.getTime();
 
 	db.query("INSERT INTO deals (id, name, audience_id, start_date, end_date, description, action, action_link, merchant_id, type, category_id, hot_deals, date, time) VALUES ('', '"+name+"', '"+audience_id+"', '"+start_date+"', '"+end_date+"', '"+description+"', '"+action+"', '"+action_link+"', '"+merchant_id+"', '"+type+"', '"+category_id+"', '"+hot_deals+"', '"+date+"', '"+time+"')", function(result) {	
 		res.json(result);
@@ -201,10 +201,11 @@ exports.addEarn = function(req, res) {
     var type = req.body.type;
     var category_id = req.body.category_id;
     var best_activities = req.body.best_activities;
-    var date = req.body.date;
-    var time = req.body.time;
+    var hot_earn = req.body.hot_earn;
+    var date = middle.getDate();
+    var time = middle.getTime();
 
-	db.query("INSERT INTO earn (id, name, audience_id, start_date, end_date, description, action, action_link, merchant_id, type, category_id, best_activities, date, time) VALUES ('', '"+name+"', '"+audience_id+"', '"+start_date+"', '"+end_date+"', '"+description+"', '"+action+"', '"+action_link+"', "+merchant_id+", '"+type+"', "+category_id+", "+best_activities+", '"+date+"', '"+time+"')", function(result) {	
+	db.query("INSERT INTO earn (id, name, audience_id, start_date, end_date, description, action, action_link, merchant_id, type, category_id, best_activities, hot_earn, date, time) VALUES ('', '"+name+"', '"+audience_id+"', '"+start_date+"', '"+end_date+"', '"+description+"', '"+action+"', '"+action_link+"', "+merchant_id+", '"+type+"', "+category_id+", "+best_activities+", "+hot_earn+", '"+date+"', '"+time+"')", function(result) {	
 		res.json(result);
 	});
 }
@@ -221,10 +222,11 @@ exports.editEarn = function(req, res) {
     var type = req.body.type;
     var category_id = req.body.category_id;
     var best_activities = req.body.best_activities;
+    var hot_earn = req.body.hot_earn;
     var image = req.body.image;
     var banner = req.body.banner;
 
-	db.query("UPDATE earn SET name = '"+name+"', audience_id = '"+audience_id+"', start_date = '"+start_date+"', end_date = '"+end_date+"', description = '"+description+"', action = '"+action+"', action_link = '"+action_link+"', image = '"+image+"', banner = '"+banner+"', merchant_id = "+merchant_id+", type = '"+type+"', category_id = "+category_id+", best_activities = "+best_activities+" WHERE id = "+ req.body.id, function(result) {	
+	db.query("UPDATE earn SET name = '"+name+"', audience_id = '"+audience_id+"', start_date = '"+start_date+"', end_date = '"+end_date+"', description = '"+description+"', action = '"+action+"', action_link = '"+action_link+"', image = '"+image+"', banner = '"+banner+"', merchant_id = "+merchant_id+", type = '"+type+"', category_id = "+category_id+", best_activities = "+best_activities+", hot_earn = "+hot_earn+" WHERE id = "+ req.body.id, function(result) {	
 		res.json(result);
 	});
 }
@@ -250,10 +252,11 @@ exports.addWin = function(req, res) {
     var point_redeem = req.body.point_redeem;
     var type = req.body.type;
     var category_id = req.body.category_id;
-    var date = req.body.date;
-    var time = req.body.time;
+    var hot_win = req.body.hot_win;
+    var date = middle.getDate();
+    var time = middle.getTime();
 
-	db.query("INSERT INTO win (id, name, audience_id, start_date, end_date, description, point_redeem, type, category_id date, time) VALUES ('', '"+name+"', '"+audience_id+"', '"+start_date+"', '"+end_date+"', '"+description+"', "+point_redeem+", '"+type+"', "+category_id+", '"+date+"', '"+time+"')", function(result) {	
+	db.query("INSERT INTO win (id, name, audience_id, start_date, end_date, description, point_redeem, type, category_id, hot_win, date, time) VALUES ('', '"+name+"', '"+audience_id+"', '"+start_date+"', '"+end_date+"', '"+description+"', "+point_redeem+", '"+type+"', "+category_id+", "+hot_win+", '"+date+"', '"+time+"')", function(result) {	
 		res.json(result);
 	});
 }
@@ -267,10 +270,11 @@ exports.editWin = function(req, res) {
     var point_redeem = req.body.point_redeem;
     var type = req.body.type;
     var category_id = req.body.category_id;
+    var hot_win = req.body.hot_win;
     var image = req.body.image;
     var banner = req.body.banner;
 
-	db.query("UPDATE win SET name = '"+name+"', audience_id = '"+audience_id+"', start_date = '"+start_date+"', end_date = '"+end_date+"', description = '"+description+"', image = '"+image+"', banner = '"+banner+"', point_redeem = "+point_redeem+", type = '"+type+"', category_id = "+category_id+" WHERE id = "+ req.body.id, function(result) {	
+	db.query("UPDATE win SET name = '"+name+"', audience_id = '"+audience_id+"', start_date = '"+start_date+"', end_date = '"+end_date+"', description = '"+description+"', image = '"+image+"', banner = '"+banner+"', point_redeem = "+point_redeem+", type = '"+type+"', category_id = "+category_id+", hot_win = "+hot_win+" WHERE id = "+ req.body.id, function(result) {	
 		res.json(result);
 	});
 }
@@ -299,8 +303,8 @@ exports.addProductDeals = function(req, res) {
     var type = req.body.type;
     var category_id = req.body.category_id;
     var hot_deals = req.body.hot_deals;
-    var date = req.body.date;
-    var time = req.body.time;
+    var date = middle.getDate();
+    var time = middle.getTime();
 
 	db.query("INSERT INTO product_deals (id, name, audience_id, start_date, end_date, description, price, discount, merchant_id, type, category_id, hot_deals, date, time) VALUES ('', '"+name+"', '"+audience_id+"', '"+start_date+"', '"+end_date+"', '"+description+"', "+price+", "+discount+", "+merchant_id+", '"+type+"', "+category_id+", "+hot_deals+", '"+date+"', '"+time+"')", function(result) {	
 		res.json(result);
@@ -345,8 +349,8 @@ exports.addAudience = function(req, res) {
     var gender = req.body.gender;
     var age_start = req.body.age_start;
     var age_end = req.body.age_end;
-    var date = req.body.date;
-    var time = req.body.time;
+    var date = middle.getDate();
+    var time = middle.getTime();
 
 	db.query("INSERT INTO audience (id, name, city, gender, age_start, age_end, date, time) VALUES ('', '"+name+"', '"+city+"', '"+gender+"', '"+age_start+"', '"+age_end+"', '"+date+"', '"+time+"')", function(result) {	
 		res.json(result);
@@ -393,40 +397,6 @@ exports.editCategory = function(req, res) {
 	});
 }
 
-exports.getOneCampaignSlot = function(req, res) {
-	db.query("SELECT *, date_format(date, '%Y-%m-%d') AS date, date_format(time, '%H:%i:%s') AS time FROM campaign_slot WHERE id = "+req.query.id, function(result) {
-		res.json(result);
-	});
-}
-
-exports.getCampaignSlot = function(req, res) {
-	db.query("SELECT *, date_format(date, '%Y-%m-%d') AS date, date_format(time, '%H:%i:%s') AS time FROM campaign_slot", function(result) {
-		res.json(result);
-	});
-}
-
-exports.addCampaignSlot = function(req, res) {
-	var name = req.body.name;
-    var source_name = req.body.source_name;
-    var source_id = req.body.source_id;
-    var date = req.body.date;
-    var time = req.body.time;
-
-	db.query("INSERT INTO campaign_slot (id, name, source_name, source_id, date, time) VALUES ('', '"+name+"', '"+source_name+"', "+source_id+", '"+date+"', '"+time+"')", function(result) {	
-		res.json(result);
-	});
-}
-
-exports.editCampaignSlot = function(req, res) {
-	var name = req.body.name;
-    var source_name = req.body.source_name;
-    var source_id = req.body.source_id;
-
-	db.query("UPDATE campaign_slot SET name = '"+name+"', source_name = '"+source_name+"', source_id = "+source_id+" WHERE id = "+ req.body.id, function(result) {	
-		res.json(result);
-	});
-}
-
 exports.getLottery = function(req, res) {
 	db.query("SELECT *, date_format(date, '%Y-%m-%d') AS date, date_format(time, '%H:%i:%s') AS time FROM lottery WHERE user_id ="+req.query.user_id, function(result) {
 		res.json(result);
@@ -436,8 +406,8 @@ exports.getLottery = function(req, res) {
 exports.addLottery = function(req, res) {
 	var lottery_code = req.body.lottery_code;
     var user_id = req.body.user_id;
-    var date = req.body.date;
-    var time = req.body.time;
+    var date = middle.getDate();
+    var time = middle.getTime();
 
 	db.query("INSERT INTO lottery (id, lottery_code, user_id, date, time) VALUES ('', '"+lottery_code+"', '"+user_id+"', '"+date+"', '"+time+"')", function(result) {	
 		res.json(result);
@@ -472,10 +442,11 @@ exports.addNews = function(req, res) {
     var description = req.body.description;
     var source_link = req.body.source_link;
     var point = req.body.point;
-    var date = req.body.date;
-    var time = req.body.time;
+    var hot_entertainment = req.body.hot_entertainment;
+    var date = middle.getDate();
+    var time = middle.getTime();
 
-	db.query("INSERT INTO news (id, title, start_date, end_date, source, description, source_link, point, date, time) VALUES ('', '"+title+"', '"+start_date+"', '"+end_date+"', '"+source+"', '"+description+"', '"+source_link+"', '"+point+"', '"+date+"', '"+time+"')", function(result) {	
+	db.query("INSERT INTO news (id, title, start_date, end_date, source, description, source_link, point, hot_entertainment, date, time) VALUES ('', '"+title+"', '"+start_date+"', '"+end_date+"', '"+source+"', '"+description+"', '"+source_link+"', '"+point+"', "+hot_entertainment+", '"+date+"', '"+time+"')", function(result) {	
 		res.json(result);
 	});
 }
@@ -488,10 +459,11 @@ exports.editNews = function(req, res) {
     var description = req.body.description;
     var source_link = req.body.source_link;
     var point = req.body.point;
+    var hot_entertainment = req.body.hot_entertainment;
     var image = req.body.image;
     var banner = req.body.banner;
 
-	db.query("UPDATE news SET title = '"+title+"', start_date = '"+start_date+"', end_date = '"+end_date+"', source = '"+source+"', description = '"+description+"', source_link = '"+source_link+"', point = '"+point+"', image = '"+image+"', banner = '"+banner+"' WHERE id = "+ req.body.id, function(result) {	
+	db.query("UPDATE news SET title = '"+title+"', start_date = '"+start_date+"', end_date = '"+end_date+"', source = '"+source+"', description = '"+description+"', source_link = '"+source_link+"', point = '"+point+"', hot_entertainment = '"+hot_entertainment+"', image = '"+image+"', banner = '"+banner+"' WHERE id = "+ req.body.id, function(result) {	
 		res.json(result);
 	});
 }
@@ -514,10 +486,11 @@ exports.addStream = function(req, res) {
     var end_date = req.body.end_date;
     var video_url = req.body.video_url;
     var point = req.body.point;
-    var date = req.body.date;
-    var time = req.body.time;
+    var hot_entertainment = req.body.hot_entertainment;
+    var date = middle.getDate();
+    var time = middle.getTime();
 
-	db.query("INSERT INTO stream (id, title, start_date, end_date, video_url, point, date, time) VALUES ('', '"+title+"', '"+start_date+"', '"+end_date+"', '"+video_url+"', '"+point+"', '"+date+"', '"+time+"')", function(result) {	
+	db.query("INSERT INTO stream (id, title, start_date, end_date, video_url, point, hot_entertainment, date, time) VALUES ('', '"+title+"', '"+start_date+"', '"+end_date+"', '"+video_url+"', '"+point+"', "+hot_entertainment+", '"+date+"', '"+time+"')", function(result) {	
 		res.json(result);
 	});
 }
@@ -528,10 +501,11 @@ exports.editStream = function(req, res) {
     var end_date = req.body.end_date;
     var video_url = req.body.video_url;
     var point = req.body.point;
+    var hot_entertainment = req.body.hot_entertainment;
     var image = req.body.image;
     var banner = req.body.banner;
 
-	db.query("UPDATE stream SET title = '"+title+"', start_date = '"+start_date+"', end_date = '"+end_date+"', video_url = '"+video_url+"', point = '"+point+"', image = '"+image+"', banner = '"+banner+"' WHERE id = "+ req.body.id, function(result) {	
+	db.query("UPDATE stream SET title = '"+title+"', start_date = '"+start_date+"', end_date = '"+end_date+"', video_url = '"+video_url+"', point = '"+point+"', hot_entertainment = "+hot_entertainment+", image = '"+image+"', banner = '"+banner+"' WHERE id = "+ req.body.id, function(result) {	
 		res.json(result);
 	});
 }
@@ -558,10 +532,11 @@ exports.addEvent = function(req, res) {
     var action_link = req.body.action_link;
     var audience_id = req.body.audience_id;
     var point = req.body.point;
-    var date = req.body.date;
-    var time = req.body.time;
+    var hot_entertainment = req.body.hot_entertainment;
+    var date = middle.getDate();
+    var time = middle.getTime();
 
-	db.query("INSERT INTO event (id, title, start_date, end_date, description, location, action, action_link, audience_id, point, date, time) VALUES ('', '"+title+"', '"+start_date+"', '"+end_date+"', '"+description+"', '"+location+"', '"+action+"', '"+action_link+"', '"+audience_id+"','"+point+"', '"+date+"', '"+time+"')", function(result) {	
+	db.query("INSERT INTO event (id, title, start_date, end_date, description, location, action, action_link, audience_id, point, hot_entertainment, date, time) VALUES ('', '"+title+"', '"+start_date+"', '"+end_date+"', '"+description+"', '"+location+"', '"+action+"', '"+action_link+"', '"+audience_id+"','"+point+"', "+hot_entertainment+", '"+date+"', '"+time+"')", function(result) {	
 		res.json(result);
 	});
 }
@@ -576,10 +551,11 @@ exports.editEvent = function(req, res) {
     var action_link = req.body.action_link;
     var audience_id = req.body.audience_id;
     var point = req.body.point;
+    var hot_entertainment = req.body.hot_entertainment;
     var image = req.body.image;
     var banner = req.body.banner;
 
-	db.query("UPDATE event SET title = '"+title+"', start_date = '"+start_date+"', end_date = '"+end_date+"', description = '"+description+"', location = '"+location+"', action = '"+action+"', action_link = '"+action_link+"', audience_id = '"+audience_id+"', point = '"+point+"', image = '"+image+"', banner = '"+banner+"' WHERE id = "+ req.body.id, function(result) {	
+	db.query("UPDATE event SET title = '"+title+"', start_date = '"+start_date+"', end_date = '"+end_date+"', description = '"+description+"', location = '"+location+"', action = '"+action+"', action_link = '"+action_link+"', audience_id = '"+audience_id+"', point = '"+point+"', hot_entertainment = "+hot_entertainment+", image = '"+image+"', banner = '"+banner+"' WHERE id = "+ req.body.id, function(result) {	
 		res.json(result);
 	});
 }
@@ -603,10 +579,11 @@ exports.addHoroscope = function(req, res) {
     var zodiac_sign = req.body.zodiac_sign;
     var description = req.body.description;
     var point = req.body.point;
-    var date = req.body.date;
-    var time = req.body.time;
+    var hot_entertainment = req.body.hot_entertainment;
+    var date = middle.getDate();
+    var time = middle.getTime();
 
-	db.query("INSERT INTO horoscope (id, title, start_date, end_date, zodiac_sign, description, point, date, time) VALUES ('', '"+title+"', '"+start_date+"', '"+end_date+"', '"+zodiac_sign+"', '"+description+"', '"+point+"', '"+date+"', '"+time+"')", function(result) {	
+	db.query("INSERT INTO horoscope (id, title, start_date, end_date, zodiac_sign, description, point, hot_entertainment, date, time) VALUES ('', '"+title+"', '"+start_date+"', '"+end_date+"', '"+zodiac_sign+"', '"+description+"', '"+point+"', "+hot_entertainment+", '"+date+"', '"+time+"')", function(result) {	
 		res.json(result);
 	});
 }
@@ -618,10 +595,52 @@ exports.editHoroscope = function(req, res) {
     var zodiac_sign = req.body.zodiac_sign;
     var description = req.body.description;
     var point = req.body.point;
+    var hot_entertainment = req.body.hot_entertainment;
     var image = req.body.image;
     var banner = req.body.banner;
 
-	db.query("UPDATE horoscope SET title = '"+title+"', start_date = '"+start_date+"', end_date = '"+end_date+"', zodiac_sign = '"+zodiac_sign+"', description = '"+description+"', point = '"+point+"', image = '"+image+"', banner = '"+banner+"' WHERE id = "+ req.body.id, function(result) {	
+	db.query("UPDATE horoscope SET title = '"+title+"', start_date = '"+start_date+"', end_date = '"+end_date+"', zodiac_sign = '"+zodiac_sign+"', description = '"+description+"', point = '"+point+"', hot_entertainment = "+hot_entertainment+", image = '"+image+"', banner = '"+banner+"' WHERE id = "+ req.body.id, function(result) {	
+		res.json(result);
+	});
+}
+
+exports.getOneVoucher = function(req, res) {
+	db.query("SELECT * FROM voucher WHERE id = "+req.query.id, function(result) {
+		res.json(result);
+	});
+}
+
+exports.getVoucher = function(req, res) {
+	db.query("SELECT * FROM voucher", function(result) {
+		res.json(result);
+	});
+}
+
+exports.addVoucher = function(req, res) {
+	var type = req.body.type;
+    var vendor = req.body.vendor;
+    var merchant = req.body.merchant;
+    var product_code = req.body.product_code;
+    var product_value = req.body.product_value;
+    var price = req.body.price;
+    var dealio_points = req.body.dealio_points;
+
+	db.query("INSERT INTO voucher (id, type, vendor, merchant, product_code, product_value, price, dealio_points) VALUES ('', '"+type+"', '"+vendor+"', '"+merchant+"', '"+product_code+"', '"+product_value+"', "+price+", "+dealio_points+")", function(result) {	
+		res.json(result);
+	});
+}
+
+exports.editVoucher = function(req, res) {
+	var type = req.body.type;
+    var vendor = req.body.vendor;
+    var merchant = req.body.merchant;
+    var product_code = req.body.product_code;
+    var product_value = req.body.product_value;
+    var price = req.body.price;
+    var dealio_points = req.body.dealio_points;
+    var image = req.body.image;
+
+	db.query("UPDATE voucher SET type = '"+type+"', vendor = '"+vendor+"', merchant = '"+merchant+"', product_code = '"+product_code+"', product_value = '"+product_value+"', price = "+price+", dealio_points = "+dealio_points+", image = '"+image+"' WHERE id = "+ req.body.id, function(result) {	
 		res.json(result);
 	});
 }

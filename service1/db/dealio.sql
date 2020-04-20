@@ -104,33 +104,6 @@ INSERT INTO `audience` VALUES (1,'Jakarta Male Audience','Jakarta Selatan','male
 UNLOCK TABLES;
 
 --
--- Table structure for table `campaign_slot`
---
-
-DROP TABLE IF EXISTS `campaign_slot`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `campaign_slot` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `source_id` int(11) DEFAULT NULL,
-  `date` date NOT NULL,
-  `time` time NOT NULL,
-  `source_name` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `campaign_slot`
---
-
-LOCK TABLES `campaign_slot` WRITE;
-/*!40000 ALTER TABLE `campaign_slot` DISABLE KEYS */;
-/*!40000 ALTER TABLE `campaign_slot` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `category`
 --
 
@@ -222,6 +195,7 @@ CREATE TABLE `earn` (
   `type` varchar(255) NOT NULL,
   `category_id` int(11) NOT NULL,
   `best_activities` int(11) DEFAULT NULL,
+  `hot_earn` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `merchant_id` (`merchant_id`),
   KEY `audience_id` (`audience_id`),
@@ -238,7 +212,7 @@ CREATE TABLE `earn` (
 
 LOCK TABLES `earn` WRITE;
 /*!40000 ALTER TABLE `earn` DISABLE KEYS */;
-INSERT INTO `earn` VALUES (19,'test deals',1,'2020-04-09','2020-04-10','asdf',NULL,'Click through url','asdasdas',4,'2020-04-15','19:19:31',NULL,'online',1,1);
+INSERT INTO `earn` VALUES (19,'test deals',1,'2020-04-09','2020-04-10','asdf',NULL,'Click through url','asdasdas',4,'2020-04-15','19:19:31',NULL,'online',1,1,0);
 /*!40000 ALTER TABLE `earn` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -264,6 +238,7 @@ CREATE TABLE `event` (
   `action_link` varchar(255) NOT NULL,
   `audience_id` int(11) NOT NULL,
   `point` int(11) DEFAULT NULL,
+  `hot_entertainment` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `audience_id` (`audience_id`),
   CONSTRAINT `event_ibfk_1` FOREIGN KEY (`audience_id`) REFERENCES `audience` (`id`)
@@ -276,7 +251,7 @@ CREATE TABLE `event` (
 
 LOCK TABLES `event` WRITE;
 /*!40000 ALTER TABLE `event` DISABLE KEYS */;
-INSERT INTO `event` VALUES (3,'nama event','2020-04-06','2020-04-09',NULL,NULL,'2020-04-14','19:29:53','test','contoh koordinat','Click through url','link testing',1,50);
+INSERT INTO `event` VALUES (3,'nama event','2020-04-06','2020-04-09',NULL,NULL,'2020-04-14','19:29:53','test','contoh koordinat','Click through url','link testing',1,50,0);
 /*!40000 ALTER TABLE `event` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -328,6 +303,7 @@ CREATE TABLE `horoscope` (
   `time` time NOT NULL,
   `description` text DEFAULT NULL,
   `point` int(11) DEFAULT NULL,
+  `hot_entertainment` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -338,7 +314,7 @@ CREATE TABLE `horoscope` (
 
 LOCK TABLES `horoscope` WRITE;
 /*!40000 ALTER TABLE `horoscope` DISABLE KEYS */;
-INSERT INTO `horoscope` VALUES (4,'Gemini','title horoscope','2020-04-06','2020-04-09',NULL,NULL,'2020-04-14','20:08:22','testing',50);
+INSERT INTO `horoscope` VALUES (4,'Gemini','title horoscope','2020-04-06','2020-04-09',NULL,NULL,'2020-04-14','20:08:22','testing',50,0);
 /*!40000 ALTER TABLE `horoscope` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -470,6 +446,7 @@ CREATE TABLE `news` (
   `banner` varchar(255) DEFAULT NULL,
   `source_link` varchar(255) DEFAULT NULL,
   `point` int(11) DEFAULT NULL,
+  `hot_entertainment` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -480,7 +457,7 @@ CREATE TABLE `news` (
 
 LOCK TABLES `news` WRITE;
 /*!40000 ALTER TABLE `news` DISABLE KEYS */;
-INSERT INTO `news` VALUES (13,'news title','2020-04-14','2020-04-18','contoh source','testing','2020-04-14','14:57:27',NULL,NULL,'contoh source link',50);
+INSERT INTO `news` VALUES (13,'news title','2020-04-14','2020-04-18','contoh source','testing','2020-04-14','14:57:27',NULL,NULL,'contoh source link',50,0);
 /*!40000 ALTER TABLE `news` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -709,6 +686,7 @@ CREATE TABLE `stream` (
   `date` date NOT NULL,
   `time` time NOT NULL,
   `point` int(11) DEFAULT NULL,
+  `hot_entertainment` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -719,7 +697,7 @@ CREATE TABLE `stream` (
 
 LOCK TABLES `stream` WRITE;
 /*!40000 ALTER TABLE `stream` DISABLE KEYS */;
-INSERT INTO `stream` VALUES (4,'nama stream','2020-04-06','2020-04-09','link video url',NULL,NULL,'2020-04-14','15:25:52',10),(6,'test stream','2020-04-14','2020-04-18','youtube.com',NULL,NULL,'2020-04-14','15:29:12',500);
+INSERT INTO `stream` VALUES (4,'nama stream','2020-04-06','2020-04-09','link video url',NULL,NULL,'2020-04-14','15:25:52',10,0),(6,'test stream','2020-04-14','2020-04-18','youtube.com',NULL,NULL,'2020-04-14','15:29:12',500,0);
 /*!40000 ALTER TABLE `stream` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -865,6 +843,36 @@ INSERT INTO `users` VALUES (5,'Hanindyo Herbowo','hanindyo.herbowo@gmail.com','0
 UNLOCK TABLES;
 
 --
+-- Table structure for table `voucher`
+--
+
+DROP TABLE IF EXISTS `voucher`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `voucher` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `type` varchar(255) NOT NULL,
+  `vendor` varchar(255) DEFAULT NULL,
+  `merchant` varchar(255) DEFAULT NULL,
+  `product_code` varchar(255) DEFAULT NULL,
+  `product_value` varchar(255) DEFAULT NULL,
+  `price` int(11) NOT NULL,
+  `dealio_points` int(11) NOT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `voucher`
+--
+
+LOCK TABLES `voucher` WRITE;
+/*!40000 ALTER TABLE `voucher` DISABLE KEYS */;
+/*!40000 ALTER TABLE `voucher` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `win`
 --
 
@@ -885,6 +893,7 @@ CREATE TABLE `win` (
   `banner` varchar(255) DEFAULT NULL,
   `type` varchar(255) NOT NULL,
   `category_id` int(11) DEFAULT NULL,
+  `hot_win` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `audience_id` (`audience_id`),
   KEY `category_id` (`category_id`),
@@ -899,7 +908,7 @@ CREATE TABLE `win` (
 
 LOCK TABLES `win` WRITE;
 /*!40000 ALTER TABLE `win` DISABLE KEYS */;
-INSERT INTO `win` VALUES (7,'testWin',1,'2020-04-06','2020-04-09','test deskripsi','link_gambar',200,'2020-04-14','12:57:45','link_banner','offline',1);
+INSERT INTO `win` VALUES (7,'testWin',1,'2020-04-06','2020-04-09','test deskripsi','link_gambar',200,'2020-04-14','12:57:45','link_banner','offline',1,0);
 /*!40000 ALTER TABLE `win` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -912,4 +921,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-04-17 13:25:14
+-- Dump completed on 2020-04-20 16:51:52
