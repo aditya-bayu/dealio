@@ -9,6 +9,7 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const { google } = require('googleapis');
 const jwt = require('jsonwebtoken');
+const md5 = require('md5');
 const request = require('request');
 
 app.use(cookieParser());
@@ -30,6 +31,25 @@ var sess = session;
 
 exports.index = function(req, res) {
 	res.json("Works");
+}
+
+exports.testMobilePulsa = function(req, res) {
+	var path = "https://testprepaid.mobilepulsa.net/v1/legacy/index";
+    var username = "08111804094";
+    var apikey = "8015c4fcdb04df0e";
+    var signTxt = md5(username+apikey+"pl");
+
+	request.post(path, {
+		json: {
+			"commands": "pricelist",
+			"username": username,
+			"sign": signTxt,
+		}
+	},
+	function(error, response, body){
+			console.log(body);
+			res.json(body);	
+	});
 }
 
 exports.registerAdmin = function(req, res) {
