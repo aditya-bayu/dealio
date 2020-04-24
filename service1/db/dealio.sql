@@ -104,33 +104,6 @@ INSERT INTO `audience` VALUES (1,'Jakarta Male Audience','Jakarta Selatan','male
 UNLOCK TABLES;
 
 --
--- Table structure for table `campaign_slot`
---
-
-DROP TABLE IF EXISTS `campaign_slot`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `campaign_slot` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `source_id` int(11) DEFAULT NULL,
-  `date` date NOT NULL,
-  `time` time NOT NULL,
-  `source_name` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `campaign_slot`
---
-
-LOCK TABLES `campaign_slot` WRITE;
-/*!40000 ALTER TABLE `campaign_slot` DISABLE KEYS */;
-/*!40000 ALTER TABLE `campaign_slot` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `category`
 --
 
@@ -222,6 +195,7 @@ CREATE TABLE `earn` (
   `type` varchar(255) NOT NULL,
   `category_id` int(11) NOT NULL,
   `best_activities` int(11) DEFAULT NULL,
+  `hot_earn` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `merchant_id` (`merchant_id`),
   KEY `audience_id` (`audience_id`),
@@ -238,7 +212,7 @@ CREATE TABLE `earn` (
 
 LOCK TABLES `earn` WRITE;
 /*!40000 ALTER TABLE `earn` DISABLE KEYS */;
-INSERT INTO `earn` VALUES (19,'test deals',1,'2020-04-09','2020-04-10','asdf',NULL,'Click through url','asdasdas',4,'2020-04-15','19:19:31',NULL,'online',1,1);
+INSERT INTO `earn` VALUES (19,'test deals',1,'2020-04-09','2020-04-10','asdf',NULL,'Click through url','asdasdas',4,'2020-04-15','19:19:31',NULL,'online',1,1,0);
 /*!40000 ALTER TABLE `earn` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -264,6 +238,7 @@ CREATE TABLE `event` (
   `action_link` varchar(255) NOT NULL,
   `audience_id` int(11) NOT NULL,
   `point` int(11) DEFAULT NULL,
+  `hot_entertainment` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `audience_id` (`audience_id`),
   CONSTRAINT `event_ibfk_1` FOREIGN KEY (`audience_id`) REFERENCES `audience` (`id`)
@@ -276,7 +251,7 @@ CREATE TABLE `event` (
 
 LOCK TABLES `event` WRITE;
 /*!40000 ALTER TABLE `event` DISABLE KEYS */;
-INSERT INTO `event` VALUES (3,'nama event','2020-04-06','2020-04-09',NULL,NULL,'2020-04-14','19:29:53','test','contoh koordinat','Click through url','link testing',1,50);
+INSERT INTO `event` VALUES (3,'nama event','2020-04-06','2020-04-09',NULL,NULL,'2020-04-14','19:29:53','test','contoh koordinat','Click through url','link testing',1,50,0);
 /*!40000 ALTER TABLE `event` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -328,6 +303,7 @@ CREATE TABLE `horoscope` (
   `time` time NOT NULL,
   `description` text DEFAULT NULL,
   `point` int(11) DEFAULT NULL,
+  `hot_entertainment` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -338,7 +314,7 @@ CREATE TABLE `horoscope` (
 
 LOCK TABLES `horoscope` WRITE;
 /*!40000 ALTER TABLE `horoscope` DISABLE KEYS */;
-INSERT INTO `horoscope` VALUES (4,'Gemini','title horoscope','2020-04-06','2020-04-09',NULL,NULL,'2020-04-14','20:08:22','testing',50);
+INSERT INTO `horoscope` VALUES (4,'Gemini','title horoscope','2020-04-06','2020-04-09',NULL,NULL,'2020-04-14','20:08:22','testing',50,0);
 /*!40000 ALTER TABLE `horoscope` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -470,6 +446,7 @@ CREATE TABLE `news` (
   `banner` varchar(255) DEFAULT NULL,
   `source_link` varchar(255) DEFAULT NULL,
   `point` int(11) DEFAULT NULL,
+  `hot_entertainment` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -480,7 +457,7 @@ CREATE TABLE `news` (
 
 LOCK TABLES `news` WRITE;
 /*!40000 ALTER TABLE `news` DISABLE KEYS */;
-INSERT INTO `news` VALUES (13,'news title','2020-04-14','2020-04-18','contoh source','testing','2020-04-14','14:57:27',NULL,NULL,'contoh source link',50);
+INSERT INTO `news` VALUES (13,'news title','2020-04-14','2020-04-18','contoh source','testing','2020-04-14','14:57:27',NULL,NULL,'contoh source link',50,0);
 /*!40000 ALTER TABLE `news` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -709,6 +686,7 @@ CREATE TABLE `stream` (
   `date` date NOT NULL,
   `time` time NOT NULL,
   `point` int(11) DEFAULT NULL,
+  `hot_entertainment` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -719,7 +697,7 @@ CREATE TABLE `stream` (
 
 LOCK TABLES `stream` WRITE;
 /*!40000 ALTER TABLE `stream` DISABLE KEYS */;
-INSERT INTO `stream` VALUES (4,'nama stream','2020-04-06','2020-04-09','link video url',NULL,NULL,'2020-04-14','15:25:52',10),(6,'test stream','2020-04-14','2020-04-18','youtube.com',NULL,NULL,'2020-04-14','15:29:12',500);
+INSERT INTO `stream` VALUES (4,'nama stream','2020-04-06','2020-04-09','link video url',NULL,NULL,'2020-04-14','15:25:52',10,0),(6,'test stream','2020-04-14','2020-04-18','youtube.com',NULL,NULL,'2020-04-14','15:29:12',500,0);
 /*!40000 ALTER TABLE `stream` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -865,6 +843,37 @@ INSERT INTO `users` VALUES (5,'Hanindyo Herbowo','hanindyo.herbowo@gmail.com','0
 UNLOCK TABLES;
 
 --
+-- Table structure for table `voucher`
+--
+
+DROP TABLE IF EXISTS `voucher`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `voucher` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `type` varchar(255) NOT NULL,
+  `vendor` varchar(255) DEFAULT NULL,
+  `merchant` varchar(255) DEFAULT NULL,
+  `product_code` varchar(255) DEFAULT NULL,
+  `product_value` varchar(255) DEFAULT NULL,
+  `price` int(11) NOT NULL,
+  `dealio_points` int(11) NOT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=88 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `voucher`
+--
+
+LOCK TABLES `voucher` WRITE;
+/*!40000 ALTER TABLE `voucher` DISABLE KEYS */;
+INSERT INTO `voucher` VALUES (6,'Pulsa','MobilePulsa','Axis','haxis50000','50000',49700,50000,NULL),(7,'Pulsa','MobilePulsa','','haxis100000','100000',99250,100000,NULL),(8,'Pulsa','MobilePulsa','','haxis200000','200000',198500,200000,NULL),(9,'Pulsa','MobilePulsa','','haxis300000','300000',299000,300000,NULL),(10,'Pulsa','MobilePulsa','','haxis500000','500000',498000,500000,NULL),(11,'Pulsa','MobilePulsa','','haxis1000000','1000000',995000,1000000,NULL),(12,'Pulsa','MobilePulsa','Indosat','hindosat50000','50000',49250,50000,NULL),(13,'Pulsa','MobilePulsa','','hindosat100000','100000',98000,100000,NULL),(14,'Pulsa','MobilePulsa','','hindosat150000','150000',143000,150000,NULL),(15,'Pulsa','MobilePulsa','','hindosat200000','200000',185500,200000,NULL),(16,'Pulsa','MobilePulsa','','hindosat250000','250000',232000,250000,NULL),(17,'Pulsa','MobilePulsa','','hindosat500000','500000',463000,500000,NULL),(18,'Pulsa','MobilePulsa','','hindosat1000000','1000000',926000,1000000,NULL),(19,'Pulsa','MobilePulsa','SmartFren','hsmart50000','50000',49500,50000,NULL),(20,'Pulsa','MobilePulsa','','hsmart100000','100000',99000,100000,NULL),(21,'Pulsa','MobilePulsa','','hsmart150000','150000',148500,150000,NULL),(22,'Pulsa','MobilePulsa','','hsmart200000','200000',198000,200000,NULL),(23,'Pulsa','MobilePulsa','','hsmart300000','300000',297000,300000,NULL),(24,'Pulsa','MobilePulsa','','hsmart500000','500000',495000,500000,NULL),(25,'Pulsa','MobilePulsa','','hsmart1000000','1000000',990000,1000000,NULL),(26,'Pulsa','MobilePulsa','Telkomsel','htelkomsel50000','50000',49750,50000,NULL),(27,'Pulsa','MobilePulsa','','htelkomsel100000','100000',98500,100000,NULL),(28,'Pulsa','MobilePulsa','','htelkomsel150000','150000',148750,150000,NULL),(29,'Pulsa','MobilePulsa','','htelkomsel200000','200000',198000,200000,NULL),(30,'Pulsa','MobilePulsa','','htelkomsel300000','300000',297500,300000,NULL),(31,'Pulsa','MobilePulsa','','htelkomsel500000','500000',495000,500000,NULL),(32,'Pulsa','MobilePulsa','','htelkomsel1000000','1000000',987500,1000000,NULL),(33,'Pulsa','MobilePulsa','Three','hthree50000','50000',49000,50000,NULL),(34,'Pulsa','MobilePulsa','','hthree100000','100000',98500,100000,NULL),(35,'Pulsa','MobilePulsa','','hthree150000','150000',148500,150000,NULL),(36,'Pulsa','MobilePulsa','','hthree200000','200000',199000,200000,NULL),(37,'Pulsa','MobilePulsa','','hthree300000','300000',297000,300000,NULL),(38,'Pulsa','MobilePulsa','','hthree500000','500000',495000,500000,NULL),(39,'Pulsa','MobilePulsa','','hthree1000000','1000000',990000,1000000,NULL),(40,'Pulsa','MobilePulsa','XL','xld50000','50000',49700,50000,NULL),(41,'Pulsa','MobilePulsa','','xld100000','100000',99250,100000,NULL),(42,'Pulsa','MobilePulsa','','xld200000','200000',198050,200000,NULL),(43,'Pulsa','MobilePulsa','','xld300000','300000',298500,300000,NULL),(44,'Pulsa','MobilePulsa','','xld500000','500000',495000,500000,NULL),(45,'Pulsa','MobilePulsa','','xld1000000','1000000',990000,1000000,NULL),(46,'Pulsa','MobilePulsa','','xld150000','150000',150000,150000,NULL),(47,'Electricity PrePaid','MobilePulsa','PLN','hpln50000','50000',50500,52000,NULL),(48,'Electricity PrePaid','MobilePulsa','','hpln100000','100000',100500,102000,NULL),(49,'Electricity PrePaid','MobilePulsa','','hpln200000','200000',200500,202000,NULL),(50,'Electricity PrePaid','MobilePulsa','','hpln500000','500000',500500,502000,NULL),(51,'Electricity PrePaid','MobilePulsa','','hpln1000000','1000000',1000,1002000,NULL),(52,'E-Money','MobilePulsa','Dana','dana50','DANA Rp 50.000',51500,52500,NULL),(53,'E-Money','MobilePulsa','','dana100','DANA Rp 100.000',101500,102500,NULL),(54,'E-Money','MobilePulsa','','dana200','DANA Rp 200.000',201500,202500,NULL),(55,'E-Money','MobilePulsa','','dana250','DANA Rp 250.000',251750,253000,NULL),(56,'E-Money','MobilePulsa','GoPay','go50','GO-PAY Rp 50.000',53000,55000,NULL),(57,'E-Money','MobilePulsa','','go100','GO-PAY Rp 100.000',103000,105000,NULL),(58,'E-Money','MobilePulsa','','go150','GO-PAY Rp 150.000',153000,155000,NULL),(59,'E-Money','MobilePulsa','LinkAja','linkaja50','LinkAja Rp 50.000',50750,52000,NULL),(60,'E-Money','MobilePulsa','','linkaja100','LinkAja Rp 100.000',100750,102000,NULL),(61,'E-Money','MobilePulsa','','linkaja200','LinkAja Rp 200.000',200750,202000,NULL),(62,'E-Money','MobilePulsa','','linkaja250','LinkAja Rp 250.000',250750,252000,NULL),(63,'E-Money','MobilePulsa','OVO','ovo50','OVO Cash Rp 50.000',51500,52500,NULL),(64,'E-Money','MobilePulsa','','ovo100','OVO Cash Rp 100.000',101500,102500,NULL),(65,'E-Money','MobilePulsa','','ovo200','OVO Cash Rp 200.000',201500,202500,NULL),(66,'E-Money','MobilePulsa','','ovo500','OVO Cash Rp 500.000',501500,502500,NULL),(67,'Digital Voucher','MobilePulsa','Alfamart','alfamart100','Voucher Alfamart Rp 100.000',99750,101000,NULL),(68,'Digital Voucher','MobilePulsa','Indomaret','indomaret100','Voucher Indomaret Rp 100.000',99750,101000,NULL),(69,'Digital Voucher','MobilePulsa','Carrefour','carrefour100','Voucher Transmart Carrefour Rp 100.000',99750,101000,NULL),(70,'Digital Voucher','Ultra Voucher','BreadLife','BFD00050','Breadlife Rp. 50.000',47500,50000,NULL),(71,'Digital Voucher','Ultra Voucher','FORE','FRC00050','Voucher Digital Fore Coffee Rp. 50.000',45000,50000,NULL),(72,'Digital Voucher','Ultra Voucher','Wakai','WKAI100','Voucher Digital Wakai Rp. 100.000',98000,100000,NULL),(73,'Digital Voucher','Ultra Voucher','Wakai','WKAI500','Voucher Digital Wakai Rp. 500.000',490000,500000,NULL),(74,'Digital Voucher','Ultra Voucher','The Little Things She Need','TLSN100','Voucher Digital The Little Things She Need Rp. 100.000',98000,100000,NULL),(75,'Digital Voucher','Ultra Voucher','The Little Things She Need','TLSN500','Voucher Digital The Little Things She Need Rp. 500.000',490000,500000,NULL),(76,'Digital Voucher','Ultra Voucher','Kintan Buffet','KNBF00100','Voucher Digital Kintan Buffet Rp. 100.000',94000,100000,NULL),(77,'Digital Voucher','Ultra Voucher','Kintan Buffet','KNBF00200','Voucher Digital Kintan Buffet Rp. 200.000',188000,200000,NULL),(78,'Digital Voucher','Ultra Voucher','Shaburi','SHBR00100','Voucher Digital Shaburi Rp. 100.000',94000,100000,NULL),(79,'Digital Voucher','Ultra Voucher','Shaburi','SHBR00200','Voucher Digital Shaburi Rp. 200.000',188000,200000,NULL),(80,'Digital Voucher','Ultra Voucher','Yoshinoya','YSNY00050','Voucher Digital Yoshinoya Rp. 50.000',46500,50000,NULL),(81,'Digital Voucher','Ultra Voucher','Yoshinoya','YSNY00100','Voucher Digital Yoshinoya Rp. 100.000',93000,100000,NULL),(82,'Digital Voucher','Ultra Voucher','Excelso','EXL00050','Voucher digital Excelso Rp. 50.000',47500,50000,NULL),(83,'Digital Voucher','Ultra Voucher','Excelso','EXL00100','Voucher digital Excelso Rp. 100.000',95000,100000,NULL),(84,'Digital Voucher','Ultra Voucher','Ta Wan','TWD00050','Voucher Digital Ta Wan Rp. 50.000',48000,50000,NULL),(85,'Digital Voucher','Ultra Voucher','Ta Wan','TWD00100','Voucher Digital Ta Wan Rp. 100.000',96000,100000,NULL),(86,'Digital Voucher','Ultra Voucher','H&M','HMD00050','Voucher Digital H&M Rp. 50.000',48500,50000,NULL),(87,'Digital Voucher','Ultra Voucher','H&M','HMD00100','Voucher Digital H&M Rp. 100.000',97000,100000,NULL);
+/*!40000 ALTER TABLE `voucher` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `win`
 --
 
@@ -885,6 +894,7 @@ CREATE TABLE `win` (
   `banner` varchar(255) DEFAULT NULL,
   `type` varchar(255) NOT NULL,
   `category_id` int(11) DEFAULT NULL,
+  `hot_win` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `audience_id` (`audience_id`),
   KEY `category_id` (`category_id`),
@@ -899,7 +909,7 @@ CREATE TABLE `win` (
 
 LOCK TABLES `win` WRITE;
 /*!40000 ALTER TABLE `win` DISABLE KEYS */;
-INSERT INTO `win` VALUES (7,'testWin',1,'2020-04-06','2020-04-09','test deskripsi','link_gambar',200,'2020-04-14','12:57:45','link_banner','offline',1);
+INSERT INTO `win` VALUES (7,'testWin',1,'2020-04-06','2020-04-09','test deskripsi','link_gambar',200,'2020-04-14','12:57:45','link_banner','offline',1,0);
 /*!40000 ALTER TABLE `win` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -912,4 +922,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-04-17 13:25:14
+-- Dump completed on 2020-04-21 16:14:10

@@ -20,6 +20,8 @@ const upload = multer({storage});
 
 router.route('/').get(function(req, res) {rf.index(req, res)});
 
+router.route('/test-mobile-pulsa').get(function(req, res) {rf.testMobilePulsa(req, res)});
+
 router.route('/register-admin').post(function(req, res) {rf.registerAdmin(req, res)});
 
 router.route('/login-admin').post(function(req, res) {rf.loginAdmin(req, res)});
@@ -82,14 +84,6 @@ router.route('/add-category').post(function(req, res) {rf.addCategory(req, res)}
 
 router.route('/edit-category').post(function(req, res) {rf.editCategory(req, res)});
 
-router.route('/get-one-campaign-slot').get(function(req, res) {rf.getOneCampaignSlot(req, res)});
-
-router.route('/get-campaign-slot').get(function(req, res) {rf.getCampaignSlot(req, res)});
-
-router.route('/add-campaign-slot').post(function(req, res) {rf.addCampaignSlot(req, res)});
-
-router.route('/edit-campaign-slot').post(function(req, res) {rf.editCampaignSlot(req, res)});
-
 router.route('/get-lottery').get(function(req, res) {rf.getLottery(req, res)});
 
 router.route('/add-lottery').post(function(req, res) {rf.addLottery(req, res)});
@@ -127,6 +121,14 @@ router.route('/get-horoscope').get(function(req, res) {rf.getHoroscope(req, res)
 router.route('/add-horoscope').post(function(req, res) {rf.addHoroscope(req, res)});
 
 router.route('/edit-horoscope').post(function(req, res) {rf.editHoroscope(req, res)});
+
+router.route('/get-one-voucher').get(function(req, res) {rf.getOneVoucher(req, res)});
+
+router.route('/get-voucher').get(function(req, res) {rf.getVoucher(req, res)});
+
+router.route('/add-voucher').post(function(req, res) {rf.addVoucher(req, res)});
+
+router.route('/edit-voucher').post(function(req, res) {rf.editVoucher(req, res)});
 
 router.route('/post-image').post(upload.single('image'), function(req, res) {rf.postImage(req, res)});
 
