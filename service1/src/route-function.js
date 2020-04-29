@@ -686,6 +686,18 @@ exports.editVoucher = function(req, res) {
 	});
 }
 
+exports.getSurveyQuestion = function(req, res) {
+	db.query("SELECT * FROM survey_question", function(result) {
+		res.json(result);
+	});
+}
+
+exports.getSurveyQuestionChoice = function(req, res) {
+	db.query("SELECT * FROM survey_question_choice", function(result) {
+		res.json(result);
+	});
+}
+
 exports.postImage = function(req, res) {
 	if(req.file) {
 		res.json(req.file);
@@ -797,10 +809,22 @@ exports.registerUser = function(req, res) {
 	var date = middle.getDate();
 	var time = middle.getTime();
 
+	//generate refcode
+	var user_refcode = name.substring(0, 3).toLowerCase() + middle.randomNumber(2) + middle.randomChar(2);
+
+	//generate qrcode
+	var qrcode =  '8008' + phone_number.substring(phone_number.length - 4) + middle.randomNumber(8);
+
 	if(login_method == 'manual') {
 		db.query("INSERT INTO user_manual (id, phone_number, email, password, date, time) VALUES ('', '"+phone_number+"', '"+email+"', '"+password+"', '"+date+"', '"+time+"')", function(result) {	
 			db.query("INSERT INTO users (id, phone_number, email, name, login_method, date, time) VALUES ('', '"+phone_number+"', '"+email+"', '"+name+"', '"+login_method+"', '"+date+"', '"+time+"')", function(result) {	
-				res.json(result);
+				db.query("INSERT INTO refcode_list (id, user_id, user_refcode, date, time) VALUES ('', "+result.insertId+", '"+user_refcode+"', '"+date+"', '"+time+"')", function(result) {	
+					console.log(result);
+				});
+				db.query("INSERT INTO user_qrcode (id, user_id, qrcode, date, time) VALUES ('', "+result.insertId+", '"+qrcode+"', '"+date+"', '"+time+"')", function(result) {	
+					console.log(result);
+					res.json(result);
+				});
 			});
 		});
 	}
@@ -924,7 +948,11 @@ exports.getUserGoogle = function(req, res) {
 }
 
 exports.setQrcode = function(req, res) {
-	var qrcode =  '8008' + '9939' + 1 + Math.floor(1000 + Math.random() * 9000);
+	var id = 5;
+
+	var length = 8 - id.toString().length;
+
+	var qrcode =  '8008' + '9939' + id + middle.randomNumber(length);
 	res.json(qrcode);
 }
 

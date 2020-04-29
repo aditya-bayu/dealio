@@ -395,7 +395,6 @@ CREATE TABLE `forget_phone_number` (
 
 LOCK TABLES `forget_phone_number` WRITE;
 /*!40000 ALTER TABLE `forget_phone_number` DISABLE KEYS */;
-INSERT INTO `forget_phone_number` VALUES (17,5,1,'2020-04-13','04:14:24');
 /*!40000 ALTER TABLE `forget_phone_number` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -458,7 +457,7 @@ CREATE TABLE `login_user` (
 
 LOCK TABLES `login_user` WRITE;
 /*!40000 ALTER TABLE `login_user` DISABLE KEYS */;
-INSERT INTO `login_user` VALUES (1,5,'2020-04-08','17:21:02'),(2,5,'2020-04-08','17:22:08'),(3,5,'2020-04-08','17:23:17'),(4,5,'2020-04-09','13:08:19'),(5,5,'2020-04-09','13:32:49'),(6,5,'2020-04-13','04:12:14'),(7,5,'2020-04-13','04:13:54'),(8,5,'2020-04-13','04:15:30'),(9,5,'2020-04-13','04:25:08'),(10,5,'2020-04-13','12:00:08'),(11,6,'2020-04-13','12:04:12'),(12,9,'2020-04-13','13:59:22'),(13,9,'2020-04-13','14:00:17'),(14,11,'2020-04-13','14:02:02');
+INSERT INTO `login_user` VALUES (11,6,'2020-04-13','12:04:12'),(12,9,'2020-04-13','13:59:22'),(13,9,'2020-04-13','14:00:17'),(14,11,'2020-04-13','14:02:02');
 /*!40000 ALTER TABLE `login_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -491,6 +490,35 @@ CREATE TABLE `lottery` (
 LOCK TABLES `lottery` WRITE;
 /*!40000 ALTER TABLE `lottery` DISABLE KEYS */;
 /*!40000 ALTER TABLE `lottery` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `lovelist`
+--
+
+DROP TABLE IF EXISTS `lovelist`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `lovelist` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `campaign_source` varchar(255) NOT NULL,
+  `campaign_id` int(11) NOT NULL,
+  `date` date NOT NULL,
+  `time` time NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `lovelist_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `lovelist`
+--
+
+LOCK TABLES `lovelist` WRITE;
+/*!40000 ALTER TABLE `lovelist` DISABLE KEYS */;
+/*!40000 ALTER TABLE `lovelist` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -649,7 +677,7 @@ CREATE TABLE `otp_regis` (
   PRIMARY KEY (`id`),
   KEY `regis_phone_number_id` (`regis_phone_number_id`),
   CONSTRAINT `otp_regis_ibfk_1` FOREIGN KEY (`regis_phone_number_id`) REFERENCES `regis_phone_number` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -658,7 +686,7 @@ CREATE TABLE `otp_regis` (
 
 LOCK TABLES `otp_regis` WRITE;
 /*!40000 ALTER TABLE `otp_regis` DISABLE KEYS */;
-INSERT INTO `otp_regis` VALUES (12,14,'0319','2020-04-08','17:17:04'),(13,15,'0755','2020-04-13','12:03:21'),(14,16,'0319','2020-04-13','12:22:07'),(15,17,'0631','2020-04-13','13:55:45'),(16,18,'0770','2020-04-13','13:58:24'),(17,19,'8931','2020-04-13','13:58:36'),(18,20,'0965','2020-04-13','14:00:50'),(19,21,'0765','2020-04-13','14:01:57'),(20,22,'0621','2020-04-13','14:02:41'),(21,23,'8942','2020-04-13','14:02:57'),(22,24,'0764','2020-04-13','14:03:05'),(23,25,'8917','2020-04-13','14:03:42'),(24,26,'0345','2020-04-13','14:04:22');
+INSERT INTO `otp_regis` VALUES (13,15,'0755','2020-04-13','12:03:21'),(14,16,'0319','2020-04-13','12:22:07'),(15,17,'0631','2020-04-13','13:55:45'),(16,18,'0770','2020-04-13','13:58:24'),(17,19,'8931','2020-04-13','13:58:36'),(18,20,'0965','2020-04-13','14:00:50'),(19,21,'0765','2020-04-13','14:01:57'),(20,22,'0621','2020-04-13','14:02:41'),(21,23,'8942','2020-04-13','14:02:57'),(22,24,'0764','2020-04-13','14:03:05'),(23,25,'8917','2020-04-13','14:03:42'),(24,26,'0345','2020-04-13','14:04:22'),(27,30,'0319','2020-04-27','14:55:48');
 /*!40000 ALTER TABLE `otp_regis` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -807,7 +835,7 @@ CREATE TABLE `refcode_list` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `refcode_list_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -816,6 +844,7 @@ CREATE TABLE `refcode_list` (
 
 LOCK TABLES `refcode_list` WRITE;
 /*!40000 ALTER TABLE `refcode_list` DISABLE KEYS */;
+INSERT INTO `refcode_list` VALUES (3,18,'han42bk','2020-04-27','14:56:11');
 /*!40000 ALTER TABLE `refcode_list` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -833,7 +862,7 @@ CREATE TABLE `regis_phone_number` (
   `time` time NOT NULL,
   `status_regis` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -842,7 +871,7 @@ CREATE TABLE `regis_phone_number` (
 
 LOCK TABLES `regis_phone_number` WRITE;
 /*!40000 ALTER TABLE `regis_phone_number` DISABLE KEYS */;
-INSERT INTO `regis_phone_number` VALUES (14,'082299392596','2020-04-08','17:17:03',1),(15,'087771805500','2020-04-13','12:03:20',1),(16,'081381085380','2020-04-13','12:22:07',1),(17,'081806802482','2020-04-13','13:55:44',1),(18,'085323991877','2020-04-13','13:58:24',1),(19,'081283386332','2020-04-13','13:58:35',1),(20,'087878752519','2020-04-13','14:00:50',1),(21,'087889882977','2020-04-13','14:01:56',0),(22,'087889882977','2020-04-13','14:02:41',0),(23,'081398769737','2020-04-13','14:02:57',2),(24,'087889882977','2020-04-13','14:03:04',0),(25,'081398769737','2020-04-13','14:03:42',2),(26,'081398769737','2020-04-13','14:04:21',1);
+INSERT INTO `regis_phone_number` VALUES (15,'087771805500','2020-04-13','12:03:20',1),(16,'081381085380','2020-04-13','12:22:07',1),(17,'081806802482','2020-04-13','13:55:44',1),(18,'085323991877','2020-04-13','13:58:24',1),(19,'081283386332','2020-04-13','13:58:35',1),(20,'087878752519','2020-04-13','14:00:50',1),(21,'087889882977','2020-04-13','14:01:56',0),(22,'087889882977','2020-04-13','14:02:41',0),(23,'081398769737','2020-04-13','14:02:57',2),(24,'087889882977','2020-04-13','14:03:04',0),(25,'081398769737','2020-04-13','14:03:42',2),(26,'081398769737','2020-04-13','14:04:21',1),(30,'082299392596','2020-04-27','14:55:47',1);
 /*!40000 ALTER TABLE `regis_phone_number` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -878,6 +907,89 @@ LOCK TABLES `stream` WRITE;
 /*!40000 ALTER TABLE `stream` DISABLE KEYS */;
 INSERT INTO `stream` VALUES (4,'nama stream','2020-04-06','2020-04-09','link video url',NULL,NULL,'2020-04-14','15:25:52',10,0,0),(6,'test stream','2020-04-14','2020-04-18','youtube.com',NULL,NULL,'2020-04-14','15:29:12',500,0,0);
 /*!40000 ALTER TABLE `stream` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `survey_question`
+--
+
+DROP TABLE IF EXISTS `survey_question`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `survey_question` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `question` varchar(255) NOT NULL,
+  `type` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `survey_question`
+--
+
+LOCK TABLES `survey_question` WRITE;
+/*!40000 ALTER TABLE `survey_question` DISABLE KEYS */;
+INSERT INTO `survey_question` VALUES (1,'Seberapa tertarik anda dengan aplikasi Dealio?','multiple'),(2,'Apakah hobby anda?','fill');
+/*!40000 ALTER TABLE `survey_question` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `survey_question_choice`
+--
+
+DROP TABLE IF EXISTS `survey_question_choice`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `survey_question_choice` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `survey_question_id` int(11) NOT NULL,
+  `choice` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `survey_question_id` (`survey_question_id`),
+  CONSTRAINT `survey_question_choice_ibfk_1` FOREIGN KEY (`survey_question_id`) REFERENCES `survey_question` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `survey_question_choice`
+--
+
+LOCK TABLES `survey_question_choice` WRITE;
+/*!40000 ALTER TABLE `survey_question_choice` DISABLE KEYS */;
+INSERT INTO `survey_question_choice` VALUES (1,1,'Sangat Tertarik'),(2,1,'Tertarik'),(3,1,'Tidak Tertarik'),(4,1,'Sangat Tidak Tertarik');
+/*!40000 ALTER TABLE `survey_question_choice` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `survey_response`
+--
+
+DROP TABLE IF EXISTS `survey_response`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `survey_response` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `survey_question_id` int(11) NOT NULL,
+  `response` varchar(255) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `date` date NOT NULL,
+  `time` time NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `survey_question_id` (`survey_question_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `survey_response_ibfk_1` FOREIGN KEY (`survey_question_id`) REFERENCES `survey_question` (`id`),
+  CONSTRAINT `survey_response_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `survey_response`
+--
+
+LOCK TABLES `survey_response` WRITE;
+/*!40000 ALTER TABLE `survey_response` DISABLE KEYS */;
+/*!40000 ALTER TABLE `survey_response` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -981,7 +1093,7 @@ CREATE TABLE `user_manual` (
   `time` time NOT NULL,
   `email` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -990,7 +1102,7 @@ CREATE TABLE `user_manual` (
 
 LOCK TABLES `user_manual` WRITE;
 /*!40000 ALTER TABLE `user_manual` DISABLE KEYS */;
-INSERT INTO `user_manual` VALUES (5,'082299392596','123456','2020-04-08','17:17:25','hanindyo.herbowo@gmail.com'),(6,'087771805500','dainton1','2020-04-13','12:03:53','gilesttmt@gmail.com'),(7,'081381085380','dealio03','2020-04-13','12:23:14','@adeseptian7@gmail.com'),(8,'081806802482','dewantoro98','2020-04-13','13:56:22','gunawanbayu98@gmail.com'),(9,'081283386332','dealio','2020-04-13','13:59:05','bartonjakarta@gmail.com'),(10,'085323991877','kabur123','2020-04-13','13:59:13','iheh69@gmail.com'),(11,'087878752519','dazza1','2020-04-13','14:01:43','Darren@digitalvisionpublishing.com '),(12,'081398769737','KakekNenek!','2020-04-13','14:05:05','deswidia@gmail.com');
+INSERT INTO `user_manual` VALUES (6,'087771805500','dainton1','2020-04-13','12:03:53','gilesttmt@gmail.com'),(7,'081381085380','dealio03','2020-04-13','12:23:14','@adeseptian7@gmail.com'),(8,'081806802482','dewantoro98','2020-04-13','13:56:22','gunawanbayu98@gmail.com'),(9,'081283386332','dealio','2020-04-13','13:59:05','bartonjakarta@gmail.com'),(10,'085323991877','kabur123','2020-04-13','13:59:13','iheh69@gmail.com'),(11,'087878752519','dazza1','2020-04-13','14:01:43','Darren@digitalvisionpublishing.com '),(12,'081398769737','KakekNenek!','2020-04-13','14:05:05','deswidia@gmail.com'),(18,'082299392596','123','2020-04-27','14:56:11','hanindyo.herbowo@gmail.com');
 /*!40000 ALTER TABLE `user_manual` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1021,6 +1133,35 @@ LOCK TABLES `user_point` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `user_qrcode`
+--
+
+DROP TABLE IF EXISTS `user_qrcode`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user_qrcode` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `qrcode` varchar(255) NOT NULL,
+  `date` date NOT NULL,
+  `time` time NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `user_qrcode_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user_qrcode`
+--
+
+LOCK TABLES `user_qrcode` WRITE;
+/*!40000 ALTER TABLE `user_qrcode` DISABLE KEYS */;
+INSERT INTO `user_qrcode` VALUES (2,18,'8008259618728165','2020-04-27','14:56:11');
+/*!40000 ALTER TABLE `user_qrcode` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `users`
 --
 
@@ -1036,7 +1177,7 @@ CREATE TABLE `users` (
   `time` time NOT NULL,
   `login_method` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1045,7 +1186,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (5,'Hanindyo Herbowo','hanindyo.herbowo@gmail.com','082299392596','2020-04-08','17:17:25','manual'),(6,'Giles Adam Taarland','gilesttmt@gmail.com','087771805500','2020-04-13','12:03:53','manual'),(7,'Septian Ade','@adeseptian7@gmail.com','081381085380','2020-04-13','12:23:14','manual'),(8,'Gunawan','gunawanbayu98@gmail.com','081806802482','2020-04-13','13:56:22','manual'),(9,'Philip Barton','bartonjakarta@gmail.com','081283386332','2020-04-13','13:59:05','manual'),(10,'Syifa Abdurrozak','iheh69@gmail.com','085323991877','2020-04-13','13:59:13','manual'),(11,'Darren ','Darren@digitalvisionpublishing.com ','087878752519','2020-04-13','14:01:43','manual'),(12,'Desi widiastuti','deswidia@gmail.com','081398769737','2020-04-13','14:05:05','manual');
+INSERT INTO `users` VALUES (6,'Giles Adam Taarland','gilesttmt@gmail.com','087771805500','2020-04-13','12:03:53','manual'),(7,'Septian Ade','@adeseptian7@gmail.com','081381085380','2020-04-13','12:23:14','manual'),(8,'Gunawan','gunawanbayu98@gmail.com','081806802482','2020-04-13','13:56:22','manual'),(9,'Philip Barton','bartonjakarta@gmail.com','081283386332','2020-04-13','13:59:05','manual'),(10,'Syifa Abdurrozak','iheh69@gmail.com','085323991877','2020-04-13','13:59:13','manual'),(11,'Darren ','Darren@digitalvisionpublishing.com ','087878752519','2020-04-13','14:01:43','manual'),(12,'Desi widiastuti','deswidia@gmail.com','081398769737','2020-04-13','14:05:05','manual'),(18,'Hanindyo Herbowo','hanindyo.herbowo@gmail.com','082299392596','2020-04-27','14:56:11','manual');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1130,4 +1271,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-04-24 18:25:03
+-- Dump completed on 2020-04-29 16:55:25

@@ -130,6 +130,10 @@ router.route('/add-voucher').post(function(req, res) {rf.addVoucher(req, res)});
 
 router.route('/edit-voucher').post(function(req, res) {rf.editVoucher(req, res)});
 
+router.route('/get-survey-question').get(function(req, res) {rf.getSurveyQuestion(req, res)});
+
+router.route('/get-survey-question-choice').get(function(req, res) {rf.getSurveyQuestionChoice(req, res)});
+
 router.route('/post-image').post(upload.single('image'), function(req, res) {rf.postImage(req, res)});
 
 router.route('/post-banner').post(upload.single('banner'), function(req, res) {rf.postBanner(req, res)});
