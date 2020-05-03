@@ -98,13 +98,13 @@ router.route('/add-news').post(function(req, res) {rf.addNews(req, res)});
 
 router.route('/edit-news').post(function(req, res) {rf.editNews(req, res)});
 
-router.route('/get-one-stream').get(function(req, res) {rf.getOneStream(req, res)});
+router.route('/get-one-watch').get(function(req, res) {rf.getOneWatch(req, res)});
 
-router.route('/get-stream').get(function(req, res) {rf.getStream(req, res)});
+router.route('/get-watch').get(function(req, res) {rf.getWatch(req, res)});
 
-router.route('/add-stream').post(function(req, res) {rf.addStream(req, res)});
+router.route('/add-watch').post(function(req, res) {rf.addWatch(req, res)});
 
-router.route('/edit-stream').post(function(req, res) {rf.editStream(req, res)});
+router.route('/edit-watch').post(function(req, res) {rf.editWatch(req, res)});
 
 router.route('/get-one-event').get(function(req, res) {rf.getOneEvent(req, res)});
 
@@ -130,9 +130,21 @@ router.route('/add-voucher').post(function(req, res) {rf.addVoucher(req, res)});
 
 router.route('/edit-voucher').post(function(req, res) {rf.editVoucher(req, res)});
 
+router.route('/get-one-survey').get(function(req, res) {rf.getOneSurvey(req, res)});
+
+router.route('/get-survey').get(function(req, res) {rf.getSurvey(req, res)});
+
+router.route('/add-survey').post(function(req, res) {rf.addSurvey(req, res)});
+
+router.route('/edit-survey').post(function(req, res) {rf.editSurvey(req, res)});
+
 router.route('/get-survey-question').get(function(req, res) {rf.getSurveyQuestion(req, res)});
 
+router.route('/add-survey-question').post(function(req, res) {rf.addSurveyQuestion(req, res)});
+
 router.route('/get-survey-question-choice').get(function(req, res) {rf.getSurveyQuestionChoice(req, res)});
+
+router.route('/add-survey-question-choice').post(function(req, res) {rf.addSurveyQuestionChoice(req, res)});
 
 router.route('/post-image').post(upload.single('image'), function(req, res) {rf.postImage(req, res)});
 

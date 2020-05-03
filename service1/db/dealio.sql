@@ -27,9 +27,7 @@ CREATE TABLE `admin` (
   `username` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `date_login` date DEFAULT NULL,
-  `date_logout` date DEFAULT NULL,
   `time_login` time DEFAULT NULL,
-  `time_logout` time DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
@@ -41,7 +39,7 @@ CREATE TABLE `admin` (
 
 LOCK TABLES `admin` WRITE;
 /*!40000 ALTER TABLE `admin` DISABLE KEYS */;
-INSERT INTO `admin` VALUES (1,'dyo','123','2020-04-08','2020-04-08','16:55:33','16:55:36'),(2,'ronald','123',NULL,NULL,NULL,NULL),(5,'james','123',NULL,'2020-04-08',NULL,'17:22:48');
+INSERT INTO `admin` VALUES (1,'dyo','123',NULL,NULL),(2,'ronald','123',NULL,NULL),(5,'james','123',NULL,NULL);
 /*!40000 ALTER TABLE `admin` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -112,13 +110,12 @@ DROP TABLE IF EXISTS `banner_deals`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `banner_deals` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `deals_id` int(11) NOT NULL,
   `position` int(11) NOT NULL,
   `date` date NOT NULL,
   `time` time NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `deals_id` (`deals_id`),
-  CONSTRAINT `banner_deals_ibfk_1` FOREIGN KEY (`deals_id`) REFERENCES `deals` (`id`)
+  `campaign_id` int(11) NOT NULL,
+  `campaign_source` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -447,7 +444,7 @@ CREATE TABLE `login_user` (
   `time` time NOT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
-  CONSTRAINT `login_user_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+  CONSTRAINT `login_user_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -478,7 +475,7 @@ CREATE TABLE `lottery` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `win_id` (`win_id`),
-  CONSTRAINT `lottery_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `lottery_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
   CONSTRAINT `lottery_ibfk_2` FOREIGN KEY (`win_id`) REFERENCES `win` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -508,7 +505,7 @@ CREATE TABLE `lovelist` (
   `time` time NOT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
-  CONSTRAINT `lovelist_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+  CONSTRAINT `lovelist_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -519,6 +516,34 @@ CREATE TABLE `lovelist` (
 LOCK TABLES `lovelist` WRITE;
 /*!40000 ALTER TABLE `lovelist` DISABLE KEYS */;
 /*!40000 ALTER TABLE `lovelist` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `membership`
+--
+
+DROP TABLE IF EXISTS `membership`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `membership` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `tier` varchar(255) NOT NULL,
+  `date` date NOT NULL,
+  `time` time NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `membership_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `membership`
+--
+
+LOCK TABLES `membership` WRITE;
+/*!40000 ALTER TABLE `membership` DISABLE KEYS */;
+/*!40000 ALTER TABLE `membership` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -622,7 +647,7 @@ CREATE TABLE `ocr_ktp_temp` (
   `image_url` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
-  CONSTRAINT `ocr_ktp_temp_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+  CONSTRAINT `ocr_ktp_temp_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -730,7 +755,7 @@ CREATE TABLE `point_source` (
   `time` time NOT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
-  CONSTRAINT `point_source_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+  CONSTRAINT `point_source_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -799,14 +824,14 @@ DROP TABLE IF EXISTS `refcode_input`;
 CREATE TABLE `refcode_input` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `refcode_list_id` int(11) NOT NULL,
-  `phone_id` int(11) NOT NULL,
+  `regis_phone_number_id` int(11) NOT NULL,
   `date` date NOT NULL,
   `time` time NOT NULL,
   PRIMARY KEY (`id`),
   KEY `refcode_list_id` (`refcode_list_id`),
-  KEY `phone_id` (`phone_id`),
+  KEY `phone_id` (`regis_phone_number_id`),
   CONSTRAINT `refcode_input_ibfk_1` FOREIGN KEY (`refcode_list_id`) REFERENCES `refcode_list` (`id`),
-  CONSTRAINT `refcode_input_ibfk_2` FOREIGN KEY (`phone_id`) REFERENCES `regis_phone_number` (`id`)
+  CONSTRAINT `refcode_input_ibfk_2` FOREIGN KEY (`regis_phone_number_id`) REFERENCES `regis_phone_number` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -834,7 +859,7 @@ CREATE TABLE `refcode_list` (
   `time` time NOT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
-  CONSTRAINT `refcode_list_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+  CONSTRAINT `refcode_list_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -876,37 +901,59 @@ INSERT INTO `regis_phone_number` VALUES (15,'087771805500','2020-04-13','12:03:2
 UNLOCK TABLES;
 
 --
--- Table structure for table `stream`
+-- Table structure for table `status_membership`
 --
 
-DROP TABLE IF EXISTS `stream`;
+DROP TABLE IF EXISTS `status_membership`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `stream` (
+CREATE TABLE `status_membership` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) NOT NULL,
-  `start_date` date NOT NULL,
-  `end_date` date NOT NULL,
-  `video_url` varchar(255) NOT NULL,
-  `image` varchar(255) DEFAULT NULL,
-  `banner` varchar(255) DEFAULT NULL,
+  `user_id` int(11) NOT NULL,
+  `changes` varchar(255) DEFAULT NULL,
+  `tier_from` varchar(255) DEFAULT NULL,
+  `tier_to` varchar(255) DEFAULT NULL,
   `date` date NOT NULL,
   `time` time NOT NULL,
-  `point` int(11) DEFAULT NULL,
-  `hot_entertainment` int(11) NOT NULL,
-  `hot_stream` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4;
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `status_membership_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `stream`
+-- Dumping data for table `status_membership`
 --
 
-LOCK TABLES `stream` WRITE;
-/*!40000 ALTER TABLE `stream` DISABLE KEYS */;
-INSERT INTO `stream` VALUES (4,'nama stream','2020-04-06','2020-04-09','link video url',NULL,NULL,'2020-04-14','15:25:52',10,0,0),(6,'test stream','2020-04-14','2020-04-18','youtube.com',NULL,NULL,'2020-04-14','15:29:12',500,0,0);
-/*!40000 ALTER TABLE `stream` ENABLE KEYS */;
+LOCK TABLES `status_membership` WRITE;
+/*!40000 ALTER TABLE `status_membership` DISABLE KEYS */;
+/*!40000 ALTER TABLE `status_membership` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `survey`
+--
+
+DROP TABLE IF EXISTS `survey`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `survey` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `date` date NOT NULL,
+  `time` time NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `survey`
+--
+
+LOCK TABLES `survey` WRITE;
+/*!40000 ALTER TABLE `survey` DISABLE KEYS */;
+INSERT INTO `survey` VALUES (1,'Test Survey','2020-05-03','14:44:12');
+/*!40000 ALTER TABLE `survey` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -920,7 +967,10 @@ CREATE TABLE `survey_question` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `question` varchar(255) NOT NULL,
   `type` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`)
+  `survey_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `survey_id` (`survey_id`),
+  CONSTRAINT `survey_question_ibfk_1` FOREIGN KEY (`survey_id`) REFERENCES `survey` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -930,7 +980,7 @@ CREATE TABLE `survey_question` (
 
 LOCK TABLES `survey_question` WRITE;
 /*!40000 ALTER TABLE `survey_question` DISABLE KEYS */;
-INSERT INTO `survey_question` VALUES (1,'Seberapa tertarik anda dengan aplikasi Dealio?','multiple'),(2,'Apakah hobby anda?','fill');
+INSERT INTO `survey_question` VALUES (1,'Seberapa tertarik anda dengan aplikasi Dealio?','multiple',1),(2,'Apakah hobby anda?','fill',1);
 /*!40000 ALTER TABLE `survey_question` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -979,7 +1029,7 @@ CREATE TABLE `survey_response` (
   KEY `survey_question_id` (`survey_question_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `survey_response_ibfk_1` FOREIGN KEY (`survey_question_id`) REFERENCES `survey_question` (`id`),
-  CONSTRAINT `survey_response_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+  CONSTRAINT `survey_response_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -990,6 +1040,36 @@ CREATE TABLE `survey_response` (
 LOCK TABLES `survey_response` WRITE;
 /*!40000 ALTER TABLE `survey_response` DISABLE KEYS */;
 /*!40000 ALTER TABLE `survey_response` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `user`
+--
+
+DROP TABLE IF EXISTS `user`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `phone_number` varchar(255) NOT NULL,
+  `date` date NOT NULL,
+  `time` time NOT NULL,
+  `login_method` varchar(255) NOT NULL,
+  `email_verified` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user`
+--
+
+LOCK TABLES `user` WRITE;
+/*!40000 ALTER TABLE `user` DISABLE KEYS */;
+INSERT INTO `user` VALUES (6,'Giles Adam Taarland','gilesttmt@gmail.com','087771805500','2020-04-13','12:03:53','manual',0),(7,'Septian Ade','@adeseptian7@gmail.com','081381085380','2020-04-13','12:23:14','manual',0),(8,'Gunawan','gunawanbayu98@gmail.com','081806802482','2020-04-13','13:56:22','manual',0),(9,'Philip Barton','bartonjakarta@gmail.com','081283386332','2020-04-13','13:59:05','manual',0),(10,'Syifa Abdurrozak','iheh69@gmail.com','085323991877','2020-04-13','13:59:13','manual',0),(11,'Darren ','Darren@digitalvisionpublishing.com ','087878752519','2020-04-13','14:01:43','manual',0),(12,'Desi widiastuti','deswidia@gmail.com','081398769737','2020-04-13','14:05:05','manual',0),(18,'Hanindyo Herbowo','hanindyo.herbowo@gmail.com','082299392596','2020-04-27','14:56:11','manual',0);
+/*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1007,10 +1087,12 @@ CREATE TABLE `user_detail` (
   `city` varchar(255) DEFAULT NULL,
   `date` date NOT NULL,
   `time` time NOT NULL,
-  `age` int(11) NOT NULL,
+  `age` int(11) DEFAULT NULL,
   `nik` varchar(255) DEFAULT NULL,
   `image` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `user_detail_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1035,6 +1117,9 @@ CREATE TABLE `user_facebook` (
   `email` varchar(255) DEFAULT NULL,
   `first_name` varchar(255) DEFAULT NULL,
   `last_name` varchar(255) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `date` date DEFAULT NULL,
+  `time` time DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -1119,7 +1204,7 @@ CREATE TABLE `user_point` (
   `point` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
-  CONSTRAINT `user_point_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+  CONSTRAINT `user_point_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1133,13 +1218,13 @@ LOCK TABLES `user_point` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `user_qrcode`
+-- Table structure for table `user_qrcode_membership`
 --
 
-DROP TABLE IF EXISTS `user_qrcode`;
+DROP TABLE IF EXISTS `user_qrcode_membership`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `user_qrcode` (
+CREATE TABLE `user_qrcode_membership` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `qrcode` varchar(255) NOT NULL,
@@ -1147,47 +1232,18 @@ CREATE TABLE `user_qrcode` (
   `time` time NOT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
-  CONSTRAINT `user_qrcode_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+  CONSTRAINT `user_qrcode_membership_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `user_qrcode`
+-- Dumping data for table `user_qrcode_membership`
 --
 
-LOCK TABLES `user_qrcode` WRITE;
-/*!40000 ALTER TABLE `user_qrcode` DISABLE KEYS */;
-INSERT INTO `user_qrcode` VALUES (2,18,'8008259618728165','2020-04-27','14:56:11');
-/*!40000 ALTER TABLE `user_qrcode` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `users`
---
-
-DROP TABLE IF EXISTS `users`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `users` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) DEFAULT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `phone_number` varchar(255) NOT NULL,
-  `date` date NOT NULL,
-  `time` time NOT NULL,
-  `login_method` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `users`
---
-
-LOCK TABLES `users` WRITE;
-/*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (6,'Giles Adam Taarland','gilesttmt@gmail.com','087771805500','2020-04-13','12:03:53','manual'),(7,'Septian Ade','@adeseptian7@gmail.com','081381085380','2020-04-13','12:23:14','manual'),(8,'Gunawan','gunawanbayu98@gmail.com','081806802482','2020-04-13','13:56:22','manual'),(9,'Philip Barton','bartonjakarta@gmail.com','081283386332','2020-04-13','13:59:05','manual'),(10,'Syifa Abdurrozak','iheh69@gmail.com','085323991877','2020-04-13','13:59:13','manual'),(11,'Darren ','Darren@digitalvisionpublishing.com ','087878752519','2020-04-13','14:01:43','manual'),(12,'Desi widiastuti','deswidia@gmail.com','081398769737','2020-04-13','14:05:05','manual'),(18,'Hanindyo Herbowo','hanindyo.herbowo@gmail.com','082299392596','2020-04-27','14:56:11','manual');
-/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+LOCK TABLES `user_qrcode_membership` WRITE;
+/*!40000 ALTER TABLE `user_qrcode_membership` DISABLE KEYS */;
+INSERT INTO `user_qrcode_membership` VALUES (2,18,'8008259618728165','2020-04-27','14:56:11');
+/*!40000 ALTER TABLE `user_qrcode_membership` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1219,6 +1275,40 @@ LOCK TABLES `voucher` WRITE;
 /*!40000 ALTER TABLE `voucher` DISABLE KEYS */;
 INSERT INTO `voucher` VALUES (6,'Pulsa','MobilePulsa','Axis','haxis50000','50000',49700,50000,NULL),(7,'Pulsa','MobilePulsa','','haxis100000','100000',99250,100000,NULL),(8,'Pulsa','MobilePulsa','','haxis200000','200000',198500,200000,NULL),(9,'Pulsa','MobilePulsa','','haxis300000','300000',299000,300000,NULL),(10,'Pulsa','MobilePulsa','','haxis500000','500000',498000,500000,NULL),(11,'Pulsa','MobilePulsa','','haxis1000000','1000000',995000,1000000,NULL),(12,'Pulsa','MobilePulsa','Indosat','hindosat50000','50000',49250,50000,NULL),(13,'Pulsa','MobilePulsa','','hindosat100000','100000',98000,100000,NULL),(14,'Pulsa','MobilePulsa','','hindosat150000','150000',143000,150000,NULL),(15,'Pulsa','MobilePulsa','','hindosat200000','200000',185500,200000,NULL),(16,'Pulsa','MobilePulsa','','hindosat250000','250000',232000,250000,NULL),(17,'Pulsa','MobilePulsa','','hindosat500000','500000',463000,500000,NULL),(18,'Pulsa','MobilePulsa','','hindosat1000000','1000000',926000,1000000,NULL),(19,'Pulsa','MobilePulsa','SmartFren','hsmart50000','50000',49500,50000,NULL),(20,'Pulsa','MobilePulsa','','hsmart100000','100000',99000,100000,NULL),(21,'Pulsa','MobilePulsa','','hsmart150000','150000',148500,150000,NULL),(22,'Pulsa','MobilePulsa','','hsmart200000','200000',198000,200000,NULL),(23,'Pulsa','MobilePulsa','','hsmart300000','300000',297000,300000,NULL),(24,'Pulsa','MobilePulsa','','hsmart500000','500000',495000,500000,NULL),(25,'Pulsa','MobilePulsa','','hsmart1000000','1000000',990000,1000000,NULL),(26,'Pulsa','MobilePulsa','Telkomsel','htelkomsel50000','50000',49750,50000,NULL),(27,'Pulsa','MobilePulsa','','htelkomsel100000','100000',98500,100000,NULL),(28,'Pulsa','MobilePulsa','','htelkomsel150000','150000',148750,150000,NULL),(29,'Pulsa','MobilePulsa','','htelkomsel200000','200000',198000,200000,NULL),(30,'Pulsa','MobilePulsa','','htelkomsel300000','300000',297500,300000,NULL),(31,'Pulsa','MobilePulsa','','htelkomsel500000','500000',495000,500000,NULL),(32,'Pulsa','MobilePulsa','','htelkomsel1000000','1000000',987500,1000000,NULL),(33,'Pulsa','MobilePulsa','Three','hthree50000','50000',49000,50000,NULL),(34,'Pulsa','MobilePulsa','','hthree100000','100000',98500,100000,NULL),(35,'Pulsa','MobilePulsa','','hthree150000','150000',148500,150000,NULL),(36,'Pulsa','MobilePulsa','','hthree200000','200000',199000,200000,NULL),(37,'Pulsa','MobilePulsa','','hthree300000','300000',297000,300000,NULL),(38,'Pulsa','MobilePulsa','','hthree500000','500000',495000,500000,NULL),(39,'Pulsa','MobilePulsa','','hthree1000000','1000000',990000,1000000,NULL),(40,'Pulsa','MobilePulsa','XL','xld50000','50000',49700,50000,NULL),(41,'Pulsa','MobilePulsa','','xld100000','100000',99250,100000,NULL),(42,'Pulsa','MobilePulsa','','xld200000','200000',198050,200000,NULL),(43,'Pulsa','MobilePulsa','','xld300000','300000',298500,300000,NULL),(44,'Pulsa','MobilePulsa','','xld500000','500000',495000,500000,NULL),(45,'Pulsa','MobilePulsa','','xld1000000','1000000',990000,1000000,NULL),(46,'Pulsa','MobilePulsa','','xld150000','150000',150000,150000,NULL),(47,'Electricity PrePaid','MobilePulsa','PLN','hpln50000','50000',50500,52000,NULL),(48,'Electricity PrePaid','MobilePulsa','','hpln100000','100000',100500,102000,NULL),(49,'Electricity PrePaid','MobilePulsa','','hpln200000','200000',200500,202000,NULL),(50,'Electricity PrePaid','MobilePulsa','','hpln500000','500000',500500,502000,NULL),(51,'Electricity PrePaid','MobilePulsa','','hpln1000000','1000000',1000,1002000,NULL),(52,'E-Money','MobilePulsa','Dana','dana50','DANA Rp 50.000',51500,52500,NULL),(53,'E-Money','MobilePulsa','','dana100','DANA Rp 100.000',101500,102500,NULL),(54,'E-Money','MobilePulsa','','dana200','DANA Rp 200.000',201500,202500,NULL),(55,'E-Money','MobilePulsa','','dana250','DANA Rp 250.000',251750,253000,NULL),(56,'E-Money','MobilePulsa','GoPay','go50','GO-PAY Rp 50.000',53000,55000,NULL),(57,'E-Money','MobilePulsa','','go100','GO-PAY Rp 100.000',103000,105000,NULL),(58,'E-Money','MobilePulsa','','go150','GO-PAY Rp 150.000',153000,155000,NULL),(59,'E-Money','MobilePulsa','LinkAja','linkaja50','LinkAja Rp 50.000',50750,52000,NULL),(60,'E-Money','MobilePulsa','','linkaja100','LinkAja Rp 100.000',100750,102000,NULL),(61,'E-Money','MobilePulsa','','linkaja200','LinkAja Rp 200.000',200750,202000,NULL),(62,'E-Money','MobilePulsa','','linkaja250','LinkAja Rp 250.000',250750,252000,NULL),(63,'E-Money','MobilePulsa','OVO','ovo50','OVO Cash Rp 50.000',51500,52500,NULL),(64,'E-Money','MobilePulsa','','ovo100','OVO Cash Rp 100.000',101500,102500,NULL),(65,'E-Money','MobilePulsa','','ovo200','OVO Cash Rp 200.000',201500,202500,NULL),(66,'E-Money','MobilePulsa','','ovo500','OVO Cash Rp 500.000',501500,502500,NULL),(67,'Digital Voucher','MobilePulsa','Alfamart','alfamart100','Voucher Alfamart Rp 100.000',99750,101000,NULL),(68,'Digital Voucher','MobilePulsa','Indomaret','indomaret100','Voucher Indomaret Rp 100.000',99750,101000,NULL),(69,'Digital Voucher','MobilePulsa','Carrefour','carrefour100','Voucher Transmart Carrefour Rp 100.000',99750,101000,NULL),(70,'Digital Voucher','Ultra Voucher','BreadLife','BFD00050','Breadlife Rp. 50.000',47500,50000,NULL),(71,'Digital Voucher','Ultra Voucher','FORE','FRC00050','Voucher Digital Fore Coffee Rp. 50.000',45000,50000,NULL),(72,'Digital Voucher','Ultra Voucher','Wakai','WKAI100','Voucher Digital Wakai Rp. 100.000',98000,100000,NULL),(73,'Digital Voucher','Ultra Voucher','Wakai','WKAI500','Voucher Digital Wakai Rp. 500.000',490000,500000,NULL),(74,'Digital Voucher','Ultra Voucher','The Little Things She Need','TLSN100','Voucher Digital The Little Things She Need Rp. 100.000',98000,100000,NULL),(75,'Digital Voucher','Ultra Voucher','The Little Things She Need','TLSN500','Voucher Digital The Little Things She Need Rp. 500.000',490000,500000,NULL),(76,'Digital Voucher','Ultra Voucher','Kintan Buffet','KNBF00100','Voucher Digital Kintan Buffet Rp. 100.000',94000,100000,NULL),(77,'Digital Voucher','Ultra Voucher','Kintan Buffet','KNBF00200','Voucher Digital Kintan Buffet Rp. 200.000',188000,200000,NULL),(78,'Digital Voucher','Ultra Voucher','Shaburi','SHBR00100','Voucher Digital Shaburi Rp. 100.000',94000,100000,NULL),(79,'Digital Voucher','Ultra Voucher','Shaburi','SHBR00200','Voucher Digital Shaburi Rp. 200.000',188000,200000,NULL),(80,'Digital Voucher','Ultra Voucher','Yoshinoya','YSNY00050','Voucher Digital Yoshinoya Rp. 50.000',46500,50000,NULL),(81,'Digital Voucher','Ultra Voucher','Yoshinoya','YSNY00100','Voucher Digital Yoshinoya Rp. 100.000',93000,100000,NULL),(82,'Digital Voucher','Ultra Voucher','Excelso','EXL00050','Voucher digital Excelso Rp. 50.000',47500,50000,NULL),(83,'Digital Voucher','Ultra Voucher','Excelso','EXL00100','Voucher digital Excelso Rp. 100.000',95000,100000,NULL),(84,'Digital Voucher','Ultra Voucher','Ta Wan','TWD00050','Voucher Digital Ta Wan Rp. 50.000',48000,50000,NULL),(85,'Digital Voucher','Ultra Voucher','Ta Wan','TWD00100','Voucher Digital Ta Wan Rp. 100.000',96000,100000,NULL),(86,'Digital Voucher','Ultra Voucher','H&M','HMD00050','Voucher Digital H&M Rp. 50.000',48500,50000,NULL),(87,'Digital Voucher','Ultra Voucher','H&M','HMD00100','Voucher Digital H&M Rp. 100.000',97000,100000,NULL);
 /*!40000 ALTER TABLE `voucher` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `watch`
+--
+
+DROP TABLE IF EXISTS `watch`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `watch` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `start_date` date NOT NULL,
+  `end_date` date NOT NULL,
+  `video_url` varchar(255) NOT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `banner` varchar(255) DEFAULT NULL,
+  `date` date NOT NULL,
+  `time` time NOT NULL,
+  `point` int(11) DEFAULT NULL,
+  `hot_entertainment` int(11) NOT NULL,
+  `hot_watch` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `watch`
+--
+
+LOCK TABLES `watch` WRITE;
+/*!40000 ALTER TABLE `watch` DISABLE KEYS */;
+INSERT INTO `watch` VALUES (4,'nama stream','2020-04-06','2020-04-09','link video url',NULL,NULL,'2020-04-14','15:25:52',10,0,0),(6,'test stream','2020-04-14','2020-04-18','youtube.com',NULL,NULL,'2020-04-14','15:29:12',500,0,0);
+/*!40000 ALTER TABLE `watch` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1271,4 +1361,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-04-29 16:55:25
+-- Dump completed on 2020-05-03 22:57:08
