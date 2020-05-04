@@ -95,7 +95,7 @@ exports.loginUser = function(req, res) {
 		if(result.length) {
 			sess.user = result[0];
 
-			db.query("SELECT id FROM users WHERE phone_number = '"+phone_number+"'", function(result) {
+			db.query("SELECT id FROM user WHERE phone_number = '"+phone_number+"'", function(result) {
 				db.query("INSERT INTO login_user (id, user_id, date, time) VALUES ('', "+result[0].id+", '"+middle.getDate()+"', '"+middle.getTime()+"')", function(result) {
 					console.log("Logged in at " + middle.getDate() + " " + middle.getTime());
 				});
@@ -503,46 +503,46 @@ exports.editNews = function(req, res) {
 	});
 }
 
-exports.getOneStream = function(req, res) {
-	db.query("SELECT *, date_format(start_date, '%Y-%m-%d') AS start_date, date_format(end_date, '%Y-%m-%d') AS end_date, date_format(date, '%Y-%m-%d') AS date, date_format(time, '%H:%i:%s') AS time FROM stream WHERE id = "+req.query.id, function(result) {
+exports.getOneWatch = function(req, res) {
+	db.query("SELECT *, date_format(start_date, '%Y-%m-%d') AS start_date, date_format(end_date, '%Y-%m-%d') AS end_date, date_format(date, '%Y-%m-%d') AS date, date_format(time, '%H:%i:%s') AS time FROM watch WHERE id = "+req.query.id, function(result) {
 		res.json(result);
 	});
 }
 
-exports.getStream = function(req, res) {
-	db.query("SELECT *, date_format(start_date, '%Y-%m-%d') AS start_date, date_format(end_date, '%Y-%m-%d') AS end_date, date_format(date, '%Y-%m-%d') AS date, date_format(time, '%H:%i:%s') AS time FROM stream", function(result) {
+exports.getWatch = function(req, res) {
+	db.query("SELECT *, date_format(start_date, '%Y-%m-%d') AS start_date, date_format(end_date, '%Y-%m-%d') AS end_date, date_format(date, '%Y-%m-%d') AS date, date_format(time, '%H:%i:%s') AS time FROM watch", function(result) {
 		res.json(result);
 	});
 }
 
-exports.addStream = function(req, res) {
+exports.addWatch = function(req, res) {
 	var title = req.body.title;
     var start_date = req.body.start_date;
     var end_date = req.body.end_date;
     var video_url = req.body.video_url;
     var point = req.body.point;
     var hot_entertainment = req.body.hot_entertainment;
-    var hot_stream = req.body.hot_stream;
+    var hot_watch = req.body.hot_watch;
     var date = middle.getDate();
     var time = middle.getTime();
 
-	db.query("INSERT INTO stream (id, title, start_date, end_date, video_url, point, hot_entertainment, hot_stream, date, time) VALUES ('', '"+title+"', '"+start_date+"', '"+end_date+"', '"+video_url+"', '"+point+"', "+hot_entertainment+", "+hot_stream+", '"+date+"', '"+time+"')", function(result) {	
+	db.query("INSERT INTO watch (id, title, start_date, end_date, video_url, point, hot_entertainment, hot_watch, date, time) VALUES ('', '"+title+"', '"+start_date+"', '"+end_date+"', '"+video_url+"', '"+point+"', "+hot_entertainment+", "+hot_watch+", '"+date+"', '"+time+"')", function(result) {	
 		res.json(result);
 	});
 }
 
-exports.editStream = function(req, res) {
+exports.editWatch = function(req, res) {
 	var title = req.body.title;
     var start_date = req.body.start_date;
     var end_date = req.body.end_date;
     var video_url = req.body.video_url;
     var point = req.body.point;
     var hot_entertainment = req.body.hot_entertainment;
-    var hot_stream = req.body.hot_stream;
+    var hot_watch = req.body.hot_watch;
     var image = req.body.image;
     var banner = req.body.banner;
 
-	db.query("UPDATE stream SET title = '"+title+"', start_date = '"+start_date+"', end_date = '"+end_date+"', video_url = '"+video_url+"', point = '"+point+"', hot_entertainment = "+hot_entertainment+", hot_stream = "+hot_stream+", image = '"+image+"', banner = '"+banner+"' WHERE id = "+ req.body.id, function(result) {	
+	db.query("UPDATE watch SET title = '"+title+"', start_date = '"+start_date+"', end_date = '"+end_date+"', video_url = '"+video_url+"', point = '"+point+"', hot_entertainment = "+hot_entertainment+", hot_watch = "+hot_watch+", image = '"+image+"', banner = '"+banner+"' WHERE id = "+ req.body.id, function(result) {	
 		res.json(result);
 	});
 }
@@ -686,6 +686,67 @@ exports.editVoucher = function(req, res) {
 	});
 }
 
+exports.getOneSurvey = function(req, res) {
+	db.query("SELECT *, date_format(date, '%Y-%m-%d') AS date, date_format(time, '%H:%i:%s') AS time FROM survey WHERE id = "+req.query.id, function(result) {
+		res.json(result);
+	});
+}
+
+exports.getSurvey = function(req, res) {
+	db.query("SELECT *, date_format(date, '%Y-%m-%d') AS date, date_format(time, '%H:%i:%s') AS time FROM survey", function(result) {
+		res.json(result);
+	});
+}
+
+exports.addSurvey = function(req, res) {
+	var title = req.body.title;
+	var date = middle.getDate();
+    var time = middle.getTime();
+
+	db.query("INSERT INTO survey (id, title, date, time) VALUES ('', '"+title+"', '"+date+"', '"+time+"')", function(result) {	
+		res.json(result);
+	});
+}
+
+exports.editSurvey = function(req, res) {
+	var title = req.body.title;
+
+	db.query("UPDATE survey SET title = '"+title+"' WHERE id = "+ req.body.id, function(result) {	
+		res.json(result);
+	});
+}
+
+exports.getSurveyQuestion = function(req, res) {
+	db.query("SELECT * FROM survey_question", function(result) {
+		res.json(result);
+	});
+}
+
+exports.addSurveyQuestion = function(req, res) {
+	var title = req.body.title;
+	var type = req.body.type;
+    var survey_id = req.body.survey_id;
+
+	db.query("INSERT INTO survey_question (id, title, type, survey_id) VALUES ('', '"+title+"', '"+type+"', "+survey_id+")", function(result) {	
+		res.json(result);
+	});
+}
+
+exports.getSurveyQuestionChoice = function(req, res) {
+	db.query("SELECT * FROM survey_question_choice", function(result) {
+		res.json(result);
+	});
+}
+
+exports.addSurveyQuestionChoice = function(req, res) {
+	var choice = req.body.choice;
+    var survey_question_id = req.body.survey_question_id;
+
+	db.query("INSERT INTO survey_question_choice (id, choice, survey_question_id) VALUES ('', '"+choice+"', "+survey_question_id+")", function(result) {	
+		res.json(result);
+	});
+}
+
 exports.postImage = function(req, res) {
 	if(req.file) {
 		res.json(req.file);
@@ -797,15 +858,27 @@ exports.registerUser = function(req, res) {
 	var date = middle.getDate();
 	var time = middle.getTime();
 
+	//generate refcode
+	var user_refcode = name.substring(0, 3).toLowerCase() + middle.randomNumber(2) + middle.randomChar(2);
+
+	//generate qrcode
+	var qrcode =  '8008' + phone_number.substring(phone_number.length - 4) + middle.randomNumber(8);
+
 	if(login_method == 'manual') {
 		db.query("INSERT INTO user_manual (id, phone_number, email, password, date, time) VALUES ('', '"+phone_number+"', '"+email+"', '"+password+"', '"+date+"', '"+time+"')", function(result) {	
-			db.query("INSERT INTO users (id, phone_number, email, name, login_method, date, time) VALUES ('', '"+phone_number+"', '"+email+"', '"+name+"', '"+login_method+"', '"+date+"', '"+time+"')", function(result) {	
-				res.json(result);
+			db.query("INSERT INTO user (id, phone_number, email, email_verified, name, login_method, date, time) VALUES ('', '"+phone_number+"', '"+email+"', "+email_verified+", '"+name+"', '"+login_method+"', '"+date+"', '"+time+"')", function(result) {	
+				db.query("INSERT INTO refcode_list (id, user_id, user_refcode, date, time) VALUES ('', "+result.insertId+", '"+user_refcode+"', '"+date+"', '"+time+"')", function(result) {	
+					console.log(result);
+				});
+				db.query("INSERT INTO user_qrcode_membership (id, user_id, qrcode, date, time) VALUES ('', "+result.insertId+", '"+qrcode+"', '"+date+"', '"+time+"')", function(result) {	
+					console.log(result);
+					res.json(result);
+				});
 			});
 		});
 	}
 	else {
-		db.query("INSERT INTO users (id, phone_number, email, name, login_method, date, time) VALUES ('', '"+phone_number+"', '"+email+"', '"+name+"', '"+login_method+"', '"+date+"', '"+time+"')", function(result) {	
+		db.query("INSERT INTO user (id, phone_number, email, email_verified, name, login_method, date, time) VALUES ('', '"+phone_number+"', '"+email+"', "+email_verified+", '"+name+"', '"+login_method+"', '"+date+"', '"+time+"')", function(result) {	
 			res.json(result);
 		});
 	}
@@ -924,14 +997,15 @@ exports.getUserGoogle = function(req, res) {
 }
 
 exports.setQrcode = function(req, res) {
-	var qrcode =  '8008' + '9939' + 1 + Math.floor(1000 + Math.random() * 9000);
+	var id = 5;
+
+	var length = 8 - id.toString().length;
+
+	var qrcode =  '8008' + '9939' + id + middle.randomNumber(length);
 	res.json(qrcode);
 }
 
 exports.logout = function(req, res) {
-	db.query("UPDATE admin SET date_logout = '"+middle.getDate()+"', time_logout = '"+middle.getTime()+"' WHERE id = "+sess.user.id, function(result) {
-		console.log("Logged out at " + middle.getDate() + " " + middle.getTime());
-		sess = session;
-		res.json(1);
-	});
+	sess = session;
+	res.json(1);
 }

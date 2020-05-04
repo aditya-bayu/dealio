@@ -24,6 +24,26 @@ exports.getTime = function() {
 	return timeformat;
 }
 
+exports.randomChar = function(length) {
+   var result           = '';
+   var characters       = 'abcdefghijklmnopqrstuvwxyz';
+   var charactersLength = characters.length;
+   for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+   }
+   return result;
+}
+
+exports.randomNumber = function(length) {
+   var result           = '';
+   var characters       = '0123456789';
+   var charactersLength = characters.length;
+   for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+   }
+   return result;
+}
+
 exports.beforeEndPoint = function(req, res, next) { //JWT verification goes here
 	// if(req.path != '/login-admin' && 
 	// 	req.path != '/register-admin' && 
