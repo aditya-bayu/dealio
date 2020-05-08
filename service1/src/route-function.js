@@ -747,6 +747,24 @@ exports.addSurveyQuestionChoice = function(req, res) {
 	});
 }
 
+exports.getSurveyResponse = function(req, res) {
+	db.query("SELECT * FROM survey_response", function(result) {
+		res.json(result);
+	});
+}
+
+exports.addSurveyResponse = function(req, res) {
+	var response = req.body.response;
+	var user_id = req.body.user_id;
+    var survey_question_id = req.body.survey_question_id;
+    var date = middle.getDate();
+    var time = middle.getTime();
+
+	db.query("INSERT INTO survey_response (id, response, user_id, survey_question_id, date, time) VALUES ('', '"+response+"', "+user_id+", "+survey_question_id+", '"+date+"', '"+time+"')", function(result) {	
+		res.json(result);
+	});
+}
+
 exports.postImage = function(req, res) {
 	if(req.file) {
 		res.json(req.file);

@@ -146,6 +146,10 @@ router.route('/get-survey-question-choice').get(function(req, res) {rf.getSurvey
 
 router.route('/add-survey-question-choice').post(function(req, res) {rf.addSurveyQuestionChoice(req, res)});
 
+router.route('/get-survey-response').get(function(req, res) {rf.getSurveyResponse(req, res)});
+
+router.route('/add-survey-response').post(function(req, res) {rf.addSurveyResponse(req, res)});
+
 router.route('/post-image').post(upload.single('image'), function(req, res) {rf.postImage(req, res)});
 
 router.route('/post-banner').post(upload.single('banner'), function(req, res) {rf.postBanner(req, res)});
