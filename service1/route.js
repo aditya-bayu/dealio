@@ -28,6 +28,8 @@ router.route('/login-admin').post(function(req, res) {rf.loginAdmin(req, res)});
 
 router.route('/login-user').post(function(req, res) {rf.loginUser(req, res)});
 
+router.route('/guest').post(function(req, res) {rf.guest(req, res)});
+
 router.route('/get-one-merchant').get(function(req, res) {rf.getOneMerchant(req, res)});
 
 router.route('/get-merchant').get(function(req, res) {rf.getMerchant(req, res)});

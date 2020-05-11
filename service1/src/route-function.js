@@ -77,7 +77,7 @@ exports.loginAdmin = function(req, res) {
 				username: result[0].username,
 				role: 'admin'
 			},'kuda', {expiresIn: '24h'}, (err, token) => {
-	    		res.json({token, response: result[0]});
+	    		res.json(token);
 	      	});
 		}
 		else {
@@ -105,7 +105,7 @@ exports.loginUser = function(req, res) {
 					username: result[0].phone_number,
 					role: 'user'
 				},'kuda', {expiresIn: '24h'}, (err, token) => {
-		    		res.json({token, response: result[0]});
+		    		res.json(token);
 		      	});
 			});
 		}
@@ -114,6 +114,14 @@ exports.loginUser = function(req, res) {
 			res.json(404);
 		}
 	});
+}
+
+exports.guest = function(req, res) {
+	jwt.sign({
+		role: 'guest'
+	},'kuda', {expiresIn: '24h'}, (err, token) => {
+		res.json(token);
+  	});
 }
 
 exports.getOneMerchant = function(req, res) {
@@ -873,6 +881,7 @@ exports.registerUser = function(req, res) {
 	var email = req.body.email;
 	var password = req.body.password;
 	var login_method = req.body.login_method;
+	var email_verified = 0;
 	var date = middle.getDate();
 	var time = middle.getTime();
 
