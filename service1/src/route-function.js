@@ -33,17 +33,53 @@ exports.index = function(req, res) {
 	res.json("Works");
 }
 
+//mobile pulsa production api key - 2175c6e67436dbac217
+
+//ip whitelist backup - 54.210.45.113
+
+//-------mobilepulsa production api-------
+// exports.testMobilePulsa = function(req, res) {
+// 	var path = "https://api.mobilepulsa.net/v1/legacy/index";
+//     var username = "08111804094";
+//     var apikey = "2175c6e67436dbac217";
+//     var ref_id = "test001";
+//     var hp = "32126583320";
+//     var signTxt = md5(username+apikey+ref_id);
+
+// 	request.post(path, {
+// 		json: {
+// 			"commands": "topup",
+// 			"username": username,
+// 			"ref_id": ref_id,
+// 			"hp": hp,
+// 			"pulsa_code": "hpln20000",
+// 			"sign": signTxt,
+// 		}
+// 	},
+// 	function(error, response, body){
+// 			console.log(body);
+// 			res.json(body);	
+// 	});
+// }
+
+
+//--------mobilepulsa development api-------
 exports.testMobilePulsa = function(req, res) {
-	var path = "https://testprepaid.mobilepulsa.net/v1/legacy/index";
+	var path = "https://testpostpaid.mobilepulsa.net/api/v1/bill/check";
     var username = "08111804094";
     var apikey = "8015c4fcdb04df0e";
-    var signTxt = md5(username+apikey+"pl");
+    var ref_id = "test005";
+    var hp = "08111804094";
+    var signTxt = md5(username+apikey+ref_id);
 
 	request.post(path, {
 		json: {
-			"commands": "pricelist",
+			"commands": "inq-pasca",
 			"username": username,
-			"sign": signTxt,
+			"code": "HPTSEL",
+			"ref_id": ref_id,
+			"hp": hp,
+			"sign": signTxt
 		}
 	},
 	function(error, response, body){
@@ -51,6 +87,12 @@ exports.testMobilePulsa = function(req, res) {
 			res.json(body);	
 	});
 }
+
+exports.testMobilePulsaCallback = function(req, res) {
+	console.log(req.body.data);
+	res.json(req.body.data);
+}
+
 
 exports.registerAdmin = function(req, res) {
 	var username = req.body.username;
@@ -894,6 +936,9 @@ exports.registerUser = function(req, res) {
 	if(login_method == 'manual') {
 		db.query("INSERT INTO user_manual (id, phone_number, email, password, date, time) VALUES ('', '"+phone_number+"', '"+email+"', '"+password+"', '"+date+"', '"+time+"')", function(result) {	
 			db.query("INSERT INTO user (id, phone_number, email, email_verified, name, login_method, date, time) VALUES ('', '"+phone_number+"', '"+email+"', "+email_verified+", '"+name+"', '"+login_method+"', '"+date+"', '"+time+"')", function(result) {	
+				db.query("INSERT INTO membership (id, user_id, tier, date, time) VALUES ('', "+result.insertId+", 'silver', '"+date+"', '"+time+"')", function(result) {	
+					console.log(result);
+				});
 				db.query("INSERT INTO refcode_list (id, user_id, user_refcode, date, time) VALUES ('', "+result.insertId+", '"+user_refcode+"', '"+date+"', '"+time+"')", function(result) {	
 					console.log(result);
 				});
@@ -906,7 +951,16 @@ exports.registerUser = function(req, res) {
 	}
 	else {
 		db.query("INSERT INTO user (id, phone_number, email, email_verified, name, login_method, date, time) VALUES ('', '"+phone_number+"', '"+email+"', "+email_verified+", '"+name+"', '"+login_method+"', '"+date+"', '"+time+"')", function(result) {	
-			res.json(result);
+			db.query("INSERT INTO membership (id, user_id, tier, date, time) VALUES ('', "+result.insertId+", 'silver', '"+date+"', '"+time+"')", function(result) {	
+				console.log(result);
+			});
+			db.query("INSERT INTO refcode_list (id, user_id, user_refcode, date, time) VALUES ('', "+result.insertId+", '"+user_refcode+"', '"+date+"', '"+time+"')", function(result) {	
+				console.log(result);
+			});
+			db.query("INSERT INTO user_qrcode_membership (id, user_id, qrcode, date, time) VALUES ('', "+result.insertId+", '"+qrcode+"', '"+date+"', '"+time+"')", function(result) {	
+				console.log(result);
+				res.json(result);
+			});
 		});
 	}
 }

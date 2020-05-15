@@ -22,6 +22,8 @@ router.route('/').get(function(req, res) {rf.index(req, res)});
 
 router.route('/test-mobile-pulsa').get(function(req, res) {rf.testMobilePulsa(req, res)});
 
+router.route('/test-mobile-pulsa/callback').get(function(req, res) {rf.testMobilePulsaCallback(req, res)});
+
 router.route('/register-admin').post(function(req, res) {rf.registerAdmin(req, res)});
 
 router.route('/login-admin').post(function(req, res) {rf.loginAdmin(req, res)});
