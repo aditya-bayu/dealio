@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Session Test</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<div class="wrapper fadeInDown">
+	  	<div id="formContent">
+	    	<!-- Login Form -->
+	    	<div>
+	      		<input type="text" id="login" class="fadeIn second" name="login" placeholder="Username">
+	      		<input type="password" id="password" class="fadeIn third" name="login" placeholder="Password">
+	      		<input type="button" id="submit" class="fadeIn fourth" value="Log In">
+	      		<br>
+	      		<button class="btn btn-primary btn-url" style="display: none">Show URL</button>
+	      		<button class="btn btn-primary btn-logout" style="display: none">Logout</button>
+	    	</div>
+	  	</div>
+	</div>
+	<script src="jquery/jquery.js"></script>
+	<script src="axios/axios.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			if(sessionStorage.getItem('user')) {
+				$('input').hide();
+				$('button').show();
+			}
+			else {
+				$('input').show();
+				$('button').hide();
+			}
+		})
+		$('#submit').click(function() {
+			var username = $('#login').val();
+			var password = $('#password').val();
+
+			axios.post('http://' + window.location.hostname + ':3000/login-admin', {
+				username: username, 
+				password: password
+			}).then(function (response) {
+				if(response.data != 404) {
+					sessionStorage.setItem('user', JSON.stringify(response.data.response));
+					location.reload();
+				}
+		    	else {
+		    		alert("Wrong Login");
+		    	}
+	  		});
+		});
+
+		$('.btn-url').click(function() {
+			alert('https://invol.co/aff_m?offer_id=1940&aff_id=118601&source=deeplink_generator&aff_sub='+JSON.parse(sessionStorage.getItem('user')).id+'&aff_sub5=29078&url=https%3A%2F%2Fwww.matahari.com%2F')
+		});
+
+		$('.btn-logout').click(function() {
+			sessionStorage.clear();
+			location.reload();
+		});
+	</script>
+</body>
+</html>
