@@ -372,7 +372,7 @@ CREATE TABLE `event` (
   `description` text DEFAULT NULL,
   `location` varchar(255) NOT NULL,
   `action` int(11) DEFAULT NULL,
-  `action_link` varchar(255) NOT NULL,
+  `action_link` varchar(255) DEFAULT NULL,
   `audience_id` int(11) NOT NULL,
   `point` int(11) DEFAULT NULL,
   `hot_entertainment` int(11) NOT NULL,
@@ -420,6 +420,67 @@ CREATE TABLE `forget_phone_number` (
 LOCK TABLES `forget_phone_number` WRITE;
 /*!40000 ALTER TABLE `forget_phone_number` DISABLE KEYS */;
 /*!40000 ALTER TABLE `forget_phone_number` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `group_lottery`
+--
+
+DROP TABLE IF EXISTS `group_lottery`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `group_lottery` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `lottery_code` varchar(255) NOT NULL,
+  `user_group_id` int(11) NOT NULL,
+  `date` date NOT NULL,
+  `time` time NOT NULL,
+  `win_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_group_id` (`user_group_id`),
+  KEY `win_id` (`win_id`),
+  CONSTRAINT `group_lottery_ibfk_1` FOREIGN KEY (`user_group_id`) REFERENCES `user_group` (`id`),
+  CONSTRAINT `group_lottery_ibfk_2` FOREIGN KEY (`win_id`) REFERENCES `win` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `group_lottery`
+--
+
+LOCK TABLES `group_lottery` WRITE;
+/*!40000 ALTER TABLE `group_lottery` DISABLE KEYS */;
+/*!40000 ALTER TABLE `group_lottery` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `group_member`
+--
+
+DROP TABLE IF EXISTS `group_member`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `group_member` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `group_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `date` date NOT NULL,
+  `time` time NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `group_id` (`group_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `group_member_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `group_member` (`id`),
+  CONSTRAINT `group_member_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `group_member`
+--
+
+LOCK TABLES `group_member` WRITE;
+/*!40000 ALTER TABLE `group_member` DISABLE KEYS */;
+/*!40000 ALTER TABLE `group_member` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -672,6 +733,9 @@ CREATE TABLE `ocr_ktp_temp` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `image_url` varchar(255) NOT NULL,
+  `status` int(11) NOT NULL,
+  `date` date NOT NULL,
+  `time` time NOT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `ocr_ktp_temp_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
@@ -1002,7 +1066,11 @@ CREATE TABLE `survey` (
   `title` varchar(255) NOT NULL,
   `date` date NOT NULL,
   `time` time NOT NULL,
-  PRIMARY KEY (`id`)
+  `audience_id` int(11) DEFAULT NULL,
+  `point` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `audience_id` (`audience_id`),
+  CONSTRAINT `survey_ibfk_1` FOREIGN KEY (`audience_id`) REFERENCES `audience` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1012,8 +1080,39 @@ CREATE TABLE `survey` (
 
 LOCK TABLES `survey` WRITE;
 /*!40000 ALTER TABLE `survey` DISABLE KEYS */;
-INSERT INTO `survey` VALUES (1,'Test Survey','2020-05-03','14:44:12');
+INSERT INTO `survey` VALUES (1,'Test Survey','2020-05-03','14:44:12',NULL,NULL);
 /*!40000 ALTER TABLE `survey` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `survey_participant`
+--
+
+DROP TABLE IF EXISTS `survey_participant`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `survey_participant` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `survey_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `duration` int(11) NOT NULL,
+  `date` date NOT NULL,
+  `time` time NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `survey_id` (`survey_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `survey_participant_ibfk_1` FOREIGN KEY (`survey_id`) REFERENCES `survey` (`id`),
+  CONSTRAINT `survey_participant_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `survey_participant`
+--
+
+LOCK TABLES `survey_participant` WRITE;
+/*!40000 ALTER TABLE `survey_participant` DISABLE KEYS */;
+/*!40000 ALTER TABLE `survey_participant` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1283,6 +1382,32 @@ LOCK TABLES `user_google` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `user_group`
+--
+
+DROP TABLE IF EXISTS `user_group`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user_group` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `group_name` varchar(255) NOT NULL,
+  `group_point` int(11) NOT NULL,
+  `date` date NOT NULL,
+  `time` time NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user_group`
+--
+
+LOCK TABLES `user_group` WRITE;
+/*!40000 ALTER TABLE `user_group` DISABLE KEYS */;
+/*!40000 ALTER TABLE `user_group` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `user_manual`
 --
 
@@ -1416,6 +1541,7 @@ CREATE TABLE `watch` (
   `point` int(11) DEFAULT NULL,
   `hot_entertainment` int(11) NOT NULL,
   `hot_watch` int(11) NOT NULL,
+  `point_duration` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -1426,7 +1552,7 @@ CREATE TABLE `watch` (
 
 LOCK TABLES `watch` WRITE;
 /*!40000 ALTER TABLE `watch` DISABLE KEYS */;
-INSERT INTO `watch` VALUES (4,'nama stream','2020-04-06','2020-04-09','link video url',NULL,NULL,'2020-04-14','15:25:52',10,0,0),(6,'test stream','2020-04-14','2020-04-18','youtube.com',NULL,NULL,'2020-04-14','15:29:12',500,0,0);
+INSERT INTO `watch` VALUES (4,'nama stream','2020-04-06','2020-04-09','link video url',NULL,NULL,'2020-04-14','15:25:52',10,0,0,0),(6,'test stream','2020-04-14','2020-04-18','youtube.com',NULL,NULL,'2020-04-14','15:29:12',500,0,0,0);
 /*!40000 ALTER TABLE `watch` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1480,4 +1606,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-05-15 15:50:43
+-- Dump completed on 2020-05-22 15:39:00
