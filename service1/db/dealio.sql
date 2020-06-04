@@ -26,7 +26,7 @@ CREATE TABLE `action` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `action_name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -35,7 +35,7 @@ CREATE TABLE `action` (
 
 LOCK TABLES `action` WRITE;
 /*!40000 ALTER TABLE `action` DISABLE KEYS */;
-INSERT INTO `action` VALUES (1,'Install'),(2,'Click through url'),(3,'Upload receipt'),(4,'Watch video'),(5,'Visit web'),(6,'Survey'),(7,'Ref code'),(8,'Take photo/video');
+INSERT INTO `action` VALUES (1,'Install'),(2,'Click through url'),(3,'Upload receipt'),(4,'Watch video'),(5,'Web view'),(6,'Survey'),(7,'Ref code'),(8,'Take photo'),(9,'Take video');
 /*!40000 ALTER TABLE `action` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -52,6 +52,7 @@ CREATE TABLE `admin` (
   `password` varchar(255) NOT NULL,
   `date_login` date DEFAULT NULL,
   `time_login` time DEFAULT NULL,
+  `role` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
@@ -63,7 +64,7 @@ CREATE TABLE `admin` (
 
 LOCK TABLES `admin` WRITE;
 /*!40000 ALTER TABLE `admin` DISABLE KEYS */;
-INSERT INTO `admin` VALUES (1,'dyo','123','2020-05-11','12:16:50'),(2,'ronald','123','2020-05-11','12:13:24'),(5,'james','123',NULL,NULL);
+INSERT INTO `admin` VALUES (1,'dyo','123','2020-05-11','12:16:50',1),(2,'ronald','123','2020-05-11','12:13:24',1),(5,'james','123',NULL,NULL,1);
 /*!40000 ALTER TABLE `admin` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -134,11 +135,11 @@ DROP TABLE IF EXISTS `banner_deals`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `banner_deals` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `campaign_id` int(11) NOT NULL,
+  `campaign_source` varchar(255) NOT NULL,
   `position` int(11) NOT NULL,
   `date` date NOT NULL,
   `time` time NOT NULL,
-  `campaign_id` int(11) NOT NULL,
-  `campaign_source` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -255,7 +256,7 @@ CREATE TABLE `category` (
 
 LOCK TABLES `category` WRITE;
 /*!40000 ALTER TABLE `category` DISABLE KEYS */;
-INSERT INTO `category` VALUES (1,'F&B'),(3,'Health & Beauty'),(4,'Supermarket'),(5,'Accessories, Jewelry and Watches'),(6,'Bag and Shoes'),(7,'Electronic and Gadget'),(8,'Departement Store'),(9,'Fashion and Sport Fashion'),(10,'Hobbies, Gift and Books'),(11,'Home and Furnishing'),(12,'Kids Fashion and Toys'),(13,'Optical Store'),(14,'Service and Travel');
+INSERT INTO `category` VALUES (1,'F&B'),(3,'Beauty and Personal Care'),(4,'Supermarkets, Minimarkets, Convenience Stores'),(5,'Departement Stores'),(6,'Electronics and Gadgets'),(7,'Accessories, Jewelry and Watches'),(8,'Fashion'),(9,'Sports Fashion and Equipments'),(10,'Home and Furnishings'),(11,'Bag and Shoes'),(12,'Travel and Accomodations');
 /*!40000 ALTER TABLE `category` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -732,7 +733,7 @@ DROP TABLE IF EXISTS `ocr_ktp_temp`;
 CREATE TABLE `ocr_ktp_temp` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
-  `image_url` varchar(255) NOT NULL,
+  `image_url` varchar(255) DEFAULT NULL,
   `status` int(11) NOT NULL,
   `date` date NOT NULL,
   `time` time NOT NULL,
@@ -807,29 +808,6 @@ INSERT INTO `otp_regis` VALUES (13,15,'0755','2020-04-13','12:03:21'),(14,16,'03
 UNLOCK TABLES;
 
 --
--- Table structure for table `phone_number_list`
---
-
-DROP TABLE IF EXISTS `phone_number_list`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `phone_number_list` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `phone_number` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `phone_number_list`
---
-
-LOCK TABLES `phone_number_list` WRITE;
-/*!40000 ALTER TABLE `phone_number_list` DISABLE KEYS */;
-/*!40000 ALTER TABLE `phone_number_list` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `point_redeem_history`
 --
 
@@ -847,7 +825,7 @@ CREATE TABLE `point_redeem_history` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `point_redeem_history_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -856,6 +834,7 @@ CREATE TABLE `point_redeem_history` (
 
 LOCK TABLES `point_redeem_history` WRITE;
 /*!40000 ALTER TABLE `point_redeem_history` DISABLE KEYS */;
+INSERT INTO `point_redeem_history` VALUES (1,18,'deals',1,100000,'0000-00-00','15:26:12');
 /*!40000 ALTER TABLE `point_redeem_history` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -887,6 +866,35 @@ CREATE TABLE `point_source` (
 LOCK TABLES `point_source` WRITE;
 /*!40000 ALTER TABLE `point_source` DISABLE KEYS */;
 /*!40000 ALTER TABLE `point_source` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `postpaid`
+--
+
+DROP TABLE IF EXISTS `postpaid`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `postpaid` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `type` varchar(255) NOT NULL,
+  `vendor` varchar(255) DEFAULT NULL,
+  `merchant` varchar(255) DEFAULT NULL,
+  `product_code` varchar(255) DEFAULT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `product_value` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=143 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `postpaid`
+--
+
+LOCK TABLES `postpaid` WRITE;
+/*!40000 ALTER TABLE `postpaid` DISABLE KEYS */;
+INSERT INTO `postpaid` VALUES (3,'Electricity PostPaid','MobilePulsa','PLN','PLNPOSTPAID',NULL,'PLN POSTPAID'),(4,'Electricity PostPaid','MobilePulsa','PLN','PLNPOSTPAIDB',NULL,'PLN POSTPAID'),(5,'Electricity PostPaid','MobilePulsa','GAS','PGAS',NULL,'PGN'),(6,'Phone PostPaid','MobilePulsa','Indosat','HPMTRIX',NULL,'MATRIX'),(7,'Phone PostPaid','MobilePulsa','Indosat','HPMTRIXB',NULL,'MATRIX B'),(8,'Phone PostPaid','MobilePulsa','SmartFren','HPSMART',NULL,'SMARTFREN POSTPAID'),(9,'Phone PostPaid','MobilePulsa','Three','HPTHREE',NULL,'THREE POSTPAID'),(10,'Phone PostPaid','MobilePulsa','Three','HPTHREEB',NULL,'THREE POSTPAID'),(11,'Phone PostPaid','MobilePulsa','Telkomsel Halo','HPTSEL',NULL,'HALO POSTPAID -2'),(12,'Phone PostPaid','MobilePulsa','Telkomsel Halo','HPTSELB',NULL,'HALO POSTPAID'),(13,'Phone PostPaid','MobilePulsa','Telkomsel Halo','HPTSELD',NULL,'HALO POSTPAID'),(14,'Phone PostPaid','MobilePulsa','XL','HPXL',NULL,'XL POSTPAID'),(15,'TV Cable Post Paid','MobilePulsa','Big TV','TVBIG',NULL,'BIG TV'),(16,'TV Cable Post Paid','MobilePulsa','FirstMedia','TVFIRST',NULL,'FIRSTMEDIA'),(17,'TV Cable Post Paid','MobilePulsa','Indovision','TVINDVS',NULL,'INDOVISION'),(18,'TV Cable Post Paid','MobilePulsa','Nex Media','TVNEX',NULL,'NEX MEDIA'),(19,'TV Cable Post Paid','MobilePulsa','Telkomvision','TVTLKMV',NULL,'TELKOMVISION'),(20,'Internet Cable Post Paid','MobilePulsa','My Republic','MYREPUBLIC',NULL,'MYREPRETAIL'),(21,'Internet Cable Post Paid','MobilePulsa','Indihome Speedy','SPEEDY',NULL,'INDIHOME (SPEEDY)'),(22,'BPJS Post Paid','MobilePulsa','BPJS Kesehatan','BPJS',NULL,'BPJS KESEHATAN'),(23,'BPJS Post Paid','MobilePulsa','BPJS Ketenagakerjaan','BPJSTK',NULL,'BPJS KETENAGAKERJAAN'),(24,'PDAM','MobilePulsa','undefined','AETRA',NULL,'AETRA'),(25,'PDAM','MobilePulsa','undefined','PALYJA',NULL,'PALYJA JAKARTA'),(26,'PDAM','MobilePulsa','undefined','PAM.ATBBATAM',NULL,'PAM ATB BATAM'),(27,'PDAM','MobilePulsa','undefined','PDAM.ATSPALEMBANG',NULL,'PDAM ATS PALEMBANG'),(28,'PDAM','MobilePulsa','undefined','PDAM.BATANG',NULL,'PDAM KABUPATEN BATANG'),(29,'PDAM','MobilePulsa','undefined','PDAM.INTANBANJAR',NULL,'PDAM INTAN BANJAR'),(30,'PDAM','MobilePulsa','undefined','PDAM.KERINCI',NULL,'PDAM TIRTA KHAYANGAN (KOTA SUNGAI PENUH)'),(31,'PDAM','MobilePulsa','undefined','PDAM.LAMPUNG',NULL,'PDAM LAMPUNG'),(32,'PDAM','MobilePulsa','undefined','PDAM.MATARAM',NULL,'PDAM GIRI MENANG MATARAM'),(33,'PDAM','MobilePulsa','undefined','PDAM.PANGKALANBUN',NULL,'PDAM PANGKALAN BUN(KOTAWARINGIN BARAT)'),(34,'PDAM','MobilePulsa','undefined','PDAM.TIRTANADIMEDAN',NULL,'PDAM TIRTANADI MEDAN'),(35,'PDAM','MobilePulsa','undefined','PDAMKAB.BADUNG',NULL,'PDAM KABUPATEN BADUNG'),(36,'PDAM','MobilePulsa','undefined','PDAMKAB.BALANGAN',NULL,'PDAM KABUPATEN BALANGAN (KALSEL)'),(37,'PDAM','MobilePulsa','undefined','PDAMKAB.BANDUNG',NULL,'PDAM KABUPATEN BANDUNG B'),(38,'PDAM','MobilePulsa','undefined','PDAMKAB.BANDUNGBARAT',NULL,'PDAM KABUPATEN BANDUNG BARAT'),(39,'PDAM','MobilePulsa','undefined','PDAMKAB.BANGKALAN',NULL,'PDAM KABUPATEN BANGKALAN (JATIM)'),(40,'PDAM','MobilePulsa','undefined','PDAMKAB.BANYUMAS',NULL,'PDAM KABUPATEN BANYUMAS'),(41,'PDAM','MobilePulsa','undefined','PDAMKAB.BANYUWANGI',NULL,'PDAM KABUPATEN BANYUWANGI'),(42,'PDAM','MobilePulsa','undefined','PDAMKAB.BARABAI',NULL,'PDAM KABUPATEN BARABAI'),(43,'PDAM','MobilePulsa','undefined','PDAMKAB.BATANG',NULL,'PDAM KABUPATEN BATANG'),(44,'PDAM','MobilePulsa','undefined','PDAMKAB.BERAU',NULL,'PDAM KABUPATEN BERAU'),(45,'PDAM','MobilePulsa','undefined','PDAMKAB.BLORA',NULL,'PDAM KABUPATEN BLORA'),(46,'PDAM','MobilePulsa','undefined','PDAMKAB.BOGOR',NULL,'PDAM KABUPATEN BOGOR (JABAR)'),(47,'PDAM','MobilePulsa','undefined','PDAMKAB.BOJONEGORO',NULL,'PDAM KABUPATEN BOJONEGORO (JATIM)'),(48,'PDAM','MobilePulsa','undefined','PDAMKAB.BONDOWOSO',NULL,'PDAM KABUPATEN BONDOWOSO (JATIM)'),(49,'PDAM','MobilePulsa','undefined','PDAMKAB.BOYOLALI',NULL,'PDAM KABUPATEN BOYOLALI'),(50,'PDAM','MobilePulsa','undefined','PDAMKAB.BREBES',NULL,'PDAM KABUPATEN BREBES'),(51,'PDAM','MobilePulsa','undefined','PDAMKAB.BULELENG',NULL,'PDAM KABUPATEN BULELENG (BALI)'),(52,'PDAM','MobilePulsa','undefined','PDAMKAB.CIAMIS',NULL,'PDAM KABUPATEN CIAMIS'),(53,'PDAM','MobilePulsa','undefined','PDAMKAB.CIANJUR',NULL,'PDAM KABUPATEN CIANJUR'),(54,'PDAM','MobilePulsa','undefined','PDAMKAB.CILACAP',NULL,'PDAM KABUPATEN CILACAP'),(55,'PDAM','MobilePulsa','undefined','PDAMKAB.CIREBON',NULL,'PDAM KABUPATEN CIREBON'),(56,'PDAM','MobilePulsa','undefined','PDAMKAB.DEMAK',NULL,'PDAM KABUPATEN DEMAK'),(57,'PDAM','MobilePulsa','undefined','PDAMKAB.GARUT',NULL,'PDAM TIRTA INTAN KABUPATEN GARUT'),(58,'PDAM','MobilePulsa','undefined','PDAMKAB.GRESIK',NULL,'PDAM KABUPATEN GRESIK'),(59,'PDAM','MobilePulsa','undefined','PDAMKAB.GROBOGAN',NULL,'PDAM KABUPATEN GROBOGAN'),(60,'PDAM','MobilePulsa','undefined','PDAMKAB.INDRAMAYU',NULL,'PDAM KABUPATEN INDRAMAYU'),(61,'PDAM','MobilePulsa','undefined','PDAMKAB.JEMBER',NULL,'PDAM KABUPATEN JEMBER (JATIM)'),(62,'PDAM','MobilePulsa','undefined','PDAMKAB.JEPARA',NULL,'PDAM KABUPATEN JEPARA'),(63,'PDAM','MobilePulsa','undefined','PDAMKAB.JOMBANG',NULL,'PDAM KABUPATEN JOMBANG'),(64,'PDAM','MobilePulsa','undefined','PDAMKAB.KARANGANYAR',NULL,'PDAM KABUPATEN KARANGANYAR'),(65,'PDAM','MobilePulsa','undefined','PDAMKAB.KARAWANG',NULL,'PDAM KABUPATEN KARAWANG'),(66,'PDAM','MobilePulsa','undefined','PDAMKAB.KEBUMEN',NULL,'PDAM KABUPATEN KEBUMEN'),(67,'PDAM','MobilePulsa','undefined','PDAMKAB.KENDAL',NULL,'PDAM KABUPATEN KENDAL'),(68,'PDAM','MobilePulsa','undefined','PDAMKAB.KISARAN',NULL,'PDAM KABUPATEN KISARAN'),(69,'PDAM','MobilePulsa','undefined','PDAMKAB.KLATEN',NULL,'PDAM KABUPATEN KLATEN'),(70,'PDAM','MobilePulsa','undefined','PDAMKAB.KLUNGKUNG',NULL,'PDAM KABUPATEN KLUNGKUNG'),(71,'PDAM','MobilePulsa','undefined','PDAMKAB.KUBURAYA',NULL,'PDAM KABUPATEN KUBU RAYA'),(72,'PDAM','MobilePulsa','undefined','PDAMKAB.KULONPROGO',NULL,'PDAM KABUPATEN KULONPROGO'),(73,'PDAM','MobilePulsa','undefined','PDAMKAB.KUNINGAN',NULL,'PDAM KABUPATEN KUNINGAN'),(74,'PDAM','MobilePulsa','undefined','PDAMKAB.LOMBOKTENGAH',NULL,'PDAM KABUPATEN LOMBOK TENGAH'),(75,'PDAM','MobilePulsa','undefined','PDAMKAB.LUMAJANG',NULL,'PDAM KABUPATEN LUMAJANG'),(76,'PDAM','MobilePulsa','undefined','PDAMKAB.MALANG',NULL,'PDAM KABUPATEN MALANG'),(77,'PDAM','MobilePulsa','undefined','PDAMKAB.MAMUJU',NULL,'PDAM KABUPATEN MAMUJU'),(78,'PDAM','MobilePulsa','undefined','PDAMKAB.MOJOKERTO',NULL,'PDAM KABUPATEN MOJOKERTO (JATIM)'),(79,'PDAM','MobilePulsa','undefined','PDAMKAB.NIAS',NULL,'PDAM KABUPATEN NIAS'),(80,'PDAM','MobilePulsa','undefined','PDAMKAB.PASAMAN',NULL,'PDAM KABUPATEN PASAMAN'),(81,'PDAM','MobilePulsa','undefined','PDAMKAB.PASER',NULL,'PDAM KABUPATEN PASER'),(82,'PDAM','MobilePulsa','undefined','PDAMKAB.PATI',NULL,'PDAM KABUPATEN PATI'),(83,'PDAM','MobilePulsa','undefined','PDAMKAB.PEKALONGAN',NULL,'PDAM KABUPATEN PEKALONGAN'),(84,'PDAM','MobilePulsa','undefined','PDAMKAB.POLEWALIMANDAR',NULL,'PDAM KABUPATEN POLEWALI MANDAR'),(85,'PDAM','MobilePulsa','undefined','PDAMKAB.PONOROGO',NULL,'PDAM KABUPATEN PONOROGO'),(86,'PDAM','MobilePulsa','undefined','PDAMKAB.PROBOLINGGO',NULL,'PDAM KABUPATEN PROBOLINGGO'),(87,'PDAM','MobilePulsa','undefined','PDAMKAB.PURBALINGGAB',NULL,'PDAM KABUPATEN PURBALINGGA'),(88,'PDAM','MobilePulsa','undefined','PDAMKAB.PURWOREJO',NULL,'PDAM KABUPATEN PURWOREJO'),(89,'PDAM','MobilePulsa','undefined','PDAMKAB.REMBANG',NULL,'PDAM KABUPATEN REMBANG'),(90,'PDAM','MobilePulsa','undefined','PDAMKAB.SAMPANG',NULL,'PDAM KABUPATEN SAMPANG'),(91,'PDAM','MobilePulsa','undefined','PDAMKAB.SEMARANG',NULL,'PDAM KABUPATEN SEMARANG'),(92,'PDAM','MobilePulsa','undefined','PDAMKAB.SIDOARJO',NULL,'PDAM KABUPATEN SIDOARJO (JATIM)'),(93,'PDAM','MobilePulsa','undefined','PDAMKAB.SITUBONDO',NULL,'PDAM KABUPATEN SITUBONDO (JATIM)'),(94,'PDAM','MobilePulsa','undefined','PDAMKAB.SLEMAN',NULL,'PDAM KABUPATEN SLEMAN'),(95,'PDAM','MobilePulsa','undefined','PDAMKAB.SUBANG',NULL,'PDAM KABUPATEN SUBANG'),(96,'PDAM','MobilePulsa','undefined','PDAMKAB.SUKABUMI',NULL,'PDAM KABUPATEN SUKABUMI'),(97,'PDAM','MobilePulsa','undefined','PDAMKAB.SUKOHARJO',NULL,'PDAM KABUPATEN SUKOHARJO'),(98,'PDAM','MobilePulsa','undefined','PDAMKAB.SUMEDANG',NULL,'PDAM KABUPATEN SUMEDANG'),(99,'PDAM','MobilePulsa','undefined','PDAMKAB.TAKALAR',NULL,'PDAM KABUPATEN TAKALAR'),(100,'PDAM','MobilePulsa','undefined','PDAMKAB.TAPIN',NULL,'PDAM KABUPATEN TAPIN (KALSEL)'),(101,'PDAM','MobilePulsa','undefined','PDAMKAB.TASIKMALAYA',NULL,'PDAM KABUPATEN TASIKMALAYA'),(102,'PDAM','MobilePulsa','undefined','PDAMKAB.TEGAL',NULL,'PDAM KABUPATEN TEGAL'),(103,'PDAM','MobilePulsa','undefined','PDAMKAB.TEMANGGUNG',NULL,'PDAM KABUPATEN TEMANGGUNG'),(104,'PDAM','MobilePulsa','undefined','PDAMKAB.WONOGIRI',NULL,'PDAM KABUPATEN WONOGIRI'),(105,'PDAM','MobilePulsa','undefined','PDAMKAB.WONOSOBO',NULL,'PDAM KABUPATEN WONOSOBO'),(106,'PDAM','MobilePulsa','undefined','PDAMKOTA.BALIKPAPAN',NULL,'PDAM KOTA BALIKPAPAN'),(107,'PDAM','MobilePulsa','undefined','PDAMKOTA.BANDARLAMPUNG',NULL,'PDAM KOTA BANDAR LAMPUNG'),(108,'PDAM','MobilePulsa','undefined','PDAMKOTA.BANDUNG',NULL,'PDAM KOTA BANDUNG'),(109,'PDAM','MobilePulsa','undefined','PDAMKOTA.BANDUNGB',NULL,'PDAM KOTA BANDUNG'),(110,'PDAM','MobilePulsa','undefined','PDAMKOTA.BANJAR',NULL,'PDAM KOTA BANJAR'),(111,'PDAM','MobilePulsa','undefined','PDAMKOTA.BANJARMASIN',NULL,'PDAM KOTA BANJARMASIN'),(112,'PDAM','MobilePulsa','undefined','PDAMKOTA.BEKASI',NULL,'PDAM KOTA BEKASI'),(113,'PDAM','MobilePulsa','undefined','PDAMKOTA.BOGOR',NULL,'PDAM KOTA BOGOR'),(114,'PDAM','MobilePulsa','undefined','PDAMKOTA.CIREBON',NULL,'PDAM KOTA CIREBON'),(115,'PDAM','MobilePulsa','undefined','PDAMKOTA.DENPASAR',NULL,'PDAM KOTA DENPASAR'),(116,'PDAM','MobilePulsa','undefined','PDAMKOTA.DEPOK',NULL,'PDAM KOTA DEPOK'),(117,'PDAM','MobilePulsa','undefined','PDAMKOTA.JAYAPURA',NULL,'PDAM KOTA JAYAPURA'),(118,'PDAM','MobilePulsa','undefined','PDAMKOTA.KEDIRI',NULL,'PDAM KOTA KEDIRI'),(119,'PDAM','MobilePulsa','undefined','PDAMKOTA.MADIUN',NULL,'PDAM KOTA MADIUN'),(120,'PDAM','MobilePulsa','undefined','PDAMKOTA.MAKASSAR',NULL,'PDAM KOTA MAKASSAR'),(121,'PDAM','MobilePulsa','undefined','PDAMKOTA.MALANG',NULL,'PDAM KOTA MALANG'),(122,'PDAM','MobilePulsa','undefined','PDAMKOTA.MALANGB',NULL,'PDAM KOTA MALANG'),(123,'PDAM','MobilePulsa','undefined','PDAMKOTA.MANADO',NULL,'PDAM KOTA MANADO (SULUT)'),(124,'PDAM','MobilePulsa','undefined','PDAMKOTA.MATARAM',NULL,'PDAM KOTA MATARAM (NTB)'),(125,'PDAM','MobilePulsa','undefined','PDAMKOTA.MEDAN',NULL,'PDAM KOTA MEDAN (SUMUT)'),(126,'PDAM','MobilePulsa','undefined','PDAMKOTA.PALEMBANG',NULL,'PDAM KOTA PALEMBANG'),(127,'PDAM','MobilePulsa','undefined','PDAMKOTA.PASURUAN',NULL,'PDAM KOTA PASURUAN (JATIM)'),(128,'PDAM','MobilePulsa','undefined','PDAMKOTA.PONTIANAK',NULL,'PDAM KOTA PONTIANAK'),(129,'PDAM','MobilePulsa','undefined','PDAMKOTA.PROBOLINGGO',NULL,'PDAM KOTA PROBOLINGGO'),(130,'PDAM','MobilePulsa','undefined','PDAMKOTA.SALATIGA',NULL,'PDAM KOTA SALATIGA'),(131,'PDAM','MobilePulsa','undefined','PDAMKOTA.SAMARINDA',NULL,'PDAM KOTA SAMARINDA'),(132,'PDAM','MobilePulsa','undefined','PDAMKOTA.SEMARANG',NULL,'PDAM KOTA SEMARANG (JATENG)'),(133,'PDAM','MobilePulsa','undefined','PDAMKOTA.SUKABUMI',NULL,'PDAM KOTA SUKABUMI'),(134,'PDAM','MobilePulsa','undefined','PDAMKOTA.SURABAYA',NULL,'PDAM KOTA SURABAYA'),(135,'PDAM','MobilePulsa','undefined','PDAMKOTA.SURAKARTA',NULL,'PDAM KOTA SURAKARTA'),(136,'PDAM','MobilePulsa','undefined','PDAMKOTA.TANGERANG',NULL,'PDAM TB KOTA TANGERANG'),(137,'PDAM','MobilePulsa','undefined','PDAMKOTA.TEGAL',NULL,'PDAM KOTA TEGAL'),(138,'PDAM','MobilePulsa','undefined','WABANJAR',NULL,'PDAM KOTA BANJAR'),(139,'PDAM','MobilePulsa','undefined','WABDG',NULL,'PDAM KABUPATEN BANDUNG'),(140,'PDAM','MobilePulsa','undefined','WABEKASI',NULL,'PDAM KOTA BEKASI'),(141,'PDAM','MobilePulsa','undefined','WACLCP',NULL,'PDAM KABUPATEN CILACAP'),(142,'PDAM','MobilePulsa','undefined','WAJPR',NULL,'PDAM KABUPATEN JEPARA');
+/*!40000 ALTER TABLE `postpaid` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -947,15 +955,15 @@ DROP TABLE IF EXISTS `refcode_input`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `refcode_input` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `refcode_list_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
   `regis_phone_number_id` int(11) NOT NULL,
   `date` date NOT NULL,
   `time` time NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `refcode_list_id` (`refcode_list_id`),
+  KEY `refcode_list_id` (`user_id`),
   KEY `phone_id` (`regis_phone_number_id`),
-  CONSTRAINT `refcode_input_ibfk_1` FOREIGN KEY (`refcode_list_id`) REFERENCES `refcode_list` (`id`),
-  CONSTRAINT `refcode_input_ibfk_2` FOREIGN KEY (`regis_phone_number_id`) REFERENCES `regis_phone_number` (`id`)
+  CONSTRAINT `refcode_input_ibfk_2` FOREIGN KEY (`regis_phone_number_id`) REFERENCES `regis_phone_number` (`id`),
+  CONSTRAINT `refcode_input_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -966,35 +974,6 @@ CREATE TABLE `refcode_input` (
 LOCK TABLES `refcode_input` WRITE;
 /*!40000 ALTER TABLE `refcode_input` DISABLE KEYS */;
 /*!40000 ALTER TABLE `refcode_input` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `refcode_list`
---
-
-DROP TABLE IF EXISTS `refcode_list`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `refcode_list` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `user_refcode` varchar(255) NOT NULL,
-  `date` date NOT NULL,
-  `time` time NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  CONSTRAINT `refcode_list_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `refcode_list`
---
-
-LOCK TABLES `refcode_list` WRITE;
-/*!40000 ALTER TABLE `refcode_list` DISABLE KEYS */;
-INSERT INTO `refcode_list` VALUES (3,18,'han42bk','2020-04-27','14:56:11'),(4,19,'adi89jm','2020-05-11','13:48:29');
-/*!40000 ALTER TABLE `refcode_list` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1064,10 +1043,11 @@ DROP TABLE IF EXISTS `survey`;
 CREATE TABLE `survey` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
-  `date` date NOT NULL,
-  `time` time NOT NULL,
   `audience_id` int(11) DEFAULT NULL,
   `point` int(11) DEFAULT NULL,
+  `prods` int(11) NOT NULL,
+  `date` date NOT NULL,
+  `time` time NOT NULL,
   PRIMARY KEY (`id`),
   KEY `audience_id` (`audience_id`),
   CONSTRAINT `survey_ibfk_1` FOREIGN KEY (`audience_id`) REFERENCES `audience` (`id`)
@@ -1080,7 +1060,7 @@ CREATE TABLE `survey` (
 
 LOCK TABLES `survey` WRITE;
 /*!40000 ALTER TABLE `survey` DISABLE KEYS */;
-INSERT INTO `survey` VALUES (1,'Test Survey','2020-05-03','14:44:12',NULL,NULL);
+INSERT INTO `survey` VALUES (1,'Test Survey',NULL,NULL,0,'2020-05-03','14:44:12');
 /*!40000 ALTER TABLE `survey` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1098,6 +1078,8 @@ CREATE TABLE `survey_participant` (
   `duration` int(11) NOT NULL,
   `date` date NOT NULL,
   `time` time NOT NULL,
+  `status` varchar(255) NOT NULL,
+  `checkpoint` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `survey_id` (`survey_id`),
   KEY `user_id` (`user_id`),
@@ -1124,9 +1106,13 @@ DROP TABLE IF EXISTS `survey_question`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `survey_question` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `question` varchar(255) NOT NULL,
-  `type` varchar(255) NOT NULL,
   `survey_id` int(11) NOT NULL,
+  `question` varchar(255) NOT NULL,
+  `image_link` varchar(255) DEFAULT NULL,
+  `video_link` varchar(255) DEFAULT NULL,
+  `type` varchar(255) NOT NULL,
+  `notes` text DEFAULT NULL,
+  `important` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `survey_id` (`survey_id`),
   CONSTRAINT `survey_question_ibfk_1` FOREIGN KEY (`survey_id`) REFERENCES `survey` (`id`)
@@ -1139,7 +1125,7 @@ CREATE TABLE `survey_question` (
 
 LOCK TABLES `survey_question` WRITE;
 /*!40000 ALTER TABLE `survey_question` DISABLE KEYS */;
-INSERT INTO `survey_question` VALUES (1,'Seberapa tertarik anda dengan aplikasi Dealio?','multiple',1),(2,'Apakah hobby anda?','fill',1);
+INSERT INTO `survey_question` VALUES (1,1,'Seberapa tertarik anda dengan aplikasi Dealio?',NULL,NULL,'multiple',NULL,0),(2,1,'Apakah hobby anda?',NULL,NULL,'fill',NULL,0);
 /*!40000 ALTER TABLE `survey_question` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1154,6 +1140,7 @@ CREATE TABLE `survey_question_choice` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `survey_question_id` int(11) NOT NULL,
   `choice` varchar(255) NOT NULL,
+  `image_link` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `survey_question_id` (`survey_question_id`),
   CONSTRAINT `survey_question_choice_ibfk_1` FOREIGN KEY (`survey_question_id`) REFERENCES `survey_question` (`id`)
@@ -1166,7 +1153,7 @@ CREATE TABLE `survey_question_choice` (
 
 LOCK TABLES `survey_question_choice` WRITE;
 /*!40000 ALTER TABLE `survey_question_choice` DISABLE KEYS */;
-INSERT INTO `survey_question_choice` VALUES (1,1,'Sangat Tertarik'),(2,1,'Tertarik'),(3,1,'Tidak Tertarik'),(4,1,'Sangat Tidak Tertarik');
+INSERT INTO `survey_question_choice` VALUES (1,1,'Sangat Tertarik',NULL),(2,1,'Tertarik',NULL),(3,1,'Tidak Tertarik',NULL),(4,1,'Sangat Tidak Tertarik',NULL);
 /*!40000 ALTER TABLE `survey_question_choice` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1180,8 +1167,8 @@ DROP TABLE IF EXISTS `survey_response`;
 CREATE TABLE `survey_response` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `survey_question_id` int(11) NOT NULL,
-  `response` varchar(255) NOT NULL,
   `user_id` int(11) NOT NULL,
+  `response` varchar(255) NOT NULL,
   `date` date NOT NULL,
   `time` time NOT NULL,
   PRIMARY KEY (`id`),
@@ -1247,6 +1234,7 @@ CREATE TABLE `user` (
   `email_verified` int(11) NOT NULL,
   `active` int(11) NOT NULL,
   `ktp_url` varchar(255) DEFAULT NULL,
+  `refcode` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -1257,7 +1245,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (6,'Giles Adam Taarland','gilesttmt@gmail.com','087771805500','2020-04-13','12:03:53','manual',0,1,NULL),(7,'Septian Ade','@adeseptian7@gmail.com','081381085380','2020-04-13','12:23:14','manual',0,1,NULL),(8,'Gunawan','gunawanbayu98@gmail.com','081806802482','2020-04-13','13:56:22','manual',0,1,NULL),(9,'Philip Barton','bartonjakarta@gmail.com','081283386332','2020-04-13','13:59:05','manual',0,1,NULL),(10,'Syifa Abdurrozak','iheh69@gmail.com','085323991877','2020-04-13','13:59:13','manual',0,1,NULL),(11,'Darren ','Darren@digitalvisionpublishing.com ','087878752519','2020-04-13','14:01:43','manual',0,1,NULL),(12,'Desi widiastuti','deswidia@gmail.com','081398769737','2020-04-13','14:05:05','manual',0,1,NULL),(18,'Hanindyo Herbowo','hanindyo.herbowo@gmail.com','082299392596','2020-04-27','14:56:11','manual',0,1,NULL),(19,'Aditya Bayu','adit@gmail.com','085782241627','2020-05-11','13:48:29','manual',0,0,NULL);
+INSERT INTO `user` VALUES (6,'Giles Adam Taarland','gilesttmt@gmail.com','087771805500','2020-04-13','12:03:53','manual',0,1,NULL,''),(7,'Septian Ade','@adeseptian7@gmail.com','081381085380','2020-04-13','12:23:14','manual',0,1,NULL,''),(8,'Gunawan','gunawanbayu98@gmail.com','081806802482','2020-04-13','13:56:22','manual',0,1,NULL,''),(9,'Philip Barton','bartonjakarta@gmail.com','081283386332','2020-04-13','13:59:05','manual',0,1,NULL,''),(10,'Syifa Abdurrozak','iheh69@gmail.com','085323991877','2020-04-13','13:59:13','manual',0,1,NULL,''),(11,'Darren ','Darren@digitalvisionpublishing.com ','087878752519','2020-04-13','14:01:43','manual',0,1,NULL,''),(12,'Desi widiastuti','deswidia@gmail.com','081398769737','2020-04-13','14:05:05','manual',0,1,NULL,''),(18,'Hanindyo Herbowo','hanindyo.herbowo@gmail.com','082299392596','2020-04-27','14:56:11','manual',0,1,NULL,'han24bk'),(19,'Aditya Bayu','adit@gmail.com','085782241627','2020-05-11','13:48:29','manual',0,0,NULL,'');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1288,6 +1276,35 @@ CREATE TABLE `user_click` (
 LOCK TABLES `user_click` WRITE;
 /*!40000 ALTER TABLE `user_click` DISABLE KEYS */;
 /*!40000 ALTER TABLE `user_click` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `user_click_action`
+--
+
+DROP TABLE IF EXISTS `user_click_action`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user_click_action` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `date` date NOT NULL,
+  `time` time NOT NULL,
+  `campaign_id` int(11) NOT NULL,
+  `campaign_source` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `user_click_action_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user_click_action`
+--
+
+LOCK TABLES `user_click_action` WRITE;
+/*!40000 ALTER TABLE `user_click_action` DISABLE KEYS */;
+/*!40000 ALTER TABLE `user_click_action` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1449,7 +1466,7 @@ CREATE TABLE `user_point` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `user_point_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1458,6 +1475,7 @@ CREATE TABLE `user_point` (
 
 LOCK TABLES `user_point` WRITE;
 /*!40000 ALTER TABLE `user_point` DISABLE KEYS */;
+INSERT INTO `user_point` VALUES (1,18,100000);
 /*!40000 ALTER TABLE `user_point` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1606,4 +1624,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-05-22 15:39:00
+-- Dump completed on 2020-06-04 15:46:37
