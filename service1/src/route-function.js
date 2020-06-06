@@ -88,11 +88,25 @@ exports.testMobilePulsa = function(req, res) {
 	});
 }
 
-exports.testMobilePulsaCallback = function(req, res) {
-	console.log(req.body.data);
-	res.json(req.body.data);
-}
+exports.testXendit = function(req, res) {
+	var path = "https://api.xendit.co/callback_virtual_accounts";
 
+	request.post(path, {
+		headers: {
+			'Authorization': 'Basic eG5kX2RldmVsb3BtZW50X3VSMXAyTlM3c0VieDQwQ0x3MXdGZUplemhaQkFSN0tlV0dBbVdtM2tYWEgwNVlYOWtMWkhpSTk4cXV0eXNlSTo='
+		},
+		json: {
+			"external_id": "dyo_test_1",
+		   	"bank_code": "BCA",
+		   	"name": "Hanindyo Herbowo",
+		   	"expected_amount": 20000
+		}
+	},
+	function(error, response, body){
+			console.log(body);
+			res.json(body);	
+	});
+}
 
 exports.registerAdmin = function(req, res) {
 	var username = req.body.username;
@@ -118,7 +132,7 @@ exports.loginAdmin = function(req, res) {
 				id: result[0].id,
 				username: result[0].username,
 				role: 'admin'
-			},'kuda', {expiresIn: '24h'}, (err, token) => {
+			},'ini3rH2LlkfGBX8QvHZ1', {expiresIn: '24h'}, (err, token) => {
 	    		res.json(token);
 	      	});
 		}
@@ -133,35 +147,47 @@ exports.loginUser = function(req, res) {
 	var phone_number = req.body.phone_number;
 	var password = req.body.password;
 
-	db.query("SELECT * FROM user_manual WHERE phone_number = '"+phone_number+"' AND password = '"+password+"'", function(result) {
-		if(result.length) {
-			sess.user = result[0];
+	if(req.params.refresher) {
+		jwt.sign({
+			id: result[0].id,
+			username: result[0].phone_number,
+			role: 'user'
+		},'ini3rH2LlkfGBX8QvHZ1', {expiresIn: '24h'}, (err, token) => {
+    		res.json(token);
+      	});
+	}
 
-			db.query("SELECT id FROM user WHERE phone_number = '"+phone_number+"'", function(result) {
-				db.query("INSERT INTO login_user (id, user_id, date, time) VALUES ('', "+result[0].id+", '"+middle.getDate()+"', '"+middle.getTime()+"')", function(result) {
-					console.log("Logged in at " + middle.getDate() + " " + middle.getTime());
+	else {
+		db.query("SELECT * FROM user_manual WHERE phone_number = '"+phone_number+"' AND password = '"+password+"'", function(result) {
+			if(result.length) {
+				sess.user = result[0];
+
+				db.query("SELECT id FROM user WHERE phone_number = '"+phone_number+"'", function(result) {
+					db.query("INSERT INTO login_user (id, user_id, date, time) VALUES ('', "+result[0].id+", '"+middle.getDate()+"', '"+middle.getTime()+"')", function(result) {
+						console.log("Logged in at " + middle.getDate() + " " + middle.getTime());
+					});
+
+					jwt.sign({
+						id: result[0].id,
+						username: result[0].phone_number,
+						role: 'user'
+					},'ini3rH2LlkfGBX8QvHZ1', {expiresIn: '24h'}, (err, token) => {
+			    		res.json(token);
+			      	});
 				});
-
-				jwt.sign({
-					id: result[0].id,
-					username: result[0].phone_number,
-					role: 'user'
-				},'kuda', {expiresIn: '24h'}, (err, token) => {
-		    		res.json(token);
-		      	});
-			});
-		}
-		else {
-			console.log(404);
-			res.json(404);
-		}
-	});
+			}
+			else {
+				console.log(404);
+				res.json(404);
+			}
+		});
+	}
 }
 
-exports.guest = function(req, res) {
+exports.loginGuest = function(req, res) {
 	jwt.sign({
 		role: 'guest'
-	},'kuda', {expiresIn: '24h'}, (err, token) => {
+	},'ini3rH2LlkfGBX8QvHZ1', {expiresIn: '24h'}, (err, token) => {
 		res.json(token);
   	});
 }
@@ -178,23 +204,6 @@ exports.getMerchant = function(req, res) {
 	});
 }
 
-exports.addMerchant = function(req, res) {
-	var name = req.body.name;
-
-	db.query("INSERT INTO merchant (id, name) VALUES ('', '"+name+"')", function(result) {	
-		res.json(result);
-	});
-}
-
-exports.editMerchant = function(req, res) {
-	var name = req.body.name;
-    var image = req.body.image;
-
-	db.query("UPDATE merchant SET name = '"+name+"', image = '"+image+"' WHERE id = "+ req.body.id, function(result) {	
-		res.json(result);
-	});
-}
-
 exports.getOneDeals = function(req, res) {
 	db.query("SELECT *, date_format(start_date, '%Y-%m-%d') AS start_date, date_format(end_date, '%Y-%m-%d') AS end_date, date_format(date, '%Y-%m-%d') AS date, date_format(time, '%H:%i:%s') AS time FROM deals WHERE id = "+req.query.id, function(result) {
 		res.json(result);
@@ -203,50 +212,6 @@ exports.getOneDeals = function(req, res) {
 
 exports.getDeals = function(req, res) {
 	db.query("SELECT *, date_format(start_date, '%Y-%m-%d') AS start_date, date_format(end_date, '%Y-%m-%d') AS end_date, date_format(date, '%Y-%m-%d') AS date, date_format(time, '%H:%i:%s') AS time FROM deals", function(result) {
-		res.json(result);
-	});
-}
-
-exports.addDeals = function(req, res) {
-	var name = req.body.name;
-    var merchant_id = req.body.merchant_id;
-    var start_date = req.body.start_date;
-    var end_date = req.body.end_date;
-    var audience_id = req.body.audience_id;
-    var description = req.body.description;
-    var action = req.body.action;
-    var action_link = req.body.action_link;
-    var type = req.body.type;
-    var category_id = req.body.category_id;
-    var hot_deals = req.body.hot_deals;
-    var best_deals = req.body.best_deals;
-    var point = req.body.point;
-    var date = middle.getDate();
-    var time = middle.getTime();
-
-	db.query("INSERT INTO deals (id, name, audience_id, start_date, end_date, description, action, action_link, merchant_id, type, category_id, hot_deals, best_deals, point, date, time) VALUES ('', '"+name+"', '"+audience_id+"', '"+start_date+"', '"+end_date+"', '"+description+"', '"+action+"', '"+action_link+"', '"+merchant_id+"', '"+type+"', '"+category_id+"', "+hot_deals+", "+best_deals+", "+point+", '"+date+"', '"+time+"')", function(result) {	
-		res.json(result);
-	});
-}
-
-exports.editDeals = function(req, res) {
-	var name = req.body.name;
-    var merchant_id = req.body.merchant_id;
-    var start_date = req.body.start_date;
-    var end_date = req.body.end_date;
-    var audience_id = req.body.audience_id;
-    var description = req.body.description;
-    var action = req.body.action;
-    var action_link = req.body.action_link;
-    var type = req.body.type;
-    var category_id = req.body.category_id;
-    var hot_deals = req.body.hot_deals;
-    var best_deals = req.body.best_deals;
-    var point = req.body.point;
-    var image = req.body.image;
-    var banner = req.body.banner;
-
-	db.query("UPDATE deals SET name = '"+name+"', audience_id = '"+audience_id+"', start_date = '"+start_date+"', end_date = '"+end_date+"', description = '"+description+"', action = '"+action+"', action_link = '"+action_link+"', image = '"+image+"', banner = '"+banner+"', merchant_id = "+merchant_id+", type = '"+type+"', category_id = "+category_id+", hot_deals = "+hot_deals+", best_deals = "+best_deals+", point = "+point+" WHERE id = "+ req.body.id, function(result) {	
 		res.json(result);
 	});
 }
@@ -263,50 +228,6 @@ exports.getEarn = function(req, res) {
 	});
 }
 
-exports.addEarn = function(req, res) {
-	var name = req.body.name;
-    var merchant_id = req.body.merchant_id;
-    var start_date = req.body.start_date;
-    var end_date = req.body.end_date;
-    var audience_id = req.body.audience_id;
-    var description = req.body.description;
-    var action = req.body.action;
-    var action_link = req.body.action_link;
-    var type = req.body.type;
-    var category_id = req.body.category_id;
-    var best_activities = req.body.best_activities;
-    var hot_activities = req.body.hot_activities;
-    var point = req.body.point;
-    var date = middle.getDate();
-    var time = middle.getTime();
-
-	db.query("INSERT INTO earn (id, name, audience_id, start_date, end_date, description, action, action_link, merchant_id, type, category_id, best_activities, hot_activities, point, date, time) VALUES ('', '"+name+"', '"+audience_id+"', '"+start_date+"', '"+end_date+"', '"+description+"', '"+action+"', '"+action_link+"', "+merchant_id+", '"+type+"', "+category_id+", "+best_activities+", "+hot_activities+", "+point+", '"+date+"', '"+time+"')", function(result) {	
-		res.json(result);
-	});
-}
-
-exports.editEarn = function(req, res) {
-	var name = req.body.name;
-    var merchant_id = req.body.merchant_id;
-    var start_date = req.body.start_date;
-    var end_date = req.body.end_date;
-    var audience_id = req.body.audience_id;
-    var description = req.body.description;
-    var action = req.body.action;
-    var action_link = req.body.action_link;
-    var type = req.body.type;
-    var category_id = req.body.category_id;
-    var best_activities = req.body.best_activities;
-    var hot_activities = req.body.hot_activities;
-    var point = req.body.point;
-    var image = req.body.image;
-    var banner = req.body.banner;
-
-	db.query("UPDATE earn SET name = '"+name+"', audience_id = '"+audience_id+"', start_date = '"+start_date+"', end_date = '"+end_date+"', description = '"+description+"', action = '"+action+"', action_link = '"+action_link+"', image = '"+image+"', banner = '"+banner+"', merchant_id = "+merchant_id+", type = '"+type+"', category_id = "+category_id+", best_activities = "+best_activities+", hot_activities = "+hot_activities+", point = "+point+" WHERE id = "+ req.body.id, function(result) {	
-		res.json(result);
-	});
-}
-
 exports.getOneWin = function(req, res) {
 	db.query("SELECT *, date_format(start_date, '%Y-%m-%d') AS start_date, date_format(end_date, '%Y-%m-%d') AS end_date, date_format(date, '%Y-%m-%d') AS date, date_format(time, '%H:%i:%s') AS time FROM win WHERE id = "+req.query.id, function(result) {
 		res.json(result);
@@ -315,44 +236,6 @@ exports.getOneWin = function(req, res) {
 
 exports.getWin = function(req, res) {
 	db.query("SELECT *, date_format(start_date, '%Y-%m-%d') AS start_date, date_format(end_date, '%Y-%m-%d') AS end_date, date_format(date, '%Y-%m-%d') AS date, date_format(time, '%H:%i:%s') AS time FROM win", function(result) {
-		res.json(result);
-	});
-}
-
-exports.addWin = function(req, res) {
-	var name = req.body.name;
-    var start_date = req.body.start_date;
-    var end_date = req.body.end_date;
-    var audience_id = req.body.audience_id;
-    var description = req.body.description;
-    var point_redeem = req.body.point_redeem;
-    var type = req.body.type;
-    var category_id = req.body.category_id;
-    var hot_prize = req.body.hot_prize;
-    var best_prize = req.body.best_prize;
-    var date = middle.getDate();
-    var time = middle.getTime();
-
-	db.query("INSERT INTO win (id, name, audience_id, start_date, end_date, description, point_redeem, type, category_id, hot_prize, best_prize, date, time) VALUES ('', '"+name+"', '"+audience_id+"', '"+start_date+"', '"+end_date+"', '"+description+"', "+point_redeem+", '"+type+"', "+category_id+", "+hot_prize+", "+best_prize+", '"+date+"', '"+time+"')", function(result) {	
-		res.json(result);
-	});
-}
-
-exports.editWin = function(req, res) {
-	var name = req.body.name;
-    var start_date = req.body.start_date;
-    var end_date = req.body.end_date;
-    var audience_id = req.body.audience_id;
-    var description = req.body.description;
-    var point_redeem = req.body.point_redeem;
-    var type = req.body.type;
-    var category_id = req.body.category_id;
-    var hot_prize = req.body.hot_prize;
-    var best_prize = req.body.best_prize;
-    var image = req.body.image;
-    var banner = req.body.banner;
-
-	db.query("UPDATE win SET name = '"+name+"', audience_id = '"+audience_id+"', start_date = '"+start_date+"', end_date = '"+end_date+"', description = '"+description+"', image = '"+image+"', banner = '"+banner+"', point_redeem = "+point_redeem+", type = '"+type+"', category_id = "+category_id+", hot_prize = "+hot_prize+", best_prize = "+best_prize+" WHERE id = "+ req.body.id, function(result) {	
 		res.json(result);
 	});
 }
@@ -369,50 +252,6 @@ exports.getProductDeals = function(req, res) {
 	});
 }
 
-exports.addProductDeals = function(req, res) {
-	var name = req.body.name;
-    var merchant_id = req.body.merchant_id;
-    var start_date = req.body.start_date;
-    var end_date = req.body.end_date;
-    var audience_id = req.body.audience_id;
-    var description = req.body.description;
-    var price = req.body.price;
-    var discount = req.body.discount;
-    var type = req.body.type;
-    var category_id = req.body.category_id;
-    var hot_deals = req.body.hot_deals;
-    var best_deals = req.body.best_deals;
-    var point = req.body.point;
-    var date = middle.getDate();
-    var time = middle.getTime();
-
-	db.query("INSERT INTO product_deals (id, name, audience_id, start_date, end_date, description, price, discount, merchant_id, type, category_id, hot_deals, best_deals, point, date, time) VALUES ('', '"+name+"', '"+audience_id+"', '"+start_date+"', '"+end_date+"', '"+description+"', "+price+", "+discount+", "+merchant_id+", '"+type+"', "+category_id+", "+hot_deals+", "+best_deals+", "+point+", '"+date+"', '"+time+"')", function(result) {	
-		res.json(result);
-	});
-}
-
-exports.editProductDeals = function(req, res) {
-	var name = req.body.name;
-    var merchant_id = req.body.merchant_id;
-    var start_date = req.body.start_date;
-    var end_date = req.body.end_date;
-    var audience_id = req.body.audience_id;
-    var description = req.body.description;
-    var price = req.body.price;
-    var discount = req.body.discount;
-    var type = req.body.type;
-    var category_id = req.body.category_id;
-    var hot_deals = req.body.hot_deals;
-    var best_deals = req.body.best_deals;
-    var point = req.body.point;
-    var image = req.body.image;
-    var banner = req.body.banner;
-
-	db.query("UPDATE product_deals SET name = '"+name+"', audience_id = '"+audience_id+"', start_date = '"+start_date+"', end_date = '"+end_date+"', description = '"+description+"', price = "+price+", discount = "+discount+", image = '"+image+"', banner = '"+banner+"', merchant_id = "+merchant_id+", type = '"+type+"', category_id = "+category_id+", hot_deals = "+hot_deals+", best_deals = "+best_deals+", point = "+point+" WHERE id = "+ req.body.id, function(result) {	
-		res.json(result);
-	});
-}
-
 exports.getOneAudience = function(req, res) {
 	db.query("SELECT * FROM audience WHERE id = "+req.query.id, function(result) {
 		res.json(result);
@@ -425,32 +264,6 @@ exports.getAudience = function(req, res) {
 	});
 }
 
-exports.addAudience = function(req, res) {
-	var name = req.body.name;
-    var city = req.body.city;
-    var gender = req.body.gender;
-    var age_start = req.body.age_start;
-    var age_end = req.body.age_end;
-    var date = middle.getDate();
-    var time = middle.getTime();
-
-	db.query("INSERT INTO audience (id, name, city, gender, age_start, age_end, date, time) VALUES ('', '"+name+"', '"+city+"', '"+gender+"', '"+age_start+"', '"+age_end+"', '"+date+"', '"+time+"')", function(result) {	
-		res.json(result);
-	});
-}
-
-exports.editAudience = function(req, res) {
-	var name = req.body.name;
-    var city = req.body.city;
-    var gender = req.body.gender;
-    var age_start = req.body.age_start;
-    var age_end = req.body.age_end;
-
-	db.query("UPDATE audience SET name = '"+name+"', city = '"+city+"', gender = '"+gender+"', age_start = '"+age_start+"', age_end = '"+age_end+"' WHERE id = "+ req.body.id, function(result) {	
-		res.json(result);
-	});
-}
-
 exports.getOneCategory = function(req, res) {
 	db.query("SELECT * FROM category WHERE id = "+req.query.id, function(result) {
 		res.json(result);
@@ -459,22 +272,6 @@ exports.getOneCategory = function(req, res) {
 
 exports.getCategory = function(req, res) {
 	db.query("SELECT * FROM category", function(result) {
-		res.json(result);
-	});
-}
-
-exports.addCategory = function(req, res) {
-	var name = req.body.name;
-
-	db.query("INSERT INTO category (id, name) VALUES ('', '"+name+"')", function(result) {	
-		res.json(result);
-	});
-}
-
-exports.editCategory = function(req, res) {
-	var name = req.body.name;
-
-	db.query("UPDATE category SET name = '"+name+"' WHERE id = "+ req.body.id, function(result) {	
 		res.json(result);
 	});
 }
@@ -517,42 +314,6 @@ exports.getNews = function(req, res) {
 	});
 }
 
-exports.addNews = function(req, res) {
-	var title = req.body.title;
-    var start_date = req.body.start_date;
-    var end_date = req.body.end_date;
-    var source = req.body.source;
-    var description = req.body.description;
-    var source_link = req.body.source_link;
-    var point = req.body.point;
-    var hot_entertainment = req.body.hot_entertainment;
-    var hot_news = req.body.hot_news;
-    var date = middle.getDate();
-    var time = middle.getTime();
-
-	db.query("INSERT INTO news (id, title, start_date, end_date, source, description, source_link, point, hot_entertainment, hot_news, date, time) VALUES ('', '"+title+"', '"+start_date+"', '"+end_date+"', '"+source+"', '"+description+"', '"+source_link+"', '"+point+"', "+hot_entertainment+", "+hot_news+", '"+date+"', '"+time+"')", function(result) {	
-		res.json(result);
-	});
-}
-
-exports.editNews = function(req, res) {
-	var title = req.body.title;
-    var start_date = req.body.start_date;
-    var end_date = req.body.end_date;
-    var source = req.body.source;
-    var description = req.body.description;
-    var source_link = req.body.source_link;
-    var point = req.body.point;
-    var hot_entertainment = req.body.hot_entertainment;
-    var hot_news = req.body.hot_news;
-    var image = req.body.image;
-    var banner = req.body.banner;
-
-	db.query("UPDATE news SET title = '"+title+"', start_date = '"+start_date+"', end_date = '"+end_date+"', source = '"+source+"', description = '"+description+"', source_link = '"+source_link+"', point = '"+point+"', hot_entertainment = "+hot_entertainment+", hot_news = "+hot_news+",  image = '"+image+"', banner = '"+banner+"' WHERE id = "+ req.body.id, function(result) {	
-		res.json(result);
-	});
-}
-
 exports.getOneWatch = function(req, res) {
 	db.query("SELECT *, date_format(start_date, '%Y-%m-%d') AS start_date, date_format(end_date, '%Y-%m-%d') AS end_date, date_format(date, '%Y-%m-%d') AS date, date_format(time, '%H:%i:%s') AS time FROM watch WHERE id = "+req.query.id, function(result) {
 		res.json(result);
@@ -561,38 +322,6 @@ exports.getOneWatch = function(req, res) {
 
 exports.getWatch = function(req, res) {
 	db.query("SELECT *, date_format(start_date, '%Y-%m-%d') AS start_date, date_format(end_date, '%Y-%m-%d') AS end_date, date_format(date, '%Y-%m-%d') AS date, date_format(time, '%H:%i:%s') AS time FROM watch", function(result) {
-		res.json(result);
-	});
-}
-
-exports.addWatch = function(req, res) {
-	var title = req.body.title;
-    var start_date = req.body.start_date;
-    var end_date = req.body.end_date;
-    var video_url = req.body.video_url;
-    var point = req.body.point;
-    var hot_entertainment = req.body.hot_entertainment;
-    var hot_watch = req.body.hot_watch;
-    var date = middle.getDate();
-    var time = middle.getTime();
-
-	db.query("INSERT INTO watch (id, title, start_date, end_date, video_url, point, hot_entertainment, hot_watch, date, time) VALUES ('', '"+title+"', '"+start_date+"', '"+end_date+"', '"+video_url+"', '"+point+"', "+hot_entertainment+", "+hot_watch+", '"+date+"', '"+time+"')", function(result) {	
-		res.json(result);
-	});
-}
-
-exports.editWatch = function(req, res) {
-	var title = req.body.title;
-    var start_date = req.body.start_date;
-    var end_date = req.body.end_date;
-    var video_url = req.body.video_url;
-    var point = req.body.point;
-    var hot_entertainment = req.body.hot_entertainment;
-    var hot_watch = req.body.hot_watch;
-    var image = req.body.image;
-    var banner = req.body.banner;
-
-	db.query("UPDATE watch SET title = '"+title+"', start_date = '"+start_date+"', end_date = '"+end_date+"', video_url = '"+video_url+"', point = '"+point+"', hot_entertainment = "+hot_entertainment+", hot_watch = "+hot_watch+", image = '"+image+"', banner = '"+banner+"' WHERE id = "+ req.body.id, function(result) {	
 		res.json(result);
 	});
 }
@@ -609,46 +338,6 @@ exports.getEvent = function(req, res) {
 	});
 }
 
-exports.addEvent = function(req, res) {
-	var title = req.body.title;
-    var start_date = req.body.start_date;
-    var end_date = req.body.end_date;
-    var description = req.body.description;
-    var location = req.body.location;
-    var action = req.body.action;
-    var action_link = req.body.action_link;
-    var audience_id = req.body.audience_id;
-    var point = req.body.point;
-    var hot_entertainment = req.body.hot_entertainment;
-    var hot_event = req.body.hot_event;
-    var date = middle.getDate();
-    var time = middle.getTime();
-
-	db.query("INSERT INTO event (id, title, start_date, end_date, description, location, action, action_link, audience_id, point, hot_entertainment, hot_event, date, time) VALUES ('', '"+title+"', '"+start_date+"', '"+end_date+"', '"+description+"', '"+location+"', '"+action+"', '"+action_link+"', '"+audience_id+"','"+point+"', "+hot_entertainment+", "+hot_event+", '"+date+"', '"+time+"')", function(result) {	
-		res.json(result);
-	});
-}
-
-exports.editEvent = function(req, res) {
-	var title = req.body.title;
-    var start_date = req.body.start_date;
-    var end_date = req.body.end_date;
-    var description = req.body.description;
-    var location = req.body.location;
-    var action = req.body.action;
-    var action_link = req.body.action_link;
-    var audience_id = req.body.audience_id;
-    var point = req.body.point;
-    var hot_entertainment = req.body.hot_entertainment;
-    var hot_event = req.body.hot_event;
-    var image = req.body.image;
-    var banner = req.body.banner;
-
-	db.query("UPDATE event SET title = '"+title+"', start_date = '"+start_date+"', end_date = '"+end_date+"', description = '"+description+"', location = '"+location+"', action = '"+action+"', action_link = '"+action_link+"', audience_id = '"+audience_id+"', point = '"+point+"', hot_entertainment = "+hot_entertainment+", hot_event = "+hot_event+", image = '"+image+"', banner = '"+banner+"' WHERE id = "+ req.body.id, function(result) {	
-		res.json(result);
-	});
-}
-
 exports.getOneHoroscope = function(req, res) {
 	db.query("SELECT *, date_format(start_date, '%Y-%m-%d') AS start_date, date_format(end_date, '%Y-%m-%d') AS end_date, date_format(date, '%Y-%m-%d') AS date, date_format(time, '%H:%i:%s') AS time FROM horoscope WHERE id = "+req.query.id, function(result) {
 		res.json(result);
@@ -661,40 +350,6 @@ exports.getHoroscope = function(req, res) {
 	});
 }
 
-exports.addHoroscope = function(req, res) {
-	var title = req.body.title;
-    var start_date = req.body.start_date;
-    var end_date = req.body.end_date;
-    var zodiac_sign = req.body.zodiac_sign;
-    var description = req.body.description;
-    var point = req.body.point;
-    var hot_entertainment = req.body.hot_entertainment;
-    var hot_horoscope = req.body.hot_horoscope;
-    var date = middle.getDate();
-    var time = middle.getTime();
-
-	db.query("INSERT INTO horoscope (id, title, start_date, end_date, zodiac_sign, description, point, hot_entertainment, hot_horoscope, date, time) VALUES ('', '"+title+"', '"+start_date+"', '"+end_date+"', '"+zodiac_sign+"', '"+description+"', '"+point+"', "+hot_entertainment+", "+hot_horoscope+", '"+date+"', '"+time+"')", function(result) {	
-		res.json(result);
-	});
-}
-
-exports.editHoroscope = function(req, res) {
-	var title = req.body.title;
-    var start_date = req.body.start_date;
-    var end_date = req.body.end_date;
-    var zodiac_sign = req.body.zodiac_sign;
-    var description = req.body.description;
-    var point = req.body.point;
-    var hot_entertainment = req.body.hot_entertainment;
-    var hot_horoscope = req.body.hot_horoscope;
-    var image = req.body.image;
-    var banner = req.body.banner;
-
-	db.query("UPDATE horoscope SET title = '"+title+"', start_date = '"+start_date+"', end_date = '"+end_date+"', zodiac_sign = '"+zodiac_sign+"', description = '"+description+"', point = '"+point+"', hot_entertainment = "+hot_entertainment+", hot_horoscope = "+hot_horoscope+", image = '"+image+"', banner = '"+banner+"' WHERE id = "+ req.body.id, function(result) {	
-		res.json(result);
-	});
-}
-
 exports.getOneVoucher = function(req, res) {
 	db.query("SELECT * FROM voucher WHERE id = "+req.query.id, function(result) {
 		res.json(result);
@@ -703,35 +358,6 @@ exports.getOneVoucher = function(req, res) {
 
 exports.getVoucher = function(req, res) {
 	db.query("SELECT * FROM voucher", function(result) {
-		res.json(result);
-	});
-}
-
-exports.addVoucher = function(req, res) {
-	var type = req.body.type;
-    var vendor = req.body.vendor;
-    var merchant = req.body.merchant;
-    var product_code = req.body.product_code;
-    var product_value = req.body.product_value;
-    var price = req.body.price;
-    var dealio_points = req.body.dealio_points;
-
-	db.query("INSERT INTO voucher (id, type, vendor, merchant, product_code, product_value, price, dealio_points) VALUES ('', '"+type+"', '"+vendor+"', '"+merchant+"', '"+product_code+"', '"+product_value+"', "+price+", "+dealio_points+")", function(result) {	
-		res.json(result);
-	});
-}
-
-exports.editVoucher = function(req, res) {
-	var type = req.body.type;
-    var vendor = req.body.vendor;
-    var merchant = req.body.merchant;
-    var product_code = req.body.product_code;
-    var product_value = req.body.product_value;
-    var price = req.body.price;
-    var dealio_points = req.body.dealio_points;
-    var image = req.body.image;
-
-	db.query("UPDATE voucher SET type = '"+type+"', vendor = '"+vendor+"', merchant = '"+merchant+"', product_code = '"+product_code+"', product_value = '"+product_value+"', price = "+price+", dealio_points = "+dealio_points+", image = '"+image+"' WHERE id = "+ req.body.id, function(result) {	
 		res.json(result);
 	});
 }
@@ -813,33 +439,6 @@ exports.addSurveyResponse = function(req, res) {
 	db.query("INSERT INTO survey_response (id, response, user_id, survey_question_id, date, time) VALUES ('', '"+response+"', "+user_id+", "+survey_question_id+", '"+date+"', '"+time+"')", function(result) {	
 		res.json(result);
 	});
-}
-
-exports.postImage = function(req, res) {
-	if(req.file) {
-		res.json(req.file);
-	}
-	else {
-		res.json(404);
-	}
-}
-
-exports.postBanner = function(req, res) {
-	if(req.file) {
-		res.json(req.file);
-	}
-	else {
-		res.json(404);
-	}
-}
-
-exports.postMerchantImage = function(req, res) {
-	if(req.file) {
-		res.json(req.file);
-	}
-	else {
-		res.json(404);
-	}
 }
 
 exports.userRegisterPhone = function(req, res) {
@@ -935,11 +534,8 @@ exports.registerUser = function(req, res) {
 
 	if(login_method == 'manual') {
 		db.query("INSERT INTO user_manual (id, phone_number, email, password, date, time) VALUES ('', '"+phone_number+"', '"+email+"', '"+password+"', '"+date+"', '"+time+"')", function(result) {	
-			db.query("INSERT INTO user (id, phone_number, email, email_verified, name, login_method, date, time) VALUES ('', '"+phone_number+"', '"+email+"', "+email_verified+", '"+name+"', '"+login_method+"', '"+date+"', '"+time+"')", function(result) {	
+			db.query("INSERT INTO user (id, phone_number, email, email_verified, name, login_method, refcode, date, time) VALUES ('', '"+phone_number+"', '"+email+"', "+email_verified+", '"+name+"', '"+login_method+"', '"+user_refcode+"', '"+date+"', '"+time+"')", function(result) {	
 				db.query("INSERT INTO membership (id, user_id, tier, date, time) VALUES ('', "+result.insertId+", 'silver', '"+date+"', '"+time+"')", function(result) {	
-					console.log(result);
-				});
-				db.query("INSERT INTO refcode_list (id, user_id, user_refcode, date, time) VALUES ('', "+result.insertId+", '"+user_refcode+"', '"+date+"', '"+time+"')", function(result) {	
 					console.log(result);
 				});
 				db.query("INSERT INTO user_qrcode_membership (id, user_id, qrcode, date, time) VALUES ('', "+result.insertId+", '"+qrcode+"', '"+date+"', '"+time+"')", function(result) {	
@@ -950,11 +546,8 @@ exports.registerUser = function(req, res) {
 		});
 	}
 	else {
-		db.query("INSERT INTO user (id, phone_number, email, email_verified, name, login_method, date, time) VALUES ('', '"+phone_number+"', '"+email+"', "+email_verified+", '"+name+"', '"+login_method+"', '"+date+"', '"+time+"')", function(result) {	
+		db.query("INSERT INTO user (id, phone_number, email, email_verified, name, login_method, refcode, date, time) VALUES ('', '"+phone_number+"', '"+email+"', "+email_verified+", '"+name+"', '"+login_method+"', '"+user_refcode+"', '"+date+"', '"+time+"')", function(result) {	
 			db.query("INSERT INTO membership (id, user_id, tier, date, time) VALUES ('', "+result.insertId+", 'silver', '"+date+"', '"+time+"')", function(result) {	
-				console.log(result);
-			});
-			db.query("INSERT INTO refcode_list (id, user_id, user_refcode, date, time) VALUES ('', "+result.insertId+", '"+user_refcode+"', '"+date+"', '"+time+"')", function(result) {	
 				console.log(result);
 			});
 			db.query("INSERT INTO user_qrcode_membership (id, user_id, qrcode, date, time) VALUES ('', "+result.insertId+", '"+qrcode+"', '"+date+"', '"+time+"')", function(result) {	

@@ -44,10 +44,21 @@ exports.randomNumber = function(length) {
    return result;
 }
 
+function logger(req, res, next) {
+	console.log(req.headers.user_session)
+	let path = req.path;
+	let user_id = parseInt(req.headers.user_session);
+	let detail = getDetail(req, res, path);
+
+	let dateObj = getDate();
+	let fulldate = dateObj.date + " " + dateObj.month + " " + dateObj.year + " @ " + dateObj.hour + ":" + dateObj.minute + ":" + dateObj.second;
+}
+
 exports.beforeEndPoint = function(req, res, next) { //JWT verification goes here
-	// if(req.path != '/login-admin' && 
-	// 	req.path != '/register-admin' && 
-	// 	getFirstPath(req.path) != '/images' && 
+	// if( req.path.split('-')[0] != '/get' &&
+	// 	req.path.split('-')[0] != '/register' &&
+	// 	req.path.split('-')[0] != '/test' &&
+	// 	req.path.split('-')[0] != '/login' &&
 	// 	req.path != '/logout') {
 	// 	const bearerHeader = req.headers['authorization'];
 	// 	if(typeof bearerHeader !== 'undefined') {
@@ -55,7 +66,7 @@ exports.beforeEndPoint = function(req, res, next) { //JWT verification goes here
 	// 		const bearerToken = bearer[1];
 
 	// 		req.token = bearerToken;
-	// 		jwt.verify(req.token, 'kuda', (err, authData) => {
+	// 		jwt.verify(req.token, 'ini3rH2LlkfGBX8QvHZ1', (err, authData) => {
 	// 			if(err) {
 	// 				res.sendStatus(403);
 	// 			}
