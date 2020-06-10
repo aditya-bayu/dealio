@@ -520,7 +520,7 @@ exports.citcallOtp = function(req, res) {
 		}, function(error, response, body){
 			console.log(body);
 			db.query("INSERT INTO otp_regis (id, regis_phone_number_id, otp_code, date, time) VALUES ('', '"+result[0].id+"', '"+body.token.substr(body.token.length-4)+"', '"+date+"', '"+time+"')", function(result) {	
-				res.json({result: regis_phone_number, token: body.token.substr(0, body.token.length-4)});
+				res.json({result: regis_phone_number, token: body.token.substr(0, body.token.length-4), otp_id: result.insertId});
 			});
 		});
 	});
