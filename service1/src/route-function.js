@@ -10,6 +10,7 @@ const bodyParser = require('body-parser');
 const { google } = require('googleapis');
 const jwt = require('jsonwebtoken');
 const md5 = require('md5');
+const { base64encode, base64decode } = require('nodejs-base64');
 const request = require('request');
 
 app.use(cookieParser());
@@ -423,6 +424,26 @@ exports.addSurveyQuestionChoice = function(req, res) {
 	});
 }
 
+exports.getSurveyParticipant = function(req, res) {
+	db.query("SELECT * FROM survey_participant", function(result) {
+		res.json(result);
+	});
+}
+
+exports.addSurveyParticipant = function(req, res) {
+    var survey_question_id = req.body.survey_question_id;
+    var user_id = req.body.user_id;
+    var duration = req.body.duration;
+    var status = req.body.status;
+    var checkpoint = req.body.checkpoint;
+    var date = middle.getDate();
+    var time = middle.getTime();
+
+	db.query("INSERT INTO survey_participant (id, survey_question_id, user_id, duration, status, checkpoint, date, time) VALUES ('', "+survey_question_id+", "+user_id+", "+duration+", '"+status+"', "+checkpoint+", '"+date+"', '"+time+"')", function(result) {	
+		res.json(result);
+	});
+}
+
 exports.getSurveyResponse = function(req, res) {
 	db.query("SELECT * FROM survey_response", function(result) {
 		res.json(result);
@@ -466,17 +487,6 @@ exports.userRegisterPhone = function(req, res) {
 	});
 }
 
-exports.userRegisterOtp = function(req, res) {
-	var regis_phone_number_id = req.body.regis_phone_number_id;
-	var otp_code = req.body.otp_code.substr(req.body.otp_code.length-4);
-	var date = middle.getDate();
-	var time = middle.getTime();
-
-	db.query("INSERT INTO otp_regis (id, regis_phone_number_id, otp_code, date, time) VALUES ('', '"+regis_phone_number_id+"', '"+otp_code+"', '"+date+"', '"+time+"')", function(result) {	
-		res.json(result);
-	});
-}
-
 exports.checkRegisterOtp = function(req, res) {
 	var id = req.body.id;
 	var otp_code = req.body.otp_code;
@@ -498,14 +508,20 @@ exports.checkRegisterOtp = function(req, res) {
 }
 
 exports.citcallOtp = function(req, res) {
+	var date = middle.getDate();
+	var time = middle.getTime();
+
 	db.query("SELECT * FROM regis_phone_number WHERE id = "+req.query.id, function(result) {
+		var regis_phone_number = result[0];
 		request.post({
 			headers: {'Content-Type' : 'application/json', 'Authorization': 'Apikey 5e69e97b699f5c31dcc16c5e63568e3c'},
 		  	url: 'http://104.199.196.122/gateway/v3/asynccall',
-		  	json: {"msisdn": result[0].phone_number, "gateway":1}
+		  	json: {"msisdn": regis_phone_number.phone_number, "gateway":1}
 		}, function(error, response, body){
-		  console.log(body);
-		  res.json({result, body});
+			console.log(body);
+			db.query("INSERT INTO otp_regis (id, regis_phone_number_id, otp_code, date, time) VALUES ('', '"+result[0].id+"', '"+body.token.substr(body.token.length-4)+"', '"+date+"', '"+time+"')", function(result) {	
+				res.json({result: regis_phone_number, token: body.token.substr(0, body.token.length-4)});
+			});
 		});
 	});
 }
@@ -523,6 +539,7 @@ exports.registerUser = function(req, res) {
 	var password = req.body.password;
 	var login_method = req.body.login_method;
 	var email_verified = 0;
+	var active = 1;
 	var date = middle.getDate();
 	var time = middle.getTime();
 
@@ -534,8 +551,14 @@ exports.registerUser = function(req, res) {
 
 	if(login_method == 'manual') {
 		db.query("INSERT INTO user_manual (id, phone_number, email, password, date, time) VALUES ('', '"+phone_number+"', '"+email+"', '"+password+"', '"+date+"', '"+time+"')", function(result) {	
-			db.query("INSERT INTO user (id, phone_number, email, email_verified, name, login_method, refcode, date, time) VALUES ('', '"+phone_number+"', '"+email+"', "+email_verified+", '"+name+"', '"+login_method+"', '"+user_refcode+"', '"+date+"', '"+time+"')", function(result) {	
+			db.query("INSERT INTO user (id, phone_number, email, email_verified, name, login_method, active, refcode, date, time) VALUES ('', '"+phone_number+"', '"+email+"', "+email_verified+", '"+name+"', '"+login_method+"', "+active+" , '"+user_refcode+"', '"+date+"', '"+time+"')", function(result) {	
 				db.query("INSERT INTO membership (id, user_id, tier, date, time) VALUES ('', "+result.insertId+", 'silver', '"+date+"', '"+time+"')", function(result) {	
+					console.log(result);
+				});
+				db.query("INSERT INTO user_detail (id, user_id, date, time) VALUES ('', "+result.insertId+", '"+date+"', '"+time+"')", function(result) {	
+					console.log(result);
+				});
+				db.query("INSERT INTO user_point (id, user_id, point) VALUES ('', "+result.insertId+", 0)", function(result) {	
 					console.log(result);
 				});
 				db.query("INSERT INTO user_qrcode_membership (id, user_id, qrcode, date, time) VALUES ('', "+result.insertId+", '"+qrcode+"', '"+date+"', '"+time+"')", function(result) {	
@@ -546,8 +569,14 @@ exports.registerUser = function(req, res) {
 		});
 	}
 	else {
-		db.query("INSERT INTO user (id, phone_number, email, email_verified, name, login_method, refcode, date, time) VALUES ('', '"+phone_number+"', '"+email+"', "+email_verified+", '"+name+"', '"+login_method+"', '"+user_refcode+"', '"+date+"', '"+time+"')", function(result) {	
+		db.query("INSERT INTO user (id, phone_number, email, email_verified, name, login_method, active, refcode, date, time) VALUES ('', '"+phone_number+"', '"+email+"', "+email_verified+", '"+name+"', '"+login_method+"', "+active+", '"+user_refcode+"', '"+date+"', '"+time+"')", function(result) {	
 			db.query("INSERT INTO membership (id, user_id, tier, date, time) VALUES ('', "+result.insertId+", 'silver', '"+date+"', '"+time+"')", function(result) {	
+				console.log(result);
+			});
+			db.query("INSERT INTO user_detail (id, user_id, date, time) VALUES ('', "+result.insertId+", '"+date+"', '"+time+"')", function(result) {	
+				console.log(result);
+			});
+			db.query("INSERT INTO user_point (id, user_id, point) VALUES ('', "+result.insertId+", 0)", function(result) {	
 				console.log(result);
 			});
 			db.query("INSERT INTO user_qrcode_membership (id, user_id, qrcode, date, time) VALUES ('', "+result.insertId+", '"+qrcode+"', '"+date+"', '"+time+"')", function(result) {	
@@ -670,13 +699,82 @@ exports.getUserGoogle = function(req, res) {
 	});
 }
 
-exports.setQrcode = function(req, res) {
-	var id = 5;
+exports.getMembership = function(req, res) {
+	db.query("SELECT * FROM membership", function(result) {
+		res.json(result);
+	});
+}
 
-	var length = 8 - id.toString().length;
+exports.addMembership = function(req, res) {
+	var user_id = req.body.user_id;
+    var tier = req.body.tier;
+    var date = middle.getDate();
+    var time = middle.getTime();
 
-	var qrcode =  '8008' + '9939' + id + middle.randomNumber(length);
-	res.json(qrcode);
+	db.query("INSERT INTO membership (id, response, user_id, tier, date, time) VALUES ('', '"+response+"', "+user_id+", '"+tier+"', '"+date+"', '"+time+"')", function(result) {	
+		res.json(result);
+	});
+}
+
+exports.getStatusMembership = function(req, res) {
+	db.query("SELECT * FROM status_membership", function(result) {
+		res.json(result);
+	});
+}
+
+exports.addStatusMembership = function(req, res) {
+	var user_id = req.body.user_id;
+    var tier_from = req.body.tier_from;
+    var date = middle.getDate();
+    var time = middle.getTime();
+
+    
+    db.query("SELECT * FROM user WHERE id = "+user_id, function(result) {
+    	//silver to gold rules
+    	if(tier_from == 'silver') {
+	    	if(!result[0].ktp_url) {
+				db.query("SELECT COUNT (id) FROM refcode_input WHERE user_id = "+user_id, function(result) {
+					if(result[0]["COUNT (id)"] >= 10) {
+						var changes = 'upgrade';
+						var tier_to = 'gold';
+						db.query("INSERT INTO status_membership (id, user_id, changes, tier_from, tier_to, date, time) VALUES ('', "+user_id+", '"+changes+"', '"+tier_from+"', '"+tier_to+"', '"+date+"', '"+time+"')", function(result) {	
+							res.json(result);
+						});
+					}
+					else {
+						res.json("You haven't invited 10 friends");
+					}
+				});
+			}
+			else {
+				res.json("You haven't upload your KTP");
+			}
+		}
+	});
+}
+
+exports.verifyEmail = function(req, res) {
+	var user_id = parseInt(base64decode(req.query.id));
+	var dateSend = base64decode(req.query.exp);
+	var dateArr = dateSend.split('-');
+	dateSend = new Date(dateArr[0], dateArr[1], dateArr[2]);
+
+	var currentdate = new Date();
+	var day = currentdate.getDate();
+	var month = currentdate.getMonth();
+	var year = currentdate.getFullYear();
+
+    var dateReceive = new Date(year, month, day);
+
+    if(Math.round((dateReceive-dateSend)/(1000*60*60)) <= 72) {
+    	db.query("UPDATE user SET email_verified = 1 WHERE id =" + user_id, function(result) {	
+			res.json(result);
+		});
+    }
+
+    else {
+    	res.json(403); //link expired
+    }
 }
 
 exports.logout = function(req, res) {

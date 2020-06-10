@@ -91,13 +91,15 @@ router.route('/get-survey-question-choice').get(function(req, res) {rf.getSurvey
 
 router.route('/add-survey-question-choice').post(function(req, res) {rf.addSurveyQuestionChoice(req, res)});
 
+router.route('/get-survey-participant').get(function(req, res) {rf.getSurveyParticipant(req, res)});
+
+router.route('/add-survey-participant').post(function(req, res) {rf.addSurveyParticipant(req, res)});
+
 router.route('/get-survey-response').get(function(req, res) {rf.getSurveyResponse(req, res)});
 
 router.route('/add-survey-response').post(function(req, res) {rf.addSurveyResponse(req, res)});
 
 router.route('/user-register-phone').post(function(req, res) {rf.userRegisterPhone(req, res)});
-
-router.route('/user-register-otp').post(function(req, res) {rf.userRegisterOtp(req, res)});
 
 router.route('/check-register-otp').post(function(req, res) {rf.checkRegisterOtp(req, res)});
 
@@ -121,7 +123,15 @@ router.route('/auth/google').post(function(req, res) {rf.authGoogle(req, res)});
 
 router.route('/get-user-google').get(function(req, res) {rf.getUserGoogle(req, res)});
 
-router.route('/set-qrcode').get(function(req, res) {rf.setQrcode(req, res)});
+router.route('/get-membership').get(function(req, res) {rf.getMembership(req, res)});
+
+router.route('/add-membership').get(function(req, res) {rf.addMembership(req, res)});
+
+router.route('/get-status-membership').get(function(req, res) {rf.getStatusMembership(req, res)});
+
+router.route('/add-status-membership').post(function(req, res) {rf.addStatusMembership(req, res)});
+
+router.route('/verify-email').get(function(req, res) {rf.verifyEmail(req, res)});
 
 router.route('/logout').get(function(req, res) {rf.logout(req, res)});
 
