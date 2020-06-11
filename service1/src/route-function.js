@@ -119,7 +119,7 @@ exports.getSnapToken = function(req, res) {
 
     var parameter = {
     	"transaction_details": {
-	        "order_id": "test-transaction-5",
+	        "order_id": "test-transaction-6",
 	        "gross_amount": 5000
     	},
     	"item_details": [{
@@ -137,13 +137,17 @@ exports.getSnapToken = function(req, res) {
 		    "email": "hanindyo.herbowo@gmail.com",
 		    "phone": "082299392596",
 	  	},
-	  	"enabled_payments": ["bca_va", "bni_va"],
+	  	"enabled_payments": ["bca_va", "bni_va", "echannel", "gopay"],
 	  	"bca_va": {
 		    "va_number": "885886888",
 		    "sub_company_code": "00000",
 	    },
 	    "bni_va": {
 		    "va_number": "885886888"
+	  	},
+	  	"gopay": {
+		    "enable_callback": true,
+	    	"callback_url": "http://gopay.com"
 	  	}
 	};
 
@@ -517,12 +521,12 @@ exports.userRegisterPhone = function(req, res) {
 
 	db.query("SELECT * FROM regis_phone_number WHERE phone_number = '"+phone_number+"' AND status_regis = 1", function(result) {
 		if(result.length != 0) {
-			res.json({status: 404});
+			res.json({status: 404, message: "Nomor sudah terdaftar"});
 		}
 		else {
 			db.query("SELECT * FROM regis_phone_number WHERE phone_number = '"+phone_number+"' AND status_regis = 0", function(result) {
 				if(result.length >= 3) {
-					res.json({status: 403});
+					res.json({status: 403, message: "Nomor anda terblokir, mohon hubungi contact support kami"});
 				}
 				else {
 					db.query("INSERT INTO regis_phone_number (id, phone_number, status_regis, date, time) VALUES ('', '"+phone_number+"', '"+status_regis+"', '"+date+"', '"+time+"')", function(result) {
@@ -562,11 +566,7 @@ exports.checkRegisterOtp = function(req, res) {
 		var phone_number = result[0].phone_number;
 		db.query("SELECT * FROM otp_regis WHERE id = "+otp_id, function(result) {
 			if(result[0].otp_code == otp_code) {
-				db.query("UPDATE regis_phone_number SET status_regis = 2 WHERE phone_number = '"+ phone_number+"' AND status_regis = 0", function(result) {	
-					db.query("UPDATE regis_phone_number SET status_regis = 1 WHERE id = "+ regis_phone_number_id, function(result) {	
-						res.json({status: 200});
-					});
-				});
+				res.json({status: 200});
 			}
 			else {
 				res.json({status: 403});
@@ -614,7 +614,11 @@ exports.registerUser = function(req, res) {
 					});
 					db.query("INSERT INTO user_qrcode_membership (id, user_id, qrcode, date, time) VALUES ('', "+result.insertId+", '"+qrcode+"', '"+date+"', '"+time+"')", function(result) {	
 						console.log(result);
-						res.json(result);
+					});
+					db.query("UPDATE regis_phone_number SET status_regis = 2 WHERE phone_number = '"+ phone_number+"' AND status_regis = 0", function(result) {	
+						db.query("UPDATE regis_phone_number SET status_regis = 1 WHERE id = "+ regis_phone_number_id, function(result) {	
+							res.json({status: 200});
+						});
 					});
 				});
 			});

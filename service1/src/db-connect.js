@@ -4,7 +4,7 @@ var con = mysql.createConnection({
   host: process.env.HOST_MYSQL ? process.env.HOST_MYSQL : "192.168.0.6",
   user: "dealioapi",
   password: "dealioteam",
-  database: "dealio"
+  database: process.env.DATABASE ? process.env.DATABASE : "dealio"
 });
 
 exports.query = function(query, callback) {
