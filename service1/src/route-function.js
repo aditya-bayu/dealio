@@ -8,6 +8,7 @@ const fs = require('fs');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const { google } = require('googleapis');
+const midtransClient = require('midtrans-client');
 const jwt = require('jsonwebtoken');
 const md5 = require('md5');
 const { base64encode, base64decode } = require('nodejs-base64');
@@ -107,6 +108,52 @@ exports.testXendit = function(req, res) {
 			console.log(body);
 			res.json(body);	
 	});
+}
+
+exports.getSnapToken = function(req, res) {
+	var snap = new midtransClient.Snap({
+        isProduction : false,
+        serverKey : 'SB-Mid-server-WI-zYHCkJDjTFx89f2Q3VRco',
+        clientKey : 'SB-Mid-client-stXsE_EOaQBu7P2m'
+    });
+
+    var parameter = {
+    	"transaction_details": {
+	        "order_id": "test-transaction-5",
+	        "gross_amount": 5000
+    	},
+    	"item_details": [{
+		    "id": "ITEM1",
+		    "price": 5000,
+		    "quantity": 1,
+		    "name": "Kopi",
+		    "brand": "Kopinih",
+		    "category": "F&B",
+		    "merchant_name": "Kopinih"
+	  	}],
+	  	"customer_details": {
+		    "first_name": "Hanindyo",
+		    "last_name": "Herbowo",
+		    "email": "hanindyo.herbowo@gmail.com",
+		    "phone": "082299392596",
+	  	},
+	  	"enabled_payments": ["bca_va", "bni_va"],
+	  	"bca_va": {
+		    "va_number": "885886888",
+		    "sub_company_code": "00000",
+	    },
+	    "bni_va": {
+		    "va_number": "885886888"
+	  	}
+	};
+
+	snap.createTransaction(parameter)
+    .then((transaction)=>{
+    	// transaction token
+        var transactionToken = transaction.token;
+        console.log('transactionToken:',transactionToken);
+        res.json({data: transactionToken});
+    })
 }
 
 exports.registerAdmin = function(req, res) {
@@ -469,7 +516,7 @@ exports.userRegisterPhone = function(req, res) {
 	var time = middle.getTime();
 
 	db.query("SELECT * FROM regis_phone_number WHERE phone_number = '"+phone_number+"' AND status_regis = 1", function(result) {
-		if(result.length == 0) {
+		if(result.length != 0) {
 			res.json({status: 404});
 		}
 		else {

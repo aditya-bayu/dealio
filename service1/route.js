@@ -11,6 +11,8 @@ router.route('/').get(function(req, res) {rf.index(req, res)});
 
 router.route('/test-mobile-pulsa').get(function(req, res) {rf.testMobilePulsa(req, res)});
 
+router.route('/get-snap-token').get(function(req, res) {rf.getSnapToken(req, res)});
+
 router.route('/test-xendit').get(function(req, res) {rf.testXendit(req, res)});
 
 router.route('/register-admin').post(function(req, res) {rf.registerAdmin(req, res)});
