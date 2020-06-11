@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
 function getFirstPath(path) {
 	return '/' + path.split('/')[1].split('/')[0];
@@ -42,6 +43,22 @@ exports.randomNumber = function(length) {
       result += characters.charAt(Math.floor(Math.random() * charactersLength));
    }
    return result;
+}
+
+exports.encryptThis = function(str) {
+	var mykey = crypto.createCipher('aes-128-cbc', 'UKJlA3fmeg');
+	var mystr = mykey.update(str, 'utf8', 'hex');
+	mystr += mykey.final('hex');
+
+	return mystr;
+}
+
+exports.decryptThis = function(str) {
+	var mykey = crypto.createDecipher('aes-128-cbc', 'UKJlA3fmeg');
+	var mystr = mykey.update(str, 'hex', 'utf8');
+	mystr += mykey.final('utf8');
+
+	return mystr;
 }
 
 function logger(req, res, next) {

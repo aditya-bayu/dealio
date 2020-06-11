@@ -469,17 +469,36 @@ exports.userRegisterPhone = function(req, res) {
 	var time = middle.getTime();
 
 	db.query("SELECT * FROM regis_phone_number WHERE phone_number = '"+phone_number+"' AND status_regis = 1", function(result) {
-		if(result.length != 0) {
-			res.json(404);
+		if(result.length == 0) {
+			res.json({status: 404});
 		}
 		else {
 			db.query("SELECT * FROM regis_phone_number WHERE phone_number = '"+phone_number+"' AND status_regis = 0", function(result) {
 				if(result.length >= 3) {
-					res.json(403);
+					res.json({status: 403});
 				}
 				else {
-					db.query("INSERT INTO regis_phone_number (id, phone_number, status_regis, date, time) VALUES ('', '"+phone_number+"', '"+status_regis+"', '"+date+"', '"+time+"')", function(result) {	
-						res.json(result);
+					db.query("INSERT INTO regis_phone_number (id, phone_number, status_regis, date, time) VALUES ('', '"+phone_number+"', '"+status_regis+"', '"+date+"', '"+time+"')", function(result) {
+						var regis_id = result.insertId;
+
+						//citcall misscall
+						request.post({
+							headers: {'Content-Type' : 'application/json', 'Authorization': 'Apikey 5e69e97b699f5c31dcc16c5e63568e3c'},
+						  	url: 'http://104.199.196.122/gateway/v3/asynccall',
+						  	json: {"msisdn": phone_number, "gateway":1}
+						}, function(error, response, body){
+							console.log(body);
+							db.query("INSERT INTO otp_regis (id, regis_phone_number_id, otp_code, date, time) VALUES ('', '"+regis_id+"', '"+body.token.substr(body.token.length-4)+"', '"+date+"', '"+time+"')", function(result) {
+								res.json({
+									data: {
+										regis_phone_number_id: middle.encryptThis(String(regis_id)),
+										phone_number: phone_number,
+										token: body.token.substr(0, body.token.length-4),
+										otp_id: middle.encryptThis(String(result.insertId))
+									}
+								});
+							});
+						});
 					});
 				}
 			});
@@ -488,40 +507,23 @@ exports.userRegisterPhone = function(req, res) {
 }
 
 exports.checkRegisterOtp = function(req, res) {
-	var id = req.body.id;
+	var otp_id = parseInt(middle.decryptThis(req.body.otp_id));
 	var otp_code = req.body.otp_code;
-	var regis_phone_number_id = req.body.regis_phone_number_id;
-	var phone_number = req.body.phone_number;
+	var regis_phone_number_id = parseInt(middle.decryptThis(req.body.regis_phone_number_id));
 
-	db.query("SELECT * FROM otp_regis WHERE id = "+id, function(result) {
-		if(result[0].otp_code == otp_code) {
-			db.query("UPDATE regis_phone_number SET status_regis = 2 WHERE phone_number = '"+ phone_number+"' AND status_regis = 0", function(result) {	
-				db.query("UPDATE regis_phone_number SET status_regis = 1 WHERE id = "+ regis_phone_number_id, function(result) {	
-					res.json(200);
+	db.query("SELECT * FROM regis_phone_number WHERE id = '"+regis_phone_number_id+"'", function(result) {
+		var phone_number = result[0].phone_number;
+		db.query("SELECT * FROM otp_regis WHERE id = "+otp_id, function(result) {
+			if(result[0].otp_code == otp_code) {
+				db.query("UPDATE regis_phone_number SET status_regis = 2 WHERE phone_number = '"+ phone_number+"' AND status_regis = 0", function(result) {	
+					db.query("UPDATE regis_phone_number SET status_regis = 1 WHERE id = "+ regis_phone_number_id, function(result) {	
+						res.json({status: 200});
+					});
 				});
-			});
-		}
-		else {
-			res.json(403);
-		}
-	});
-}
-
-exports.citcallOtp = function(req, res) {
-	var date = middle.getDate();
-	var time = middle.getTime();
-
-	db.query("SELECT * FROM regis_phone_number WHERE id = "+req.query.id, function(result) {
-		var regis_phone_number = result[0];
-		request.post({
-			headers: {'Content-Type' : 'application/json', 'Authorization': 'Apikey 5e69e97b699f5c31dcc16c5e63568e3c'},
-		  	url: 'http://104.199.196.122/gateway/v3/asynccall',
-		  	json: {"msisdn": regis_phone_number.phone_number, "gateway":1}
-		}, function(error, response, body){
-			console.log(body);
-			db.query("INSERT INTO otp_regis (id, regis_phone_number_id, otp_code, date, time) VALUES ('', '"+result[0].id+"', '"+body.token.substr(body.token.length-4)+"', '"+date+"', '"+time+"')", function(result) {	
-				res.json({result: regis_phone_number, token: body.token.substr(0, body.token.length-4), otp_id: result.insertId});
-			});
+			}
+			else {
+				res.json({status: 403});
+			}
 		});
 	});
 }
@@ -533,7 +535,7 @@ exports.getOnePhoneRegis = function(req, res) {
 }
 
 exports.registerUser = function(req, res) {
-	var phone_number = req.body.phone_number;
+	var regis_phone_number_id = parseInt(middle.decryptThis(req.body.regis_phone_number_id));
 	var name = req.body.name;
 	var email = req.body.email;
 	var password = req.body.password;
@@ -543,15 +545,35 @@ exports.registerUser = function(req, res) {
 	var date = middle.getDate();
 	var time = middle.getTime();
 
-	//generate refcode
-	var user_refcode = name.substring(0, 3).toLowerCase() + middle.randomNumber(2) + middle.randomChar(2);
+	db.query("SELECT * FROM regis_phone_number WHERE id = '"+regis_phone_number_id+"'", function(result) {
+		var phone_number = result[0].phone_number;
+		//generate refcode
+		var user_refcode = name.substring(0, 3).toLowerCase() + middle.randomNumber(2) + middle.randomChar(2);
 
-	//generate qrcode
-	var qrcode =  '8008' + phone_number.substring(phone_number.length - 4) + middle.randomNumber(8);
+		//generate qrcode
+		var qrcode =  '8008' + phone_number.substring(phone_number.length - 4) + middle.randomNumber(8);
 
-	if(login_method == 'manual') {
-		db.query("INSERT INTO user_manual (id, phone_number, email, password, date, time) VALUES ('', '"+phone_number+"', '"+email+"', '"+password+"', '"+date+"', '"+time+"')", function(result) {	
-			db.query("INSERT INTO user (id, phone_number, email, email_verified, name, login_method, active, refcode, date, time) VALUES ('', '"+phone_number+"', '"+email+"', "+email_verified+", '"+name+"', '"+login_method+"', "+active+" , '"+user_refcode+"', '"+date+"', '"+time+"')", function(result) {	
+		if(login_method == 'manual') {
+			db.query("INSERT INTO user_manual (id, phone_number, email, password, date, time) VALUES ('', '"+phone_number+"', '"+email+"', '"+password+"', '"+date+"', '"+time+"')", function(result) {	
+				db.query("INSERT INTO user (id, phone_number, email, email_verified, name, login_method, active, refcode, date, time) VALUES ('', '"+phone_number+"', '"+email+"', "+email_verified+", '"+name+"', '"+login_method+"', "+active+" , '"+user_refcode+"', '"+date+"', '"+time+"')", function(result) {	
+					db.query("INSERT INTO membership (id, user_id, tier, date, time) VALUES ('', "+result.insertId+", 'silver', '"+date+"', '"+time+"')", function(result) {	
+						console.log(result);
+					});
+					db.query("INSERT INTO user_detail (id, user_id, date, time) VALUES ('', "+result.insertId+", '"+date+"', '"+time+"')", function(result) {	
+						console.log(result);
+					});
+					db.query("INSERT INTO user_point (id, user_id, point) VALUES ('', "+result.insertId+", 0)", function(result) {	
+						console.log(result);
+					});
+					db.query("INSERT INTO user_qrcode_membership (id, user_id, qrcode, date, time) VALUES ('', "+result.insertId+", '"+qrcode+"', '"+date+"', '"+time+"')", function(result) {	
+						console.log(result);
+						res.json(result);
+					});
+				});
+			});
+		}
+		else {
+			db.query("INSERT INTO user (id, phone_number, email, email_verified, name, login_method, active, refcode, date, time) VALUES ('', '"+phone_number+"', '"+email+"', "+email_verified+", '"+name+"', '"+login_method+"', "+active+", '"+user_refcode+"', '"+date+"', '"+time+"')", function(result) {	
 				db.query("INSERT INTO membership (id, user_id, tier, date, time) VALUES ('', "+result.insertId+", 'silver', '"+date+"', '"+time+"')", function(result) {	
 					console.log(result);
 				});
@@ -566,25 +588,8 @@ exports.registerUser = function(req, res) {
 					res.json(result);
 				});
 			});
-		});
-	}
-	else {
-		db.query("INSERT INTO user (id, phone_number, email, email_verified, name, login_method, active, refcode, date, time) VALUES ('', '"+phone_number+"', '"+email+"', "+email_verified+", '"+name+"', '"+login_method+"', "+active+", '"+user_refcode+"', '"+date+"', '"+time+"')", function(result) {	
-			db.query("INSERT INTO membership (id, user_id, tier, date, time) VALUES ('', "+result.insertId+", 'silver', '"+date+"', '"+time+"')", function(result) {	
-				console.log(result);
-			});
-			db.query("INSERT INTO user_detail (id, user_id, date, time) VALUES ('', "+result.insertId+", '"+date+"', '"+time+"')", function(result) {	
-				console.log(result);
-			});
-			db.query("INSERT INTO user_point (id, user_id, point) VALUES ('', "+result.insertId+", 0)", function(result) {	
-				console.log(result);
-			});
-			db.query("INSERT INTO user_qrcode_membership (id, user_id, qrcode, date, time) VALUES ('', "+result.insertId+", '"+qrcode+"', '"+date+"', '"+time+"')", function(result) {	
-				console.log(result);
-				res.json(result);
-			});
-		});
-	}
+		}
+	});
 }
 
 exports.userForgetPhone = function(req, res) {

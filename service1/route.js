@@ -103,8 +103,6 @@ router.route('/user-register-phone').post(function(req, res) {rf.userRegisterPho
 
 router.route('/check-register-otp').post(function(req, res) {rf.checkRegisterOtp(req, res)});
 
-router.route('/citcall-otp').get(function(req, res) {rf.citcallOtp(req, res)});
-
 router.route('/get-one-phone-regis').get(function(req, res) {rf.getOnePhoneRegis(req, res)});
 
 router.route('/register-user').post(function(req, res) {rf.registerUser(req, res)});
