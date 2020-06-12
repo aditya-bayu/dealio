@@ -547,7 +547,6 @@ CREATE TABLE `login_user` (
 
 LOCK TABLES `login_user` WRITE;
 /*!40000 ALTER TABLE `login_user` DISABLE KEYS */;
-INSERT INTO `login_user` VALUES (11,6,'2020-04-13','12:04:12'),(12,9,'2020-04-13','13:59:22'),(13,9,'2020-04-13','14:00:17'),(14,11,'2020-04-13','14:02:02');
 /*!40000 ALTER TABLE `login_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -627,7 +626,7 @@ CREATE TABLE `membership` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `membership_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -636,6 +635,7 @@ CREATE TABLE `membership` (
 
 LOCK TABLES `membership` WRITE;
 /*!40000 ALTER TABLE `membership` DISABLE KEYS */;
+INSERT INTO `membership` VALUES (4,23,'silver','2020-06-12','12:06:15');
 /*!40000 ALTER TABLE `membership` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -794,12 +794,14 @@ CREATE TABLE `otp_regis` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `regis_phone_number_id` int(11) NOT NULL,
   `otp_code` varchar(255) NOT NULL,
+  `valid` int(11) NOT NULL,
+  `otp_type` int(11) NOT NULL,
   `date` date NOT NULL,
   `time` time NOT NULL,
   PRIMARY KEY (`id`),
   KEY `regis_phone_number_id` (`regis_phone_number_id`),
   CONSTRAINT `otp_regis_ibfk_1` FOREIGN KEY (`regis_phone_number_id`) REFERENCES `regis_phone_number` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -808,7 +810,7 @@ CREATE TABLE `otp_regis` (
 
 LOCK TABLES `otp_regis` WRITE;
 /*!40000 ALTER TABLE `otp_regis` DISABLE KEYS */;
-INSERT INTO `otp_regis` VALUES (13,15,'0755','2020-04-13','12:03:21'),(14,16,'0319','2020-04-13','12:22:07'),(15,17,'0631','2020-04-13','13:55:45'),(16,18,'0770','2020-04-13','13:58:24'),(17,19,'8931','2020-04-13','13:58:36'),(18,20,'0965','2020-04-13','14:00:50'),(19,21,'0765','2020-04-13','14:01:57'),(20,22,'0621','2020-04-13','14:02:41'),(21,23,'8942','2020-04-13','14:02:57'),(22,24,'0764','2020-04-13','14:03:05'),(23,25,'8917','2020-04-13','14:03:42'),(24,26,'0345','2020-04-13','14:04:22'),(27,30,'0319','2020-04-27','14:55:48'),(29,32,'0753','2020-05-11','13:48:04'),(33,30,'0390','2020-06-10','13:50:44'),(34,30,'8926','2020-06-10','16:46:11'),(36,38,'0332','2020-06-11','11:47:19');
+INSERT INTO `otp_regis` VALUES (38,41,'0395',0,0,'2020-06-12','12:01:52');
 /*!40000 ALTER TABLE `otp_regis` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -839,7 +841,6 @@ CREATE TABLE `point_redeem_history` (
 
 LOCK TABLES `point_redeem_history` WRITE;
 /*!40000 ALTER TABLE `point_redeem_history` DISABLE KEYS */;
-INSERT INTO `point_redeem_history` VALUES (1,18,'deals',1,100000,'0000-00-00','15:26:12');
 /*!40000 ALTER TABLE `point_redeem_history` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -983,6 +984,33 @@ LOCK TABLES `refcode_input` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `regis_device`
+--
+
+DROP TABLE IF EXISTS `regis_device`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `regis_device` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `device` varchar(255) NOT NULL,
+  `status_regis` int(11) NOT NULL,
+  `date` date NOT NULL,
+  `time` time NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `regis_device`
+--
+
+LOCK TABLES `regis_device` WRITE;
+/*!40000 ALTER TABLE `regis_device` DISABLE KEYS */;
+INSERT INTO `regis_device` VALUES (3,'1a2b3c4d',1,'2020-06-12','12:01:52');
+/*!40000 ALTER TABLE `regis_device` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `regis_phone_number`
 --
 
@@ -996,7 +1024,7 @@ CREATE TABLE `regis_phone_number` (
   `time` time NOT NULL,
   `status_regis` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1005,7 +1033,7 @@ CREATE TABLE `regis_phone_number` (
 
 LOCK TABLES `regis_phone_number` WRITE;
 /*!40000 ALTER TABLE `regis_phone_number` DISABLE KEYS */;
-INSERT INTO `regis_phone_number` VALUES (15,'087771805500','2020-04-13','12:03:20',1),(16,'081381085380','2020-04-13','12:22:07',1),(17,'081806802482','2020-04-13','13:55:44',1),(18,'085323991877','2020-04-13','13:58:24',1),(19,'081283386332','2020-04-13','13:58:35',1),(20,'087878752519','2020-04-13','14:00:50',1),(21,'087889882977','2020-04-13','14:01:56',0),(22,'087889882977','2020-04-13','14:02:41',0),(23,'081398769737','2020-04-13','14:02:57',2),(24,'087889882977','2020-04-13','14:03:04',0),(25,'081398769737','2020-04-13','14:03:42',2),(26,'081398769737','2020-04-13','14:04:21',1),(30,'082299392596','2020-04-27','14:55:47',1),(32,'085782241627','2020-05-11','13:48:03',1),(38,'082299392596','2020-06-11','11:47:19',1);
+INSERT INTO `regis_phone_number` VALUES (41,'082299392596','2020-06-12','12:01:52',1);
 /*!40000 ALTER TABLE `regis_phone_number` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1265,7 +1293,7 @@ CREATE TABLE `user` (
   `ktp_url` varchar(255) DEFAULT NULL,
   `refcode` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1274,7 +1302,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (6,'Giles Adam Taarland','gilesttmt@gmail.com','087771805500','2020-04-13','12:03:53','manual',0,1,NULL,''),(7,'Septian Ade','@adeseptian7@gmail.com','081381085380','2020-04-13','12:23:14','manual',0,1,NULL,''),(8,'Gunawan','gunawanbayu98@gmail.com','081806802482','2020-04-13','13:56:22','manual',0,1,NULL,''),(9,'Philip Barton','bartonjakarta@gmail.com','081283386332','2020-04-13','13:59:05','manual',0,1,NULL,''),(10,'Syifa Abdurrozak','iheh69@gmail.com','085323991877','2020-04-13','13:59:13','manual',0,1,NULL,''),(11,'Darren ','Darren@digitalvisionpublishing.com ','087878752519','2020-04-13','14:01:43','manual',0,1,NULL,''),(12,'Desi widiastuti','deswidia@gmail.com','081398769737','2020-04-13','14:05:05','manual',0,1,NULL,''),(18,'Hanindyo Herbowo','hanindyo.herbowo@gmail.com','082299392596','2020-04-27','14:56:11','manual',0,1,NULL,'han24bk'),(19,'Aditya Bayu','adit@gmail.com','085782241627','2020-05-11','13:48:29','manual',0,1,NULL,''),(21,'dyo','dyo@gmail.com','082299392596','2020-06-11','11:50:25','manual',0,1,NULL,'dyo38ye');
+INSERT INTO `user` VALUES (23,'Hanindyo Herbowo','hanindyo.herbowo@gmail.com','082299392596','2020-06-12','12:06:15','manual',0,1,NULL,'han63td');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1357,7 +1385,7 @@ CREATE TABLE `user_detail` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `user_detail_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1366,6 +1394,7 @@ CREATE TABLE `user_detail` (
 
 LOCK TABLES `user_detail` WRITE;
 /*!40000 ALTER TABLE `user_detail` DISABLE KEYS */;
+INSERT INTO `user_detail` VALUES (4,23,NULL,NULL,NULL,'2020-06-12','12:06:15',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `user_detail` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1468,7 +1497,7 @@ CREATE TABLE `user_manual` (
   `time` time NOT NULL,
   `email` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1477,7 +1506,7 @@ CREATE TABLE `user_manual` (
 
 LOCK TABLES `user_manual` WRITE;
 /*!40000 ALTER TABLE `user_manual` DISABLE KEYS */;
-INSERT INTO `user_manual` VALUES (6,'087771805500','dainton1','2020-04-13','12:03:53','gilesttmt@gmail.com'),(7,'081381085380','dealio03','2020-04-13','12:23:14','@adeseptian7@gmail.com'),(8,'081806802482','dewantoro98','2020-04-13','13:56:22','gunawanbayu98@gmail.com'),(9,'081283386332','dealio','2020-04-13','13:59:05','bartonjakarta@gmail.com'),(10,'085323991877','kabur123','2020-04-13','13:59:13','iheh69@gmail.com'),(11,'087878752519','dazza1','2020-04-13','14:01:43','Darren@digitalvisionpublishing.com '),(12,'081398769737','KakekNenek!','2020-04-13','14:05:05','deswidia@gmail.com'),(18,'082299392596','123','2020-04-27','14:56:11','hanindyo.herbowo@gmail.com'),(20,'085782241627','123','2020-05-11','13:48:29','adit@gmail.com');
+INSERT INTO `user_manual` VALUES (24,'082299392596','123','2020-06-12','12:06:15','hanindyo.herbowo@gmail.com');
 /*!40000 ALTER TABLE `user_manual` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1495,7 +1524,7 @@ CREATE TABLE `user_point` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `user_point_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1504,7 +1533,7 @@ CREATE TABLE `user_point` (
 
 LOCK TABLES `user_point` WRITE;
 /*!40000 ALTER TABLE `user_point` DISABLE KEYS */;
-INSERT INTO `user_point` VALUES (1,18,100000);
+INSERT INTO `user_point` VALUES (5,23,0);
 /*!40000 ALTER TABLE `user_point` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1524,7 +1553,7 @@ CREATE TABLE `user_qrcode_membership` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `user_qrcode_membership_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1533,7 +1562,7 @@ CREATE TABLE `user_qrcode_membership` (
 
 LOCK TABLES `user_qrcode_membership` WRITE;
 /*!40000 ALTER TABLE `user_qrcode_membership` DISABLE KEYS */;
-INSERT INTO `user_qrcode_membership` VALUES (2,18,'8008259618728165','2020-04-27','14:56:11'),(3,19,'8008162777014633','2020-05-11','13:48:29');
+INSERT INTO `user_qrcode_membership` VALUES (7,23,'8008259666355020','2020-06-12','12:06:15');
 /*!40000 ALTER TABLE `user_qrcode_membership` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1680,4 +1709,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-06-11 12:10:24
+-- Dump completed on 2020-06-12 12:15:44
