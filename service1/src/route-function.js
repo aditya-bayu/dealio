@@ -509,9 +509,18 @@ exports.addSurveyResponse = function(req, res) {
 exports.userRegisterPhone = function(req, res) {
 	var phone_number = req.body.phone_number;
 	var device = req.body.device;
+	var login_method = req.body.login_method;
 	var status_regis = 0;
 	var date = middle.getDate();
 	var time = middle.getTime();
+
+	if(login_method == 'google') {
+		var user_google_id = req.body.user_google_id;
+	}
+
+	else if(login_method == 'facebook') {
+		var user_facebook_id = req.body.user_facebook_id;
+	}
 
 	db.query("SELECT * FROM regis_phone_number WHERE phone_number = '"+phone_number+"' AND status_regis = 1", function(result) {
 		if(result.length != 0) {
@@ -556,7 +565,9 @@ exports.userRegisterPhone = function(req, res) {
 															phone_number: phone_number,
 															device: device,
 															token: body.token.substr(0, body.token.length-4),
-															otp_id: middle.encryptThis(String(result.insertId))
+															otp_id: middle.encryptThis(String(result.insertId)),
+															user_google_id: user_google_id,
+															user_facebook_id: user_facebook_id
 														}
 													});
 												});
@@ -577,7 +588,11 @@ exports.checkRegisterOtp = function(req, res) {
 	var otp_id = parseInt(middle.decryptThis(req.body.otp_id));
 	var otp_code = req.body.otp_code;
 	var regis_phone_number_id = parseInt(middle.decryptThis(req.body.regis_phone_number_id));
+	var regis_device_id = parseInt(middle.decryptThis(req.body.regis_device_id));
+	var login_method = req.body.login_method;
 	var failed_count = req.body.failed_count;
+	var date = middle.getDate();
+	var time = middle.getTime();
 
 	if(failed_count >= 3) {
 		db.query("UPDATE otp_regis SET valid = 0 WHERE id = "+otp_id, function(result) {
@@ -587,20 +602,106 @@ exports.checkRegisterOtp = function(req, res) {
 	else {
 		db.query("SELECT * FROM regis_phone_number WHERE id = "+regis_phone_number_id, function(result) {
 			var phone_number = result[0].phone_number;
-			db.query("SELECT * FROM otp_regis WHERE id = "+otp_id, function(result) {
-				if(result[0].valid == 0) {
-					res.json({status: 404, message: "Kode OTP ini sudah tidak valid, silahkan ulangi verifikasi nomor"});
-				}
-				else {
-					if(result[0].otp_code == otp_code) {
-						db.query("UPDATE otp_regis SET valid = 0 WHERE id = "+otp_id, function(result) {
-							res.json({status: 200, message: "Verifikasi kode OTP sukses"});
-						});
+			db.query("SELECT * FROM regis_device WHERE id = '"+regis_device_id+"'", function(result) {
+				var device = result[0].device;
+
+				db.query("SELECT * FROM otp_regis WHERE id = "+otp_id, function(result) {
+					if(result[0].valid == 0) {
+						res.json({status: 404, message: "Kode OTP ini sudah tidak valid, silahkan ulangi verifikasi nomor"});
 					}
 					else {
-						res.json({status: 403, message: "Kode OTP yang anda masukkan salah"});
+						if(result[0].otp_code == otp_code) {
+							db.query("UPDATE otp_regis SET valid = 0 WHERE id = "+otp_id, function(result) {
+								if(login_method == 'google') {
+									var user_google_id = parseInt(middle.decryptThis(req.body.user_google_id));
+									db.query("SELECT *, date_format(date, '%Y-%m-%d') AS date, date_format(time, '%H:%i:%s') AS time FROM user_google WHERE id = "+user_google_id, function(result) {
+										var email = result[0].email;
+										var email_verified = 0;
+										var name = result[0].full_name;
+										var active = 1;
+										
+										//generate refcode
+										var user_refcode = name.substring(0, 3).toLowerCase() + middle.randomNumber(2) + middle.randomChar(2);
+
+										//generate qrcode
+										var qrcode =  '8008' + phone_number.substring(phone_number.length - 4) + middle.randomNumber(8);
+										
+										db.query("INSERT INTO user (id, phone_number, email, email_verified, name, login_method, active, refcode, date, time) VALUES ('', '"+phone_number+"', '"+email+"', "+email_verified+", '"+name+"', '"+login_method+"', "+active+" , '"+user_refcode+"', '"+date+"', '"+time+"')", function(result) {
+											db.query("INSERT INTO membership (id, user_id, tier, date, time) VALUES ('', "+result.insertId+", 'silver', '"+date+"', '"+time+"')", function(result) {	
+												console.log(result);
+											});
+											db.query("INSERT INTO user_detail (id, user_id, date, time) VALUES ('', "+result.insertId+", '"+date+"', '"+time+"')", function(result) {	
+												console.log(result);
+											});
+											db.query("INSERT INTO user_point (id, user_id, point) VALUES ('', "+result.insertId+", 0)", function(result) {	
+												console.log(result);
+											});
+											db.query("INSERT INTO user_qrcode_membership (id, user_id, qrcode, date, time) VALUES ('', "+result.insertId+", '"+qrcode+"', '"+date+"', '"+time+"')", function(result) {	
+												console.log(result);
+											});
+											db.query("UPDATE regis_device SET status_regis = 2 WHERE device = '"+ device+"' AND status_regis = 0", function(result) {	
+												db.query("UPDATE regis_device SET status_regis = 1 WHERE id = "+ regis_device_id, function(result) {	
+													console.log(result);
+												});
+											});
+											db.query("UPDATE regis_phone_number SET status_regis = 2 WHERE phone_number = '"+ phone_number+"' AND status_regis = 0", function(result) {	
+												db.query("UPDATE regis_phone_number SET status_regis = 1 WHERE id = "+ regis_phone_number_id, function(result) {	
+													res.json({status: 200, message: "Registrasi sukses"});
+												});
+											});
+										});
+									});
+								}
+								else if(login_method == 'facebook') {
+									var user_facebook_id = parseInt(middle.decryptThis(req.body.user_facebook_id));
+									db.query("SELECT *, date_format(date, '%Y-%m-%d') AS date, date_format(time, '%H:%i:%s') AS time FROM user_facebook WHERE id = "+user_facebook_id, function(result) {
+										var email = result[0].email;
+										var email_verified = 0;
+										var name = result[0].name;
+										var active = 1;
+										
+										//generate refcode
+										var user_refcode = name.substring(0, 3).toLowerCase() + middle.randomNumber(2) + middle.randomChar(2);
+
+										//generate qrcode
+										var qrcode =  '8008' + phone_number.substring(phone_number.length - 4) + middle.randomNumber(8);
+										
+										db.query("INSERT INTO user (id, phone_number, email, email_verified, name, login_method, active, refcode, date, time) VALUES ('', '"+phone_number+"', '"+email+"', "+email_verified+", '"+name+"', '"+login_method+"', "+active+" , '"+user_refcode+"', '"+date+"', '"+time+"')", function(result) {
+											db.query("INSERT INTO membership (id, user_id, tier, date, time) VALUES ('', "+result.insertId+", 'silver', '"+date+"', '"+time+"')", function(result) {	
+												console.log(result);
+											});
+											db.query("INSERT INTO user_detail (id, user_id, date, time) VALUES ('', "+result.insertId+", '"+date+"', '"+time+"')", function(result) {	
+												console.log(result);
+											});
+											db.query("INSERT INTO user_point (id, user_id, point) VALUES ('', "+result.insertId+", 0)", function(result) {	
+												console.log(result);
+											});
+											db.query("INSERT INTO user_qrcode_membership (id, user_id, qrcode, date, time) VALUES ('', "+result.insertId+", '"+qrcode+"', '"+date+"', '"+time+"')", function(result) {	
+												console.log(result);
+											});
+											db.query("UPDATE regis_device SET status_regis = 2 WHERE device = '"+ device+"' AND status_regis = 0", function(result) {	
+												db.query("UPDATE regis_device SET status_regis = 1 WHERE id = "+ regis_device_id, function(result) {	
+													console.log(result);
+												});
+											});
+											db.query("UPDATE regis_phone_number SET status_regis = 2 WHERE phone_number = '"+ phone_number+"' AND status_regis = 0", function(result) {	
+												db.query("UPDATE regis_phone_number SET status_regis = 1 WHERE id = "+ regis_phone_number_id, function(result) {	
+													res.json({status: 200, message: "Registrasi sukses"});
+												});
+											});
+										});
+									});
+								}
+								else {
+									res.json({status: 200, message: "Verifikasi kode OTP sukses"});
+								}
+							});
+						}
+						else {
+							res.json({status: 403, message: "Kode OTP yang anda masukkan salah"});
+						}
 					}
-				}
+				});
 			});
 		});
 	}
@@ -659,32 +760,6 @@ exports.registerUser = function(req, res) {
 							db.query("UPDATE regis_phone_number SET status_regis = 1 WHERE id = "+ regis_phone_number_id, function(result) {	
 								res.json({status: 200, message: "Registrasi sukses"});
 							});
-						});
-					});
-				});
-			}
-			else {
-				db.query("INSERT INTO user (id, phone_number, email, email_verified, name, login_method, active, refcode, date, time) VALUES ('', '"+phone_number+"', '"+email+"', "+email_verified+", '"+name+"', '"+login_method+"', "+active+", '"+user_refcode+"', '"+date+"', '"+time+"')", function(result) {	
-					db.query("INSERT INTO membership (id, user_id, tier, date, time) VALUES ('', "+result.insertId+", 'silver', '"+date+"', '"+time+"')", function(result) {	
-						console.log(result);
-					});
-					db.query("INSERT INTO user_detail (id, user_id, date, time) VALUES ('', "+result.insertId+", '"+date+"', '"+time+"')", function(result) {	
-						console.log(result);
-					});
-					db.query("INSERT INTO user_point (id, user_id, point) VALUES ('', "+result.insertId+", 0)", function(result) {	
-						console.log(result);
-					});
-					db.query("INSERT INTO user_qrcode_membership (id, user_id, qrcode, date, time) VALUES ('', "+result.insertId+", '"+qrcode+"', '"+date+"', '"+time+"')", function(result) {	
-						console.log(result);
-					});
-					db.query("UPDATE regis_device SET status_regis = 2 WHERE device = '"+ device+"' AND status_regis = 0", function(result) {	
-						db.query("UPDATE regis_device SET status_regis = 1 WHERE id = "+ regis_device_id, function(result) {	
-							console.log(result);
-						});
-					});
-					db.query("UPDATE regis_phone_number SET status_regis = 2 WHERE phone_number = '"+ phone_number+"' AND status_regis = 0", function(result) {	
-						db.query("UPDATE regis_phone_number SET status_regis = 1 WHERE id = "+ regis_phone_number_id, function(result) {	
-							res.json({status: 200, message: "Registrasi sukses"});
 						});
 					});
 				});
@@ -779,6 +854,7 @@ exports.forgetPasswordUser = function(req, res) {
 
 exports.authGoogle = function(req, res) {
 	var access_token = req.body.access_token;
+
 	request.get({
 		url: 'https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=' + access_token
 	}, 	function(error, response, body){
@@ -793,8 +869,8 @@ exports.authGoogle = function(req, res) {
   			var date = middle.getDate();
 			var time = middle.getTime();
 			if(body.id) {
-	  			db.query("INSERT INTO user_google (id, google_id, full_name, given_name, family_name, image_url, email, date, time) VALUES ('', '"+google_id+"', '"+full_name+"', '"+given_name+"', '"+family_name+"', '"+image_url+"', '"+email+"', '"+date+"', '"+time+"')", function(result) {	
-					res.json({status: 200, message:'Authentication Success', data: body});
+	  			db.query("INSERT INTO user_google (id, google_id, full_name, given_name, family_name, image_url, email, date, time) VALUES ('', '"+google_id+"', '"+full_name+"', '"+given_name+"', '"+family_name+"', '"+image_url+"', '"+email+"', '"+date+"', '"+time+"')", function(result) {
+					res.json({status: 200, message:'Authentication Success', data: {user_google_id: middle.encryptThis(String(result.insertId))}});
 				});
 	  		}
 	  		else {
@@ -827,7 +903,7 @@ exports.authFacebook = function(req, res) {
 			var time = middle.getTime();
 			if(body.id) {
 	  			db.query("INSERT INTO user_facebook (id, fb_id, email, first_name, last_name, name, date, time) VALUES ('', '"+fb_id+"', '"+email+"', '"+first_name+"', '"+last_name+"', '"+name+"', '"+date+"', '"+time+"')", function(result) {	
-					res.json({status: 200, message:'Authentication Success', data: body});
+					res.json({status: 200, message:'Authentication Success', data: {user_facebook_id: middle.encryptThis(String(result.insertId))}});
 				});
 	  		}
 	  		else {
