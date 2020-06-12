@@ -90,18 +90,11 @@ exports.testMobilePulsa = function(req, res) {
 	});
 }
 
-exports.testXendit = function(req, res) {
-	var path = "https://api.xendit.co/callback_virtual_accounts";
-
-	request.post(path, {
-		headers: {
-			'Authorization': 'Basic eG5kX2RldmVsb3BtZW50X3VSMXAyTlM3c0VieDQwQ0x3MXdGZUplemhaQkFSN0tlV0dBbVdtM2tYWEgwNVlYOWtMWkhpSTk4cXV0eXNlSTo='
-		},
+exports.testUltraVoucher = function(req, res) {
+	var path = 'https://apisandbox.vouchercenter.id/api/v1/Token/accessToken';
+	request.get(path, {
 		json: {
-			"external_id": "dyo_test_1",
-		   	"bank_code": "BCA",
-		   	"name": "Hanindyo Herbowo",
-		   	"expected_amount": 20000
+			
 		}
 	},
 	function(error, response, body){
@@ -799,15 +792,53 @@ exports.authGoogle = function(req, res) {
   			var email = body.email;
   			var date = middle.getDate();
 			var time = middle.getTime();
-  			db.query("INSERT INTO user_google (id, google_id, full_name, given_name, family_name, image_url, email, date, time) VALUES ('', '"+google_id+"', '"+full_name+"', '"+given_name+"', '"+family_name+"', '"+image_url+"', '"+email+"', '"+date+"', '"+time+"')", function(result) {	
-				res.json(result);
-			});
+			if(body.id) {
+	  			db.query("INSERT INTO user_google (id, google_id, full_name, given_name, family_name, image_url, email, date, time) VALUES ('', '"+google_id+"', '"+full_name+"', '"+given_name+"', '"+family_name+"', '"+image_url+"', '"+email+"', '"+date+"', '"+time+"')", function(result) {	
+					res.json({status: 200, message:'Authentication Success', data: body});
+				});
+	  		}
+	  		else {
+	  			res.json({status: 403, message:'Authentication Failed', data:body});
+	  		}
 		}
 	);
 }
 
 exports.getUserGoogle = function(req, res) {
 	db.query("SELECT *, date_format(date, '%Y-%m-%d') AS date, date_format(time, '%H:%i:%s') AS time FROM user_google WHERE id = "+req.query.id, function(result) {
+		res.json(result);
+	});
+}
+
+exports.authFacebook = function(req, res) {
+	var access_token = req.body.access_token;
+	var fb_user_id = req.body.fb_user_id;
+	request.get({
+		url: 'https://graph.facebook.com/'+ fb_user_id +'?fields=id,email,first_name,last_name,name&access_token=' + access_token
+	}, 	function(error, response, body){
+  			body = JSON.parse(body);
+  			console.log(body);
+  			var fb_id = body.id;
+  			var email = body.email;
+  			var first_name = body.first_name;
+  			var last_name = body.last_name;
+  			var name = body.name;
+  			var date = middle.getDate();
+			var time = middle.getTime();
+			if(body.id) {
+	  			db.query("INSERT INTO user_facebook (id, fb_id, email, first_name, last_name, name, date, time) VALUES ('', '"+fb_id+"', '"+email+"', '"+first_name+"', '"+last_name+"', '"+name+"', '"+date+"', '"+time+"')", function(result) {	
+					res.json({status: 200, message:'Authentication Success', data: body});
+				});
+	  		}
+	  		else {
+	  			res.json({status: 403, message:'Authentication Failed', data:body});
+	  		}
+		}
+	);
+}
+
+exports.getUserFacebook = function(req, res) {
+	db.query("SELECT *, date_format(date, '%Y-%m-%d') AS date, date_format(time, '%H:%i:%s') AS time FROM user_facebook WHERE id = "+req.query.id, function(result) {
 		res.json(result);
 	});
 }

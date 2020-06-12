@@ -1407,6 +1407,7 @@ DROP TABLE IF EXISTS `user_facebook`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_facebook` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `fb_id` varchar(255) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   `first_name` varchar(255) DEFAULT NULL,
   `last_name` varchar(255) DEFAULT NULL,
@@ -1414,7 +1415,7 @@ CREATE TABLE `user_facebook` (
   `date` date DEFAULT NULL,
   `time` time DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1423,6 +1424,7 @@ CREATE TABLE `user_facebook` (
 
 LOCK TABLES `user_facebook` WRITE;
 /*!40000 ALTER TABLE `user_facebook` DISABLE KEYS */;
+INSERT INTO `user_facebook` VALUES (3,'676246443178999','hanindyo.herbowo@gmail.com','Hanindyo','Herbowo','Hanindyo Herbowo','2020-06-12','15:22:07');
 /*!40000 ALTER TABLE `user_facebook` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1444,7 +1446,7 @@ CREATE TABLE `user_google` (
   `date` date DEFAULT NULL,
   `time` time DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1709,4 +1711,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-06-12 12:15:44
+-- Dump completed on 2020-06-12 15:29:03

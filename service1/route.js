@@ -13,9 +13,9 @@ router.route(basepath + '/').get(function(req, res) {rf.index(req, res)});
 
 router.route(basepath + '/test-mobile-pulsa').get(function(req, res) {rf.testMobilePulsa(req, res)});
 
-router.route(basepath + '/get-snap-token').get(function(req, res) {rf.getSnapToken(req, res)});
+router.route(basepath + '/test-ultra-voucher').get(function(req, res) {rf.testUltraVoucher(req, res)});
 
-router.route(basepath + '/test-xendit').get(function(req, res) {rf.testXendit(req, res)});
+router.route(basepath + '/get-snap-token').get(function(req, res) {rf.getSnapToken(req, res)});
 
 router.route(basepath + '/register-admin').post(function(req, res) {rf.registerAdmin(req, res)});
 
@@ -124,6 +124,10 @@ router.route(basepath + '/forget-password-user').post(function(req, res) {rf.for
 router.route(basepath + '/auth/google').post(function(req, res) {rf.authGoogle(req, res)});
 
 router.route(basepath + '/get-user-google').get(function(req, res) {rf.getUserGoogle(req, res)});
+
+router.route(basepath + '/auth/facebook').post(function(req, res) {rf.authFacebook(req, res)});
+
+router.route(basepath + '/get-user-facebook').get(function(req, res) {rf.getUserFacebook(req, res)});
 
 router.route(basepath + '/get-membership').get(function(req, res) {rf.getMembership(req, res)});
 
